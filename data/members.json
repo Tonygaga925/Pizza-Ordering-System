@@ -1,0 +1,10 @@
+[
+  {
+    "id": "M001",
+    "username": "alice123",
+    "password": "password123",
+    "name": "Alice Chen",
+    "phone": "0912345678",
+    "registerDate": "2026-01-15 10:30:00"
+  }
+]

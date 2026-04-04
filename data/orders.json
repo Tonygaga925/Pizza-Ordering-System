@@ -1,12 +1,28 @@
 [
   {
-    "customerName": "Alan",
-    "pizzaName": "Margherita",
-    "size": "Medium",
+    "orderId": "ORD20260405001",
+    "memberId": "M001",
+    "customerName": "Alice Chen",
+    "phone": "0912345678",
+    "pizzaName": "Pepperoni",
+    "size": "Large",
     "extraToppings": [
+      "Mushrooms",
       "Olives"
     ],
-    "totalPrice": 8.587000000000002,
-    "timestamp": "2026-04-04 15:46:17"
+    "totalPrice": 14.38,
+    "timestamp": "2026-04-05 14:25:30",
+    "status": "completed"
+  },
+  {
+    "orderId": "ORD20260405002",
+    "customerName": "Tom",
+    "phone": "66899466",
+    "pizzaName": "Pepperoni",
+    "size": "Medium",
+    "extraToppings": [],
+    "totalPrice": 10.387,
+    "timestamp": "2026-04-05 01:19:22",
+    "status": "completed"
   }
 ]
