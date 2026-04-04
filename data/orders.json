@@ -1,0 +1,12 @@
+[
+  {
+    "customerName": "Alan",
+    "pizzaName": "Margherita",
+    "size": "Medium",
+    "extraToppings": [
+      "Olives"
+    ],
+    "totalPrice": 8.587000000000002,
+    "timestamp": "2026-04-04 15:46:17"
+  }
+]
