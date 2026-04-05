@@ -109,5 +109,19 @@
     "pointsEarned": 224,
     "timestamp": "2026-04-05 15:37:06.778547",
     "status": "completed"
+  },
+  "ORD1775382913424": {
+    "orderId": "ORD1775382913424",
+    "customerName": "Terry",
+    "phone": "98761234",
+    "pizzaName": "Hawaiian",
+    "size": "Medium",
+    "extraToppings": [],
+    "originalTotal": 18.187,
+    "finalTotal": 18.187,
+    "discountApplied": 0.0,
+    "pointsEarned": 143,
+    "timestamp": "2026-04-05 17:55:13.454936",
+    "status": "completed"
   }
 }

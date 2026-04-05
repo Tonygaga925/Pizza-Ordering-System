@@ -1,6 +1,7 @@
 package model;
 
 import java.util.List;
+import model.size.*;
 
 public class Order {
     private String orderId;
@@ -21,22 +22,23 @@ public class Order {
     public Order() {}
     
     // Constructor for new orders
-    public Order(String orderId, String memberId, String customerName, String phone, 
-                 String pizzaName, String size, List<String> extraToppings, double originalTotal) {
-        this.orderId = orderId;
-        this.memberId = memberId;
-        this.customerName = customerName;
-        this.phone = phone;
-        this.pizzaName = pizzaName;
-        this.size = size;
-        this.extraToppings = extraToppings;
-        this.originalTotal = originalTotal;
-        this.finalTotal = originalTotal;
-        this.discountApplied = 0;
-        this.pointsEarned = 0;
-        this.timestamp = java.time.LocalDateTime.now().toString().replace("T", " ");
-        this.status = "completed";
-    }
+    // In constructor, convert Size to String
+public Order(String orderId, String memberId, String customerName, String phone, 
+             String pizzaName, Size size, List<String> extraToppings, double originalTotal) {
+    this.orderId = orderId;
+    this.memberId = memberId;
+    this.customerName = customerName;
+    this.phone = phone;
+    this.pizzaName = pizzaName;
+    this.size = size.getName();  // Store size name
+    this.extraToppings = extraToppings;
+    this.originalTotal = originalTotal;
+    this.finalTotal = originalTotal;
+    this.discountApplied = 0;
+    this.pointsEarned = 0;
+    this.timestamp = java.time.LocalDateTime.now().toString().replace("T", " ");
+    this.status = "completed";
+}
     
     // Getters and setters...
     public String getOrderId() { return orderId; }

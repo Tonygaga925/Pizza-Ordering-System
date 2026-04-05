@@ -2,9 +2,11 @@ package service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
 import model.Order;
 import model.Member;
 import model.Pizza;
+import model.size.*;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -99,7 +101,7 @@ private void saveOrders() throws IOException {
 }
      // For member orders with Pizza object (recommended)
     public String placeOrder(String memberId, String customerName, String phone, 
-                             Pizza pizza, String size, List<String> extraToppings, 
+                             Pizza pizza, Size size, List<String> extraToppings, 
                              double originalTotal) throws IOException {
         String orderId = generateOrderId();
         double finalTotal = originalTotal;
@@ -151,44 +153,32 @@ private void saveOrders() throws IOException {
     }
      // Overloaded method for guest orders
     public String placeOrder(String customerName, String phone, 
-                             Pizza pizza, String size, List<String> extraToppings, 
+                             Pizza pizza, Size size, List<String> extraToppings, 
                              double originalTotal) throws IOException {
         return placeOrder(null, customerName, phone, pizza, size, extraToppings, originalTotal);
     }
     
     // Legacy method for backward compatibility
     public String placeOrder(String memberId, String customerName, String phone, 
-                             String pizzaName, String size, List<String> extraToppings, 
+                             String pizzaName, Size size, List<String> extraToppings, 
                              double total) throws IOException {
         // Create a temporary Pizza object if we don't have the actual one
         Pizza tempPizza = new Pizza(pizzaName, total, extraToppings, (int)(total * 10));
         return placeOrder(memberId, customerName, phone, tempPizza, size, extraToppings, total);
     }
-       private int calculatePoints(Pizza pizza, String size, List<String> extraToppings) {
-        int points = pizza.getPointsValue();
-        
-        // Size bonus
-        if (menuLoader != null) {
-            Double multiplier = menuLoader.getSizeMultiplier().get(size);
-            if (multiplier != null) {
-                points = (int)(points * multiplier);
-            }
-        } else {
-            // Fallback if menuLoader not available
-            if ("Medium".equalsIgnoreCase(size)) {
-                points = (int)(points * 1.3);
-            } else if ("Large".equalsIgnoreCase(size)) {
-                points = (int)(points * 1.6);
-            }
-        }
-        
-        // Extra toppings bonus (5 points per extra topping)
-        if (extraToppings != null) {
-            points += extraToppings.size() * 5;
-        }
-        
-        return points;
+       private int calculatePoints(Pizza pizza, Size size, List<String> extraToppings) {
+    int points = pizza.getPointsValue();
+    
+    // Size bonus using factory pattern
+    points = (int)(points * size.getMultiplier());
+    
+    // Extra toppings bonus (5 points per extra topping)
+    if (extraToppings != null) {
+        points += extraToppings.size() * 5;
     }
+    
+    return points;
+}
     
     private String generateOrderId() {
         return "ORD" + System.currentTimeMillis();

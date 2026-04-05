@@ -1,6 +1,7 @@
 import model.Order;
 import model.Pizza;
 import model.Member;
+import model.size.*;
 import service.MenuLoader;
 import service.OrderManager;
 import service.MemberManager;
@@ -191,80 +192,83 @@ public class Main {
             System.out.printf("%d. %s - $%.2f (Toppings: %s)%n",
                     i+1, p.getName(), p.getBasePrice(), String.join(", ", p.getToppings()));
         }
-        System.out.println("Sizes: Small(x1.0), Medium(x1.3), Large(x1.6)");
+        System.out.println("Sizes: 1. Small(x1.0), 2. Medium(x1.3), 3. Large(x1.6)"); // remain
         System.out.printf("Extra topping price: $%.2f%n", menuLoader.getExtraToppingPrice());
     }
     
     private static void placeOrder(boolean isMember) throws IOException {
-        showMenu();
-        
-        int pizzaIndex = getIntInput("Choose pizza number: ") - 1;
-        
-        if (pizzaIndex < 0 || pizzaIndex >= menuLoader.getPizzas().size()) {
-            System.out.println("Invalid pizza choice!");
-            return;
-        }
-        
-        Pizza selectedPizza = menuLoader.getPizzas().get(pizzaIndex);
-        
-        System.out.print("Enter size (Small/Medium/Large): ");
-        String size = scanner.nextLine();
-        if (!menuLoader.getSizeMultiplier().containsKey(size)) {
-            System.out.println("Invalid size!");
-            return;
-        }
-        
-        double multiplier = menuLoader.getSizeMultiplier().get(size);
-        
-        System.out.print("Extra toppings? (comma-separated, e.g., Mushrooms,Olives) or press enter to skip: ");
-        String extraLine = scanner.nextLine();
-        List<String> extraToppings = new ArrayList<>();
-        if (!extraLine.trim().isEmpty()) {
-            extraToppings = Arrays.asList(extraLine.split("\\s*,\\s*"));
-        }
-        
-        double baseWithSize = selectedPizza.getBasePrice() * multiplier;
-        double extraCost = extraToppings.size() * menuLoader.getExtraToppingPrice();
-        double originalTotal = baseWithSize + extraCost;
-        
-        // Calculate final total after discount
-        double finalTotal = originalTotal;
-        if (isMember) {
-            Member member = memberManager.getCurrentMember();
-            finalTotal = originalTotal * (1 - member.getDiscount());
-            
-            if (member.getDiscount() > 0) {
-                System.out.printf("Original total: $%.2f%n", originalTotal);
-                System.out.printf("VIP discount (%.0f%%): -$%.2f%n", 
-                    member.getDiscount() * 100, originalTotal * member.getDiscount());
-                System.out.printf("Final total: $%.2f%n", finalTotal);
-            } else {
-                System.out.printf("Total: $%.2f%n", finalTotal);
-            }
-        } else {
-            System.out.printf("Total: $%.2f%n", originalTotal);
-        }
-        
-        String orderId;
-        if (isMember) {
-            Member member = memberManager.getCurrentMember();
-            orderId = orderManager.placeOrder(
-                member.getId(), member.getName(), member.getPhone(),
-                selectedPizza, size, extraToppings, originalTotal
-            );
-        } else {
-            System.out.print("Enter your name: ");
-            String customerName = scanner.nextLine();
-            System.out.print("Enter your phone number: ");
-            String phone = scanner.nextLine();
-            orderId = orderManager.placeOrder(
-                customerName, phone, selectedPizza, size, extraToppings, originalTotal
-            );
-        }
-        
-        System.out.printf("Order placed successfully! Order ID: %s%n", orderId);
-        System.out.println("Please save your Order ID for future reference!");
+    showMenu();
+    
+    int pizzaIndex = getIntInput("Choose pizza number: ") - 1;
+    
+    if (pizzaIndex < 0 || pizzaIndex >= menuLoader.getPizzas().size()) {
+        System.out.println("Invalid pizza choice!");
+        return;
     }
+    
+    Pizza selectedPizza = menuLoader.getPizzas().get(pizzaIndex);
+    
+    // Display size options using factory
+    SizeFactory.displaySizeOptions();
+    int sizeChoice = getIntInput("Choose size (1-3): ");
+    
+    Size selectedSize;
+    try {
+        selectedSize = SizeFactory.getSize(sizeChoice);
+    } catch (IllegalArgumentException e) {
+        System.out.println("Invalid size choice!");
+        return;
+    }
+    
+    System.out.print("Extra toppings? (comma-separated, e.g., Mushrooms,Olives) or press enter to skip: ");
+    String extraLine = scanner.nextLine();
+    List<String> extraToppings = new ArrayList<>();
+    if (!extraLine.trim().isEmpty()) {
+        extraToppings = Arrays.asList(extraLine.split("\\s*,\\s*"));
+    }
+    
+    double baseWithSize = selectedPizza.getBasePrice() * selectedSize.getMultiplier();
+    double extraCost = extraToppings.size() * menuLoader.getExtraToppingPrice();
+    double originalTotal = baseWithSize + extraCost;
+    
+    // Calculate final total after discount
+    double finalTotal = originalTotal;
+    if (isMember) {
+        Member member = memberManager.getCurrentMember();
+        finalTotal = originalTotal * (1 - member.getDiscount());
+        
+        if (member.getDiscount() > 0) {
+            System.out.printf("Original total: $%.2f%n", originalTotal);
+            System.out.printf("VIP discount (%.0f%%): -$%.2f%n", 
+                member.getDiscount() * 100, originalTotal * member.getDiscount());
+            System.out.printf("Final total: $%.2f%n", finalTotal);
+        } else {
+            System.out.printf("Total: $%.2f%n", finalTotal);
+        }
+    } else {
+        System.out.printf("Total: $%.2f%n", originalTotal);
+    }
+    
+    String orderId;
+    if (isMember) {
+        Member member = memberManager.getCurrentMember();
+        orderId = orderManager.placeOrder(
+            member.getId(), member.getName(), member.getPhone(),
+            selectedPizza, selectedSize, extraToppings, originalTotal
+        );
+    } else {
+        System.out.print("Enter your name: ");
+        String customerName = scanner.nextLine();
+        System.out.print("Enter your phone number: ");
+        String phone = scanner.nextLine();
+        orderId = orderManager.placeOrder(
+            customerName, phone, selectedPizza, selectedSize, extraToppings, originalTotal
+        );
+    }
+    
+    System.out.printf("Order placed successfully! Order ID: %s%n", orderId);
+    System.out.println("Please save your Order ID for future reference!");
+}
     
     private static void viewMyOrders() {
         Member member = memberManager.getCurrentMember();
