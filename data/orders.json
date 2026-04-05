@@ -1,5 +1,67 @@
-[
-  {
+{
+  "ORD1775376082295": {
+    "orderId": "ORD1775376082295",
+    "memberId": "M001",
+    "customerName": "Alice Chan",
+    "phone": "0912345678",
+    "pizzaName": "Hawaiian",
+    "size": "Small",
+    "extraToppings": [
+      "asdasd"
+    ],
+    "originalTotal": 15.49,
+    "finalTotal": 13.941,
+    "discountApplied": 1.5490000000000002,
+    "pointsEarned": 115,
+    "timestamp": "2026-04-05 16:01:22.332250",
+    "status": "completed"
+  },
+  "ORD1775375746220": {
+    "orderId": "ORD1775375746220",
+    "memberId": "M001",
+    "customerName": "Alice Chan",
+    "phone": "0912345678",
+    "pizzaName": "Meat Lovers",
+    "size": "Medium",
+    "extraToppings": [],
+    "originalTotal": 22.087,
+    "finalTotal": 19.8783,
+    "discountApplied": 2.2087,
+    "pointsEarned": 195,
+    "timestamp": "2026-04-05 15:55:46.250786",
+    "status": "completed"
+  },
+  "ORD20260405002": {
+    "orderId": "ORD20260405002",
+    "customerName": "Tom",
+    "phone": "66899466",
+    "pizzaName": "Pepperoni",
+    "size": "Medium",
+    "extraToppings": [],
+    "originalTotal": 10.387,
+    "finalTotal": 10.387,
+    "discountApplied": 0.0,
+    "pointsEarned": 103,
+    "timestamp": "2026-04-05 01:19:22",
+    "status": "completed"
+  },
+  "ORD1775375969179": {
+    "orderId": "ORD1775375969179",
+    "customerName": "Peter",
+    "phone": "61777778",
+    "pizzaName": "Meat Lovers",
+    "size": "Large",
+    "extraToppings": [
+      "Olives"
+    ],
+    "originalTotal": 28.683999999999997,
+    "finalTotal": 28.683999999999997,
+    "discountApplied": 0.0,
+    "pointsEarned": 245,
+    "timestamp": "2026-04-05 15:59:29.206160",
+    "status": "completed"
+  },
+  "ORD20260405001": {
     "orderId": "ORD20260405001",
     "memberId": "M001",
     "customerName": "Alice Chen",
@@ -10,19 +72,42 @@
       "Mushrooms",
       "Olives"
     ],
-    "totalPrice": 14.38,
+    "originalTotal": 25.58,
+    "finalTotal": 23.02,
+    "discountApplied": 2.56,
+    "pointsEarned": 255,
     "timestamp": "2026-04-05 14:25:30",
     "status": "completed"
   },
-  {
-    "orderId": "ORD20260405002",
-    "customerName": "Tom",
-    "phone": "66899466",
+  "ORD1775374381668": {
+    "orderId": "ORD1775374381668",
+    "memberId": "M001",
+    "customerName": "Alice Chen",
+    "phone": "0912345678",
     "pizzaName": "Pepperoni",
-    "size": "Medium",
+    "size": "Small",
+    "extraToppings": [
+      "Olives"
+    ],
+    "originalTotal": 16.490000000000002,
+    "finalTotal": 14.841000000000001,
+    "discountApplied": 1.6490000000000002,
+    "pointsEarned": 130,
+    "timestamp": "2026-04-05 15:33:01.702053",
+    "status": "completed"
+  },
+  "ORD1775374626721": {
+    "orderId": "ORD1775374626721",
+    "customerName": "Sam",
+    "phone": "98765432",
+    "pizzaName": "BBQ Chicken",
+    "size": "Large",
     "extraToppings": [],
-    "totalPrice": 10.387,
-    "timestamp": "2026-04-05 01:19:22",
+    "originalTotal": 25.584000000000003,
+    "finalTotal": 25.584000000000003,
+    "discountApplied": 0.0,
+    "pointsEarned": 224,
+    "timestamp": "2026-04-05 15:37:06.778547",
     "status": "completed"
   }
-]
+}

@@ -1,7 +1,7 @@
 package service;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import model.Pizza;
 import util.JsonUtil;
 
@@ -16,6 +16,7 @@ public class MenuLoader {
     public MenuLoader(String menuFilePath) throws IOException {
         JsonObject menu = JsonUtil.readFromFile(menuFilePath, JsonObject.class);
         
+        // Load pizzas
         JsonArray pizzaArray = menu.getAsJsonArray("pizzas");
         pizzas = new ArrayList<>();
         for (var elem : pizzaArray) {
@@ -26,19 +27,36 @@ public class MenuLoader {
             for (var t : p.getAsJsonArray("toppings")) {
                 toppings.add(t.getAsString());
             }
-            pizzas.add(new Pizza(name, price, toppings));
+            
+            // Read pointsValue (default to 0 if not present)
+            int pointsValue = 0;
+            if (p.has("pointsValue")) {
+                pointsValue = p.get("pointsValue").getAsInt();
+            }
+            
+            pizzas.add(new Pizza(name, price, toppings, pointsValue));
         }
-
+        
+        // Load size multipliers
+        JsonObject sizeMultiplierObj = menu.getAsJsonObject("sizeMultiplier");
         sizeMultiplier = new HashMap<>();
-        JsonObject sizeObj = menu.getAsJsonObject("sizeMultiplier");
-        for (String key : sizeObj.keySet()) {
-            sizeMultiplier.put(key, sizeObj.get(key).getAsDouble());
+        for (var entry : sizeMultiplierObj.entrySet()) {
+            sizeMultiplier.put(entry.getKey(), entry.getValue().getAsDouble());
         }
-
+        
+        // Load extra topping price
         extraToppingPrice = menu.get("extraToppingPrice").getAsDouble();
     }
-
-    public List<Pizza> getPizzas() { return pizzas; }
-    public Map<String, Double> getSizeMultiplier() { return sizeMultiplier; }
-    public double getExtraToppingPrice() { return extraToppingPrice; }
+    
+    public List<Pizza> getPizzas() {
+        return pizzas;
+    }
+    
+    public Map<String, Double> getSizeMultiplier() {
+        return sizeMultiplier;
+    }
+    
+    public double getExtraToppingPrice() {
+        return extraToppingPrice;
+    }
 }

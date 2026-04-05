@@ -19,6 +19,11 @@ public class Main {
             menuLoader = new MenuLoader("data/menu.json");
             orderManager = new OrderManager("data/orders.json");
             memberManager = new MemberManager("data/members.json");
+            
+            // Set references
+            orderManager.setMemberManager(memberManager);
+            orderManager.setMenuLoader(menuLoader);
+            
             scanner = new Scanner(System.in);
             
             while (true) {
@@ -42,8 +47,8 @@ public class Main {
         System.out.println("5. Exit");
         System.out.print("Choose: ");
         
-        int choice = scanner.nextInt();
-        scanner.nextLine();
+        int choice = getIntInput();
+        if (choice == -1) return; // Invalid input
         
         try {
             switch (choice) {
@@ -64,7 +69,7 @@ public class Main {
                     System.exit(0);
                     break;
                 default:
-                    System.out.println("Invalid choice!");
+                    System.out.println("Invalid choice! Please enter 1-5.");
             }
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
@@ -73,16 +78,26 @@ public class Main {
     
     private static void showMemberMenu() {
         Member current = memberManager.getCurrentMember();
-        System.out.println("\n=== Welcome, " + current.getName() + "! ===");
-        System.out.println("1. Show Menu");
+        
+        System.out.println("\n=== Welcome, " + current.getName() + " ===");
+        System.out.println("Level: " + current.getLevelDisplay());
+        System.out.println("Points: " + current.getPoints());
+        
+        int pointsToNext = current.getPointsToNextLevel();
+        if (pointsToNext > 0) {
+            System.out.println(pointsToNext + " more points to reach VIP!");
+        }
+        
+        System.out.println("\n1. Show Menu");
         System.out.println("2. Place Order");
         System.out.println("3. View My Orders");
         System.out.println("4. Search Order by ID");
-        System.out.println("5. Logout");
+        System.out.println("5. View Member Info");
+        System.out.println("6. Logout");
         System.out.print("Choose: ");
         
-        int choice = scanner.nextInt();
-        scanner.nextLine();
+        int choice = getIntInput();
+        if (choice == -1) return;
         
         try {
             switch (choice) {
@@ -99,15 +114,38 @@ public class Main {
                     memberSearchOrderById();
                     break;
                 case 5:
+                    memberManager.displayMemberInfo();
+                    break;
+                case 6:
                     memberManager.logout();
                     System.out.println("Logged out successfully!");
                     break;
                 default:
-                    System.out.println("Invalid choice!");
+                    System.out.println("Invalid choice! Please enter 1-6.");
             }
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+    
+    // Helper method to safely get integer input
+    private static int getIntInput() {
+        while (true) {
+            try {
+                int input = scanner.nextInt();
+                scanner.nextLine(); // consume newline
+                return input;
+            } catch (InputMismatchException e) {
+                System.out.print("Invalid input! Please enter a number: ");
+                scanner.nextLine(); // clear invalid input
+            }
+        }
+    }
+    
+    // Overloaded method with custom prompt
+    private static int getIntInput(String prompt) {
+        System.out.print(prompt);
+        return getIntInput();
     }
     
     private static void login() throws IOException {
@@ -160,16 +198,14 @@ public class Main {
     private static void placeOrder(boolean isMember) throws IOException {
         showMenu();
         
-        System.out.print("Choose pizza number: ");
-        int pizzaIndex = scanner.nextInt() - 1;
-        scanner.nextLine();
+        int pizzaIndex = getIntInput("Choose pizza number: ") - 1;
         
         if (pizzaIndex < 0 || pizzaIndex >= menuLoader.getPizzas().size()) {
             System.out.println("Invalid pizza choice!");
             return;
         }
         
-        Pizza selected = menuLoader.getPizzas().get(pizzaIndex);
+        Pizza selectedPizza = menuLoader.getPizzas().get(pizzaIndex);
         
         System.out.print("Enter size (Small/Medium/Large): ");
         String size = scanner.nextLine();
@@ -187,16 +223,34 @@ public class Main {
             extraToppings = Arrays.asList(extraLine.split("\\s*,\\s*"));
         }
         
-        double baseWithSize = selected.getBasePrice() * multiplier;
+        double baseWithSize = selectedPizza.getBasePrice() * multiplier;
         double extraCost = extraToppings.size() * menuLoader.getExtraToppingPrice();
-        double total = baseWithSize + extraCost;
+        double originalTotal = baseWithSize + extraCost;
+        
+        // Calculate final total after discount
+        double finalTotal = originalTotal;
+        if (isMember) {
+            Member member = memberManager.getCurrentMember();
+            finalTotal = originalTotal * (1 - member.getDiscount());
+            
+            if (member.getDiscount() > 0) {
+                System.out.printf("Original total: $%.2f%n", originalTotal);
+                System.out.printf("VIP discount (%.0f%%): -$%.2f%n", 
+                    member.getDiscount() * 100, originalTotal * member.getDiscount());
+                System.out.printf("Final total: $%.2f%n", finalTotal);
+            } else {
+                System.out.printf("Total: $%.2f%n", finalTotal);
+            }
+        } else {
+            System.out.printf("Total: $%.2f%n", originalTotal);
+        }
         
         String orderId;
         if (isMember) {
             Member member = memberManager.getCurrentMember();
             orderId = orderManager.placeOrder(
                 member.getId(), member.getName(), member.getPhone(),
-                selected.getName(), size, extraToppings, total
+                selectedPizza, size, extraToppings, originalTotal
             );
         } else {
             System.out.print("Enter your name: ");
@@ -204,12 +258,11 @@ public class Main {
             System.out.print("Enter your phone number: ");
             String phone = scanner.nextLine();
             orderId = orderManager.placeOrder(
-                customerName, phone, selected.getName(), size, extraToppings, total
+                customerName, phone, selectedPizza, size, extraToppings, originalTotal
             );
         }
         
         System.out.printf("Order placed successfully! Order ID: %s%n", orderId);
-        System.out.printf("Total: $%.2f%n", total);
         System.out.println("Please save your Order ID for future reference!");
     }
     
@@ -237,7 +290,6 @@ public class Main {
         }
     }
     
-    // Guest check order by id
     private static void guestSearchOrderById() {
         System.out.print("Enter Order ID: ");
         String orderId = scanner.nextLine();
@@ -253,7 +305,6 @@ public class Main {
         orderManager.displayOrder(order);
     }
     
-    // Member check order
     private static void memberSearchOrderById() {
         System.out.print("Enter Order ID: ");
         String orderId = scanner.nextLine();
@@ -267,7 +318,6 @@ public class Main {
         
         Member member = memberManager.getCurrentMember();
         
-        // Check permission: Members can only view their own orders
         if (order.getMemberId() != null && !order.getMemberId().equals(member.getId())) {
             System.out.println("You are not authorized to view this order!");
             return;
