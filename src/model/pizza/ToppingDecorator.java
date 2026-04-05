@@ -21,4 +21,8 @@ public abstract class ToppingDecorator implements Pizza {
     public int getPoints() {
         return pizza.getPoints();
     }
+
+    public Pizza getPizza() {
+        return pizza;
+    }
 }

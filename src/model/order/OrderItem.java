@@ -31,4 +31,9 @@ public class OrderItem {
     public String getDescription() {
         return String.format("%dx %s (%s)", quantity, pizza.getDescription(), size.getName());
     }
+
+     public double getSingleItemTotal() {
+        return pizza.getPrice();
+    }
+    
 }
