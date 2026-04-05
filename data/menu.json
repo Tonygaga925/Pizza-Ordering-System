@@ -3,37 +3,31 @@
     {
       "name": "Margherita",
       "basePrice": 12.99,
-      "toppings": ["Mozzarella", "Tomato Sauce", "Basil"],
       "pointsValue": 100
     },
     {
       "name": "Pepperoni",
       "basePrice": 14.99,
-      "toppings": ["Mozzarella", "Tomato Sauce", "Pepperoni"],
       "pointsValue": 120
     },
     {
       "name": "Hawaiian",
       "basePrice": 13.99,
-      "toppings": ["Mozzarella", "Tomato Sauce", "Ham", "Pineapple"],
       "pointsValue": 110
     },
     {
       "name": "Vegetarian",
       "basePrice": 13.49,
-      "toppings": ["Mozzarella", "Tomato Sauce", "Mushrooms", "Olives", "Bell Peppers"],
       "pointsValue": 105
     },
     {
       "name": "Meat Lovers",
       "basePrice": 16.99,
-      "toppings": ["Mozzarella", "Tomato Sauce", "Pepperoni", "Sausage", "Beef", "Bacon"],
       "pointsValue": 150
     },
     {
       "name": "BBQ Chicken",
       "basePrice": 15.99,
-      "toppings": ["Mozzarella", "BBQ Sauce", "Chicken", "Red Onions", "Cilantro"],
       "pointsValue": 140
     }
   ],
@@ -41,6 +35,5 @@
     "Small": 1.0,
     "Medium": 1.3,
     "Large": 1.6
-  },
-  "extraToppingPrice": 1.50
+  }
 }

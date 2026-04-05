@@ -7,6 +7,7 @@ import model.Order;
 import model.Member;
 import model.Pizza;
 import model.size.*;
+import model.topping.*;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -99,86 +100,95 @@ private void saveOrders() throws IOException {
         gson.toJson(orders, writer);
     }
 }
-     // For member orders with Pizza object (recommended)
-    public String placeOrder(String memberId, String customerName, String phone, 
-                             Pizza pizza, Size size, List<String> extraToppings, 
-                             double originalTotal) throws IOException {
-        String orderId = generateOrderId();
-        double finalTotal = originalTotal;
-        double discount = 0;
-        
-        // Calculate points based on pizza and order details
-        int pointsEarned = calculatePoints(pizza, size, extraToppings);
-        
-        // Apply member discount if applicable
-        if (memberId != null && !memberId.isEmpty() && memberManager != null) {
-            Member member = memberManager.getMemberById(memberId);
-            if (member != null) {
-                double discountRate = member.getDiscount();
-                if (discountRate > 0) {
-                    discount = originalTotal * discountRate;
-                    finalTotal = originalTotal - discount;
-                    System.out.println(member.getLevelDisplay() + " discount applied: -$" + String.format("%.2f", discount));
-                }
-                
-                // Update member points after order
-                memberManager.updateMemberPoints(memberId, pointsEarned);
-            }
-        }
-        
-        Order order = new Order(orderId, memberId, customerName, phone, 
-                                pizza.getName(), size, extraToppings, originalTotal);
-        order.setFinalTotal(finalTotal);
-        order.setDiscountApplied(discount);
-        order.setPointsEarned(pointsEarned);
-        
-        orders.put(orderId, order);
-        saveOrders();
-        
-        // Display points earned info
-        if (memberId != null && memberManager != null) {
-            System.out.println("Points earned this order: " + pointsEarned);
-            
-            // Show updated member info
-            Member member = memberManager.getMemberById(memberId);
-            if (member != null) {
-                System.out.println("Total points now: " + member.getPoints());
-                if (member.getPointsToNextLevel() > 0) {
-                    System.out.println( member.getPointsToNextLevel() + " more points to reach VIP!");
-                }
-            }
-        }
-        
-        return orderId;
+     // For member orders with Pizza object
+public String placeOrder(String memberId, String customerName, String phone, 
+                         Pizza pizza, Size size, List<Topping> extraToppings, 
+                         double originalTotal) throws IOException {
+    String orderId = generateOrderId();
+    double finalTotal = originalTotal;
+    double discount = 0;
+    
+    // Calculate points based on pizza, size, and extra toppings
+    int pointsEarned = calculatePoints(pizza, size, extraToppings);
+    
+    // Convert Topping objects to strings for storage
+    List<String> toppingNames = new ArrayList<>();
+    for (Topping topping : extraToppings) {
+        toppingNames.add(topping.getName());
     }
+    
+    // Apply member discount if applicable
+    if (memberId != null && !memberId.isEmpty() && memberManager != null) {
+        Member member = memberManager.getMemberById(memberId);
+        if (member != null) {
+            double discountRate = member.getDiscount();
+            if (discountRate > 0) {
+                discount = originalTotal * discountRate;
+                finalTotal = originalTotal - discount;
+                System.out.println("VIP discount applied: -$" + String.format("%.2f", discount));
+            }
+            
+            // Update member points after order
+            memberManager.updateMemberPoints(memberId, pointsEarned);
+        }
+    }
+    
+    Order order = new Order(orderId, memberId, customerName, phone, 
+                            pizza.getName(), size, toppingNames, originalTotal);
+    order.setFinalTotal(finalTotal);
+    order.setDiscountApplied(discount);
+    order.setPointsEarned(pointsEarned);
+    
+    orders.put(orderId, order);
+    saveOrders();
+    
+    // Display points earned info
+    if (memberId != null && memberManager != null) {
+        System.out.println("Points earned this order: " + pointsEarned);
+        
+        Member member = memberManager.getMemberById(memberId);
+        if (member != null) {
+            System.out.println("Total points now: " + member.getPoints());
+            if (member.getPointsToNextLevel() > 0) {
+                System.out.println(member.getPointsToNextLevel() + " more points to reach VIP!");
+            }
+        }
+    }
+    
+    return orderId;
+}
+
+private int calculatePoints(Pizza pizza, Size size, List<Topping> extraToppings) {
+    int points = pizza.getPointsValue();
+    
+    // Size bonus
+    points = (int)(points * size.getMultiplier());
+    
+    // Extra toppings bonus - get points directly from Topping objects
+    if (extraToppings != null) {
+        for (Topping topping : extraToppings) {
+            points += topping.getPointsValue();  // 直接從 Topping 物件取得點數
+        }
+    }
+    
+    return points;
+}
+
      // Overloaded method for guest orders
     public String placeOrder(String customerName, String phone, 
-                             Pizza pizza, Size size, List<String> extraToppings, 
+                             Pizza pizza, Size size, List<Topping> extraToppings, 
                              double originalTotal) throws IOException {
         return placeOrder(null, customerName, phone, pizza, size, extraToppings, originalTotal);
     }
     
     // Legacy method for backward compatibility
     public String placeOrder(String memberId, String customerName, String phone, 
-                             String pizzaName, Size size, List<String> extraToppings, 
+                             String pizzaName, Size size, List<Topping> extraToppings, 
                              double total) throws IOException {
         // Create a temporary Pizza object if we don't have the actual one
-        Pizza tempPizza = new Pizza(pizzaName, total, extraToppings, (int)(total * 10));
+        Pizza tempPizza = new Pizza(pizzaName, total, (int)(total * 10));
         return placeOrder(memberId, customerName, phone, tempPizza, size, extraToppings, total);
     }
-       private int calculatePoints(Pizza pizza, Size size, List<String> extraToppings) {
-    int points = pizza.getPointsValue();
-    
-    // Size bonus using factory pattern
-    points = (int)(points * size.getMultiplier());
-    
-    // Extra toppings bonus (5 points per extra topping)
-    if (extraToppings != null) {
-        points += extraToppings.size() * 5;
-    }
-    
-    return points;
-}
     
     private String generateOrderId() {
         return "ORD" + System.currentTimeMillis();

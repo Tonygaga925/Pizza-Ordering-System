@@ -30,7 +30,7 @@ public Order(String orderId, String memberId, String customerName, String phone,
     this.customerName = customerName;
     this.phone = phone;
     this.pizzaName = pizzaName;
-    this.size = size.getName();  // Store size name
+    this.size = size.getName();
     this.extraToppings = extraToppings;
     this.originalTotal = originalTotal;
     this.finalTotal = originalTotal;

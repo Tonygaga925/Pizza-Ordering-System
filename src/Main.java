@@ -2,6 +2,9 @@ import model.Order;
 import model.Pizza;
 import model.Member;
 import model.size.*;
+import model.topping.*;
+import model.topping.Topping;
+import model.topping.ToppingFactory;
 import service.MenuLoader;
 import service.OrderManager;
 import service.MemberManager;
@@ -189,11 +192,9 @@ public class Main {
         List<Pizza> pizzas = menuLoader.getPizzas();
         for (int i = 0; i < pizzas.size(); i++) {
             Pizza p = pizzas.get(i);
-            System.out.printf("%d. %s - $%.2f (Toppings: %s)%n",
-                    i+1, p.getName(), p.getBasePrice(), String.join(", ", p.getToppings()));
+            System.out.printf("%d. %s - $%.2f %n",
+                    i+1, p.getName(), p.getBasePrice());
         }
-        System.out.println("Sizes: 1. Small(x1.0), 2. Medium(x1.3), 3. Large(x1.6)"); // remain
-        System.out.printf("Extra topping price: $%.2f%n", menuLoader.getExtraToppingPrice());
     }
     
     private static void placeOrder(boolean isMember) throws IOException {
@@ -220,33 +221,70 @@ public class Main {
         return;
     }
     
-    System.out.print("Extra toppings? (comma-separated, e.g., Mushrooms,Olives) or press enter to skip: ");
-    String extraLine = scanner.nextLine();
-    List<String> extraToppings = new ArrayList<>();
-    if (!extraLine.trim().isEmpty()) {
-        extraToppings = Arrays.asList(extraLine.split("\\s*,\\s*"));
+    // Select extra toppings using factory pattern
+    // Select extra toppings using factory pattern
+    List<Topping> selectedToppings = selectToppings();  // List<Topping>
+    
+    // Calculate costs
+    double baseWithSize = selectedPizza.getBasePrice() * selectedSize.getMultiplier();
+    double extraCost = 0;
+    int totalPointsFromToppings = 0;
+    
+    for (Topping topping : selectedToppings) {
+        extraCost += topping.getPrice();
+        totalPointsFromToppings += topping.getPointsValue();
     }
     
-    double baseWithSize = selectedPizza.getBasePrice() * selectedSize.getMultiplier();
-    double extraCost = extraToppings.size() * menuLoader.getExtraToppingPrice();
     double originalTotal = baseWithSize + extraCost;
-    
+
     // Calculate final total after discount
     double finalTotal = originalTotal;
     if (isMember) {
         Member member = memberManager.getCurrentMember();
         finalTotal = originalTotal * (1 - member.getDiscount());
         
+        System.out.println("\n--- Order Summary ---");
+        System.out.println("Pizza: " + selectedPizza.getName());
+        System.out.println("Size: " + selectedSize.getName() + " (x" + selectedSize.getMultiplier() + ")");
+        System.out.println("Base price: $" + String.format("%.2f", baseWithSize));
+        
+        if (!selectedToppings.isEmpty()) {
+            System.out.println("Extra toppings:");
+            for (Topping topping : selectedToppings) {
+                System.out.println("  - " + topping.getName() + ": $" + String.format("%.2f", topping.getPrice()));
+            }
+            System.out.println("Toppings total: $" + String.format("%.2f", extraCost));
+        }
+        
+        System.out.println("Original total: $" + String.format("%.2f", originalTotal));
+        
         if (member.getDiscount() > 0) {
-            System.out.printf("Original total: $%.2f%n", originalTotal);
-            System.out.printf("VIP discount (%.0f%%): -$%.2f%n", 
-                member.getDiscount() * 100, originalTotal * member.getDiscount());
-            System.out.printf("Final total: $%.2f%n", finalTotal);
+            System.out.println("VIP discount (10%): -$" + String.format("%.2f", originalTotal * member.getDiscount()));
+            System.out.println("Final total: $" + String.format("%.2f", finalTotal));
         } else {
-            System.out.printf("Total: $%.2f%n", finalTotal);
+            System.out.println("Total: $" + String.format("%.2f", finalTotal));
         }
     } else {
-        System.out.printf("Total: $%.2f%n", originalTotal);
+        System.out.println("\n--- Order Summary ---");
+        System.out.println("Pizza: " + selectedPizza.getName());
+        System.out.println("Size: " + selectedSize.getName() + " (x" + selectedSize.getMultiplier() + ")");
+        System.out.println("Base price: $" + String.format("%.2f", baseWithSize));
+        
+        if (!selectedToppings.isEmpty()) {
+            System.out.println("Extra toppings:");
+            for (Topping topping : selectedToppings) {
+                System.out.println("  - " + topping.getName() + ": $" + String.format("%.2f", topping.getPrice()));
+            }
+            System.out.println("Toppings total: $" + String.format("%.2f", extraCost));
+        }
+        
+        System.out.println("Total: $" + String.format("%.2f", originalTotal));
+    }
+    
+    // Convert Topping objects to strings for order storage
+    List<String> toppingNames = new ArrayList<>();
+    for (Topping topping : selectedToppings) {
+        toppingNames.add(topping.getName());
     }
     
     String orderId;
@@ -254,7 +292,7 @@ public class Main {
         Member member = memberManager.getCurrentMember();
         orderId = orderManager.placeOrder(
             member.getId(), member.getName(), member.getPhone(),
-            selectedPizza, selectedSize, extraToppings, originalTotal
+            selectedPizza, selectedSize, selectedToppings, originalTotal 
         );
     } else {
         System.out.print("Enter your name: ");
@@ -262,13 +300,60 @@ public class Main {
         System.out.print("Enter your phone number: ");
         String phone = scanner.nextLine();
         orderId = orderManager.placeOrder(
-            customerName, phone, selectedPizza, selectedSize, extraToppings, originalTotal
+            customerName, phone, selectedPizza, selectedSize, selectedToppings, originalTotal
         );
     }
     
-    System.out.printf("Order placed successfully! Order ID: %s%n", orderId);
+    System.out.printf("\nOrder placed successfully! Order ID: %s%n", orderId);
     System.out.println("Please save your Order ID for future reference!");
 }
+
+private static List<Topping> selectToppings() {
+    List<Topping> selectedToppings = new ArrayList<>();
+    Set<Integer> selectedNumbers = new HashSet<>();
+    
+    ToppingFactory.displayToppingMenu();
+    
+    while (true) {
+        int choice = getIntInput("Enter topping number (0 to finish): ");
+        
+        if (choice == 0) {
+            if (selectedToppings.isEmpty()) {
+                System.out.println("No toppings selected. Continuing without extra toppings.");
+            } else {
+                System.out.println("\nToppings selected:");
+                double totalToppingCost = 0;
+                int totalToppingPoints = 0;
+                for (Topping t : selectedToppings) {
+                    System.out.println("  - " + t.getName() + " ($" + String.format("%.2f", t.getPrice()) + ", " + t.getPointsValue() + " points)");
+                    totalToppingCost += t.getPrice();
+                    totalToppingPoints += t.getPointsValue();
+                }
+                System.out.printf("Total topping cost: $%.2f%n", totalToppingCost);
+                System.out.println("Total topping points: " + totalToppingPoints);
+            }
+            break;
+        }
+        
+        try {
+            if (selectedNumbers.contains(choice)) {
+                System.out.println("You already selected this topping! Please choose a different one.");
+                continue;
+            }
+            
+            Topping topping = ToppingFactory.getTopping(choice);
+            selectedToppings.add(topping);
+            selectedNumbers.add(choice);
+            System.out.println("Added: " + topping.getName() + " ($" + String.format("%.2f", topping.getPrice()) + ")");
+            
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid choice! Please enter a number between 0 and " + ToppingFactory.getAllToppings().size());
+        }
+    }
+    
+    return selectedToppings;
+}
+
     
     private static void viewMyOrders() {
         Member member = memberManager.getCurrentMember();

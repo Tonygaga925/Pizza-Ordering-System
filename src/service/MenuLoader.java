@@ -23,10 +23,6 @@ public class MenuLoader {
             JsonObject p = elem.getAsJsonObject();
             String name = p.get("name").getAsString();
             double price = p.get("basePrice").getAsDouble();
-            List<String> toppings = new ArrayList<>();
-            for (var t : p.getAsJsonArray("toppings")) {
-                toppings.add(t.getAsString());
-            }
             
             // Read pointsValue (default to 0 if not present)
             int pointsValue = 0;
@@ -34,7 +30,7 @@ public class MenuLoader {
                 pointsValue = p.get("pointsValue").getAsInt();
             }
             
-            pizzas.add(new Pizza(name, price, toppings, pointsValue));
+            pizzas.add(new Pizza(name, price, pointsValue));
         }
         
         // Load size multipliers
@@ -43,20 +39,10 @@ public class MenuLoader {
         for (var entry : sizeMultiplierObj.entrySet()) {
             sizeMultiplier.put(entry.getKey(), entry.getValue().getAsDouble());
         }
-        
-        // Load extra topping price
-        extraToppingPrice = menu.get("extraToppingPrice").getAsDouble();
     }
     
-    public List<Pizza> getPizzas() {
-        return pizzas;
-    }
-    
-    public Map<String, Double> getSizeMultiplier() {
-        return sizeMultiplier;
-    }
-    
-    public double getExtraToppingPrice() {
-        return extraToppingPrice;
-    }
+    // Getters
+    public List<Pizza> getPizzas() { return pizzas; }
+    public Map<String, Double> getSizeMultiplier() { return sizeMultiplier; }
+    public double getExtraToppingPrice() { return extraToppingPrice; }
 }

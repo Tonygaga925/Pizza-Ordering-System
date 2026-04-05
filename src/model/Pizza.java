@@ -1,25 +1,23 @@
 package model;
 
 import java.util.List;
+import model.topping.*;
 
 public class Pizza {
     private String name;
     private double basePrice;
-    private List<String> toppings;
     private int pointsValue;
     
     // Constructor
-    public Pizza(String name, double basePrice, List<String> toppings, int pointsValue) {
+    public Pizza(String name, double basePrice, int pointsValue) {
         this.name = name;
         this.basePrice = basePrice;
-        this.toppings = toppings;
         this.pointsValue = pointsValue;
     }
     
     // Getters
     public String getName() { return name; }
     public double getBasePrice() { return basePrice; }
-    public List<String> getToppings() { return toppings; }
     public int getPointsValue() { return pointsValue; }
     
     @Override
