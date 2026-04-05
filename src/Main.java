@@ -1,10 +1,9 @@
-import model.Order;
-import model.Pizza;
+import model.pizza.*;
 import model.Member;
+import model.command.AddToppingCommand;
+import model.command.CommandHistory;
 import model.size.*;
-import model.topping.*;
-import model.topping.Topping;
-import model.topping.ToppingFactory;
+import model.order.*;
 import service.MenuLoader;
 import service.OrderManager;
 import service.MemberManager;
@@ -26,7 +25,6 @@ public class Main {
             
             // Set references
             orderManager.setMemberManager(memberManager);
-            orderManager.setMenuLoader(menuLoader);
             
             scanner = new Scanner(System.in);
             
@@ -52,7 +50,7 @@ public class Main {
         System.out.print("Choose: ");
         
         int choice = getIntInput();
-        if (choice == -1) return; // Invalid input
+        if (choice == -1) return;
         
         try {
             switch (choice) {
@@ -132,21 +130,19 @@ public class Main {
         }
     }
     
-    // Helper method to safely get integer input
     private static int getIntInput() {
         while (true) {
             try {
                 int input = scanner.nextInt();
-                scanner.nextLine(); // consume newline
+                scanner.nextLine();
                 return input;
             } catch (InputMismatchException e) {
                 System.out.print("Invalid input! Please enter a number: ");
-                scanner.nextLine(); // clear invalid input
+                scanner.nextLine();
             }
         }
     }
     
-    // Overloaded method with custom prompt
     private static int getIntInput(String prompt) {
         System.out.print(prompt);
         return getIntInput();
@@ -189,171 +185,234 @@ public class Main {
     
     private static void showMenu() {
         System.out.println("\n--- Menu ---");
-        List<Pizza> pizzas = menuLoader.getPizzas();
+        List<BasePizza> pizzas = menuLoader.getPizzas();
         for (int i = 0; i < pizzas.size(); i++) {
-            Pizza p = pizzas.get(i);
-            System.out.printf("%d. %s - $%.2f %n",
-                    i+1, p.getName(), p.getBasePrice());
+            BasePizza p = pizzas.get(i);
+            System.out.printf("%d. %s - $%.2f (%d points)%n",
+                    i+1, p.getName(), p.getBasePrice(), p.getPoints());
         }
+        System.out.println("\nNote: You can add extra toppings after selecting your pizza.");
+    }
+
+    private static String getStringInput(String prompt) {
+        System.out.print(prompt);
+        return scanner.nextLine();
     }
     
     private static void placeOrder(boolean isMember) throws IOException {
-    showMenu();
-    
-    int pizzaIndex = getIntInput("Choose pizza number: ") - 1;
-    
-    if (pizzaIndex < 0 || pizzaIndex >= menuLoader.getPizzas().size()) {
-        System.out.println("Invalid pizza choice!");
-        return;
-    }
-    
-    Pizza selectedPizza = menuLoader.getPizzas().get(pizzaIndex);
-    
-    // Display size options using factory
-    SizeFactory.displaySizeOptions();
-    int sizeChoice = getIntInput("Choose size (1-3): ");
-    
-    Size selectedSize;
-    try {
-        selectedSize = SizeFactory.getSize(sizeChoice);
-    } catch (IllegalArgumentException e) {
-        System.out.println("Invalid size choice!");
-        return;
-    }
-    
-    // Select extra toppings using factory pattern
-    // Select extra toppings using factory pattern
-    List<Topping> selectedToppings = selectToppings();  // List<Topping>
-    
-    // Calculate costs
-    double baseWithSize = selectedPizza.getBasePrice() * selectedSize.getMultiplier();
-    double extraCost = 0;
-    int totalPointsFromToppings = 0;
-    
-    for (Topping topping : selectedToppings) {
-        extraCost += topping.getPrice();
-        totalPointsFromToppings += topping.getPointsValue();
-    }
-    
-    double originalTotal = baseWithSize + extraCost;
-
-    // Calculate final total after discount
-    double finalTotal = originalTotal;
-    if (isMember) {
-        Member member = memberManager.getCurrentMember();
-        finalTotal = originalTotal * (1 - member.getDiscount());
+        List<OrderItem> items = new ArrayList<>();
+        boolean addingPizzas = true;
         
-        System.out.println("\n--- Order Summary ---");
-        System.out.println("Pizza: " + selectedPizza.getName());
-        System.out.println("Size: " + selectedSize.getName() + " (x" + selectedSize.getMultiplier() + ")");
-        System.out.println("Base price: $" + String.format("%.2f", baseWithSize));
-        
-        if (!selectedToppings.isEmpty()) {
-            System.out.println("Extra toppings:");
-            for (Topping topping : selectedToppings) {
-                System.out.println("  - " + topping.getName() + ": $" + String.format("%.2f", topping.getPrice()));
-            }
-            System.out.println("Toppings total: $" + String.format("%.2f", extraCost));
-        }
-        
-        System.out.println("Original total: $" + String.format("%.2f", originalTotal));
-        
-        if (member.getDiscount() > 0) {
-            System.out.println("VIP discount (10%): -$" + String.format("%.2f", originalTotal * member.getDiscount()));
-            System.out.println("Final total: $" + String.format("%.2f", finalTotal));
-        } else {
-            System.out.println("Total: $" + String.format("%.2f", finalTotal));
-        }
-    } else {
-        System.out.println("\n--- Order Summary ---");
-        System.out.println("Pizza: " + selectedPizza.getName());
-        System.out.println("Size: " + selectedSize.getName() + " (x" + selectedSize.getMultiplier() + ")");
-        System.out.println("Base price: $" + String.format("%.2f", baseWithSize));
-        
-        if (!selectedToppings.isEmpty()) {
-            System.out.println("Extra toppings:");
-            for (Topping topping : selectedToppings) {
-                System.out.println("  - " + topping.getName() + ": $" + String.format("%.2f", topping.getPrice()));
-            }
-            System.out.println("Toppings total: $" + String.format("%.2f", extraCost));
-        }
-        
-        System.out.println("Total: $" + String.format("%.2f", originalTotal));
-    }
-    
-    // Convert Topping objects to strings for order storage
-    List<String> toppingNames = new ArrayList<>();
-    for (Topping topping : selectedToppings) {
-        toppingNames.add(topping.getName());
-    }
-    
-    String orderId;
-    if (isMember) {
-        Member member = memberManager.getCurrentMember();
-        orderId = orderManager.placeOrder(
-            member.getId(), member.getName(), member.getPhone(),
-            selectedPizza, selectedSize, selectedToppings, originalTotal 
-        );
-    } else {
-        System.out.print("Enter your name: ");
-        String customerName = scanner.nextLine();
-        System.out.print("Enter your phone number: ");
-        String phone = scanner.nextLine();
-        orderId = orderManager.placeOrder(
-            customerName, phone, selectedPizza, selectedSize, selectedToppings, originalTotal
-        );
-    }
-    
-    System.out.printf("\nOrder placed successfully! Order ID: %s%n", orderId);
-    System.out.println("Please save your Order ID for future reference!");
-}
-
-private static List<Topping> selectToppings() {
-    List<Topping> selectedToppings = new ArrayList<>();
-    Set<Integer> selectedNumbers = new HashSet<>();
-    
-    ToppingFactory.displayToppingMenu();
-    
-    while (true) {
-        int choice = getIntInput("Enter topping number (0 to finish): ");
-        
-        if (choice == 0) {
-            if (selectedToppings.isEmpty()) {
-                System.out.println("No toppings selected. Continuing without extra toppings.");
-            } else {
-                System.out.println("\nToppings selected:");
-                double totalToppingCost = 0;
-                int totalToppingPoints = 0;
-                for (Topping t : selectedToppings) {
-                    System.out.println("  - " + t.getName() + " ($" + String.format("%.2f", t.getPrice()) + ", " + t.getPointsValue() + " points)");
-                    totalToppingCost += t.getPrice();
-                    totalToppingPoints += t.getPointsValue();
+        while (addingPizzas) {
+            System.out.println("\n=== Build Your Pizza ===");
+            
+            // Show pizza menu
+            showPizzaMenu();
+            int pizzaIndex = getIntInput("Choose pizza number (0 to finish): ") - 1;
+            
+            if (pizzaIndex == -1) {
+                if (items.isEmpty()) {
+                    System.out.println("No pizzas selected. Returning to menu.");
+                    return;
                 }
-                System.out.printf("Total topping cost: $%.2f%n", totalToppingCost);
-                System.out.println("Total topping points: " + totalToppingPoints);
+                break;
             }
-            break;
-        }
-        
-        try {
-            if (selectedNumbers.contains(choice)) {
-                System.out.println("You already selected this topping! Please choose a different one.");
+            
+            if (pizzaIndex < 0 || pizzaIndex >= menuLoader.getPizzas().size()) {
+                System.out.println("Invalid pizza choice!");
                 continue;
             }
             
-            Topping topping = ToppingFactory.getTopping(choice);
-            selectedToppings.add(topping);
-            selectedNumbers.add(choice);
-            System.out.println("Added: " + topping.getName() + " ($" + String.format("%.2f", topping.getPrice()) + ")");
+            // Start with base pizza
+            BasePizza selectedBase = menuLoader.getPizzas().get(pizzaIndex);
+
+            // Choose size
+            SizeFactory.displaySizeOptions();
+            int sizeChoice = getIntInput("Choose size (input number): ");
+            Size selectedSize;
+            try {
+                selectedSize = SizeFactory.getSize(sizeChoice);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid size choice!");
+                continue;
+            }
+
+            double baseWithSizePrice = selectedBase.getBasePrice() * selectedSize.getMultiplier();
+
+            MutablePizzaWrapper pizzaWrapper = new MutablePizzaWrapper(
+                new BasePizza(selectedBase.getName(), baseWithSizePrice, selectedBase.getPoints())
+            );
             
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid choice! Please enter a number between 0 and " + ToppingFactory.getAllToppings().size());
+            // Initialize command history for this pizza
+            CommandHistory history = new CommandHistory();
+            
+            // Add toppings with Undo/Redo support
+            boolean addingToppings = true;
+            while (addingToppings) {
+                PizzaFactory.displayToppingMenu();
+                System.out.println("\nCurrent pizza: " + pizzaWrapper.getDescription());
+                System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
+                System.out.printf("Current points: %d%n", pizzaWrapper.getPoints());
+                
+                if (history.canUndo()) {
+                    System.out.println("\nCommands: u=Undo, r=Redo, 0=Finish, or enter topping number");
+                } else {
+                    System.out.println("\nCommands: 0=Finish, or enter topping number");
+                }
+                
+                String input = getStringInput("Enter choice: ");
+                
+                // Check for undo/redo commands
+                if (input.equalsIgnoreCase("u") || input.equalsIgnoreCase("undo")) {
+                    if (history.undo()) {
+                        System.out.println("Undo successful!");
+                        System.out.println("Current pizza: " + pizzaWrapper.getDescription());
+                        System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
+                    } else {
+                        System.out.println("Nothing to undo!");
+                    }
+                    continue;
+                }
+                
+                if (input.equalsIgnoreCase("r") || input.equalsIgnoreCase("redo")) {
+                    if (history.redo()) {
+                        System.out.println("Redo successful!");
+                        System.out.println("Current pizza: " + pizzaWrapper.getDescription());
+                        System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
+                    } else {
+                        System.out.println("Nothing to redo!");
+                    }
+                    continue;
+                }
+                
+                // Parse topping choice
+                int toppingChoice;
+                try {
+                    toppingChoice = Integer.parseInt(input);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input! Please enter a number, u for undo, or r for redo.");
+                    continue;
+                }
+                
+                if (toppingChoice == 0) {
+                    addingToppings = false;
+                    break;
+                }
+                
+                // Check if topping is valid
+                List<String> toppingNames = PizzaFactory.getToppingNames();
+                if (toppingChoice < 1 || toppingChoice > toppingNames.size()) {
+                    System.out.println("Invalid topping choice!");
+                    continue;
+                }
+                
+                String toppingName = toppingNames.get(toppingChoice - 1);
+                
+                // Check if topping already selected
+                if (history.isToppingSelected(toppingName)) {
+                    System.out.println("You already selected " + toppingName + "! Each topping can only be added once.");
+                    continue;
+                }
+                
+                // Create and execute command
+                AddToppingCommand command = new AddToppingCommand(pizzaWrapper, toppingChoice, toppingName);
+                history.executeCommand(command);
+                System.out.println("Added: " + toppingName);
+            }
+            
+            // Display final pizza
+            System.out.println("\n--- Pizza Summary ---");
+            System.out.println("Pizza: " + pizzaWrapper.getDescription());
+            System.out.printf("Price: $%.2f%n", pizzaWrapper.getPrice());
+            System.out.printf("Points: %d%n", pizzaWrapper.getPoints());
+            
+            // Choose quantity
+            int quantity = getIntInput("Enter quantity (1-99): ");
+            if (quantity < 1) quantity = 1;
+            
+            // Create order item
+            OrderItem item = new OrderItem(pizzaWrapper.getPizza(), selectedSize, quantity);
+            items.add(item);
+            
+            // Display current order total
+            double currentTotal = calculateCurrentTotal(items);
+            System.out.printf("\nCurrent order total: $%.2f%n", currentTotal);
+            
+            System.out.print("\nAdd another pizza? (y/n): ");
+            String another = scanner.nextLine().toLowerCase();
+            if (!another.equals("y")) {
+                addingPizzas = false;
+            }
+        }
+        
+        String orderId = generateOrderId();
+        
+        // Set customer info and create order
+        Order order;
+        if (isMember) {
+            Member member = memberManager.getCurrentMember();
+            order = new Order(member.getId(), member.getName(), member.getPhone(), items);
+        } else {
+            System.out.print("Enter your name: ");
+            String name = scanner.nextLine();
+            System.out.print("Enter your phone number: ");
+            String phone = scanner.nextLine();
+            order = new Order(null, name, phone, items);
+        }
+        
+        // 設置 orderId
+        order.setOrderId(orderId);
+        
+        // Apply member discount
+        if (isMember) {
+            Member member = memberManager.getCurrentMember();
+            double discountRate = member.getDiscount();
+            if (discountRate > 0) {
+                order.applyDiscount(discountRate);
+                System.out.println("\nVIP discount applied!");
+            }
+        }
+        
+        // Display and confirm order
+        order.displayOrder();
+        
+        System.out.print("\nConfirm order? (y/n): ");
+        String confirm = scanner.nextLine().toLowerCase();
+        if (confirm.equals("y")) {
+
+            orderManager.placeOrder(order);
+            
+            if (isMember) {
+                Member member = memberManager.getCurrentMember();
+                memberManager.updateMemberPoints(member.getId(), order.getTotalPoints());
+            }
+            
+            System.out.println("\nOrder placed successfully!");
+            System.out.println("Your Order ID: " + orderId);
+            System.out.println("Please save this ID for future reference.");
+        } else {
+            System.out.println("Order cancelled.");
         }
     }
     
-    return selectedToppings;
-}
-
+    private static double calculateCurrentTotal(List<OrderItem> items) {
+        double total = 0;
+        for (OrderItem item : items) {
+            total += item.getItemTotal();
+        }
+        return total;
+    }
+    
+    private static void showPizzaMenu() {
+        System.out.println("\n--- Pizza Menu ---");
+        List<BasePizza> pizzas = menuLoader.getPizzas();
+        for (int i = 0; i < pizzas.size(); i++) {
+            BasePizza p = pizzas.get(i);
+            System.out.printf("%d. %s - $%.2f (%d points)%n", 
+                i + 1, p.getName(), p.getBasePrice(), p.getPoints());
+        }
+        System.out.println("0. Finish / Checkout");
+    }
     
     private static void viewMyOrders() {
         Member member = memberManager.getCurrentMember();
@@ -413,5 +472,9 @@ private static List<Topping> selectToppings() {
         }
         
         orderManager.displayOrder(order);
+    }
+    
+    private static String generateOrderId() {
+        return "ORD" + System.currentTimeMillis();
     }
 }

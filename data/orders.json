@@ -1,38 +1,26 @@
 {
-  "ORD1775386136085": {
-    "orderId": "ORD1775386136085",
-    "customerName": "Marco",
-    "phone": "98001234",
-    "pizzaName": "BBQ Chicken",
-    "size": "Large",
-    "extraToppings": [
-      "Cheese",
-      "Onion",
-      "Chicken"
+  "ORD1775397469673": {
+    "orderId": "ORD1775397469673",
+    "customerName": "Sam",
+    "phone": "66895747",
+    "items": [
+      {
+        "pizza": {
+          "pizza": {
+            "name": "BBQ Chicken",
+            "basePrice": 25.584000000000003,
+            "basePoints": 140
+          }
+        },
+        "size": {},
+        "quantity": 1
+      }
     ],
-    "originalTotal": 30.184000000000005,
-    "finalTotal": 30.184000000000005,
+    "originalTotal": 26.584000000000003,
+    "finalTotal": 26.584000000000003,
     "discountApplied": 0.0,
-    "pointsEarned": 257,
-    "timestamp": "2026-04-05 18:48:56.115509",
-    "status": "completed"
-  },
-  "ORD1775387014714": {
-    "orderId": "ORD1775387014714",
-    "customerName": "Terry",
-    "phone": "96001234",
-    "pizzaName": "Pepperoni",
-    "size": "Large",
-    "extraToppings": [
-      "Bacon",
-      "Cheese",
-      "Chicken"
-    ],
-    "originalTotal": 30.284000000000002,
-    "finalTotal": 30.284000000000002,
-    "discountApplied": 0.0,
-    "pointsEarned": 240,
-    "timestamp": "2026-04-05 19:03:34.741982",
+    "totalPoints": 145,
+    "timestamp": "2026-04-05 21:57:57",
     "status": "completed"
   }
 }

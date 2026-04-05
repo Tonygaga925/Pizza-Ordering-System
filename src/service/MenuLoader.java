@@ -2,14 +2,14 @@ package service;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import model.Pizza;
+import model.pizza.*;
 import util.JsonUtil;
 
 import java.io.IOException;
 import java.util.*;
 
 public class MenuLoader {
-    private List<Pizza> pizzas;
+    private List<BasePizza> pizzas;
     private Map<String, Double> sizeMultiplier;
     private double extraToppingPrice;
 
@@ -29,8 +29,7 @@ public class MenuLoader {
             if (p.has("pointsValue")) {
                 pointsValue = p.get("pointsValue").getAsInt();
             }
-            
-            pizzas.add(new Pizza(name, price, pointsValue));
+            pizzas.add(new BasePizza(name, price, pointsValue));
         }
         
         // Load size multipliers
@@ -42,7 +41,7 @@ public class MenuLoader {
     }
     
     // Getters
-    public List<Pizza> getPizzas() { return pizzas; }
+    public List<BasePizza> getPizzas() { return pizzas; }
     public Map<String, Double> getSizeMultiplier() { return sizeMultiplier; }
     public double getExtraToppingPrice() { return extraToppingPrice; }
 }
