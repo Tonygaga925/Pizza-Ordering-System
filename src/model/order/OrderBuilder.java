@@ -28,12 +28,19 @@ public class OrderBuilder {
         return this;
     }
     
-    public OrderBuilder addPizza(Pizza pizza, Size size, int quantity) {
-        OrderItem item = new OrderItem(pizza, size, quantity);
-        items.add(item);
-        return this;
-    }
-    
+public OrderBuilder addPizza(Pizza pizza, Size size, int quantity) {
+    OrderItem item = new OrderItem(
+        pizza.getDescription(),
+        pizza.getPrice(),
+        pizza.getPoints(),
+        size.getName(),
+        size.getMultiplier(),
+        quantity
+    );
+    items.add(item);
+    return this;
+}
+
     public OrderBuilder addPizza(Pizza pizza, Size size) {
         return addPizza(pizza, size, 1);
     }

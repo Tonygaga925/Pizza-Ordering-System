@@ -16,6 +16,10 @@ public class Order {
     private int totalPoints;
     private String timestamp;
     private String status;
+
+    public Order() {
+        // Default constructor for Gson
+    }
     
     public Order(String memberId, String customerName, String phone, List<OrderItem> items) {
         this.memberId = memberId;
@@ -59,25 +63,28 @@ public class Order {
     public String getTimestamp() { return timestamp; }
     public String getStatus() { return status; }
     
-    public void displayOrder() {
-        System.out.println("\n=== Order Details ===");
-        System.out.println("Order ID: " + orderId);
-        System.out.println("Date: " + timestamp);
-        System.out.println("Customer: " + customerName);
-        System.out.println("Phone: " + phone);
-        System.out.println("\nItems:");
-        for (int i = 0; i < items.size(); i++) {
-            OrderItem item = items.get(i);
-            System.out.printf("  %d. %s - $%.2f each x%d = $%.2f%n",
-                i + 1, item.getDescription(), 
-                item.getPizza().getPrice() * item.getSize().getMultiplier(),
-                item.getQuantity(), item.getItemTotal());
-        }
-        System.out.printf("\nOriginal total: $%.2f%n", originalTotal);
-        if (discountApplied > 0) {
-            System.out.printf("Discount: -$%.2f%n", discountApplied);
-        }
-        System.out.printf("Final total: $%.2f%n", finalTotal);
+    public void displayOrder(boolean isMember) {
+    System.out.println("\n=== Order Details ===");
+    System.out.println("Order ID: " + orderId);
+    System.out.println("Date: " + timestamp);
+    System.out.println("Customer: " + customerName);
+    System.out.println("Phone: " + phone);
+    System.out.println("\nItems:");
+    for (int i = 0; i < items.size(); i++) {
+        OrderItem item = items.get(i);
+        System.out.printf("  %d. %s - $%.2f each x%d = $%.2f%n",
+            i + 1, item.getDescription(), 
+            item.getPizzaPrice(),
+            item.getQuantity(), item.getItemTotal());
+    }
+    System.out.printf("\nOriginal total: $%.2f%n", originalTotal);
+    if (discountApplied > 0) {
+        System.out.printf("Discount: -$%.2f%n", discountApplied);
+    }
+    System.out.printf("Final total: $%.2f%n", finalTotal);
+    if(isMember){
         System.out.printf("Points earned: %d%n", totalPoints);
     }
+}
+
 }

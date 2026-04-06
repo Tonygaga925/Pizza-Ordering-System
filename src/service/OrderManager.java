@@ -60,9 +60,54 @@ public class OrderManager {
         }
     }
 
+    public void refreshOrders() {
+        try {
+            loadOrders();
+            System.out.println("Orders refreshed. Total orders: " + orders.size());
+        } catch (IOException e) {
+            System.err.println("Warning: Could not refresh orders: " + e.getMessage());
+        }
+    }
+
+    public List<Order> getOrdersByMemberIdFromFile(String memberId) {
+        List<Order> memberOrders = new ArrayList<>();
+        File file = new File(orderFilePath);
+        
+        if (!file.exists()) {
+            return memberOrders;
+        }
+        
+        try (Reader reader = new FileReader(file)) {
+            Type type = new TypeToken<Map<String, Order>>() {}.getType();
+            Map<String, Order> loadedOrders = gson.fromJson(reader, type);
+            
+            if (loadedOrders != null) {
+                for (Order order : loadedOrders.values()) {
+                    if (memberId != null && memberId.equals(order.getMemberId())) {
+                        memberOrders.add(order);
+                    }
+                }
+            }
+            
+            memberOrders.sort(Comparator.comparing(Order::getTimestamp, Comparator.nullsLast(Comparator.reverseOrder())));
+            
+        } catch (IOException e) {
+            System.err.println("Error reading orders file: " + e.getMessage());
+        }
+        
+        return memberOrders;
+    }
+
     public String placeOrder(String memberId, String customerName, String phone,
             Pizza pizza, Size size, int quantity) throws IOException {
-        OrderItem item = new OrderItem(pizza, size, quantity);
+        OrderItem item = new OrderItem(
+            pizza.getDescription(),
+            pizza.getPrice(),
+            pizza.getPoints(),
+            size.getName(),
+            size.getMultiplier(),
+            quantity
+        );
         List<OrderItem> items = new ArrayList<>();
         items.add(item);
 
@@ -78,12 +123,10 @@ public class OrderManager {
         return placeOrder(order);
     }
 
-    // 支援多個披薩的訂單（每個披薩可能已有不同配料）
     public String placeOrder(String memberId, String customerName, String phone,
             List<OrderItem> items) throws IOException {
         Order order = new Order(memberId, customerName, phone, items);
 
-        // 應用會員折扣
         if (memberId != null && memberManager != null) {
             Member member = memberManager.getMemberById(memberId);
             if (member != null && member.getDiscount() > 0) {
@@ -120,12 +163,12 @@ public class OrderManager {
         return memberOrders;
     }
 
-    public void displayOrder(Order order) {
+    public void displayOrder(Order order, boolean isMember) {
         if (order == null) {
             System.out.println("Order not found!");
             return;
         }
-        order.displayOrder();
+        order.displayOrder(isMember);
     }
 
     public void displayOrders(List<Order> orders) {
