@@ -1,30 +1,86 @@
-// model/size/SizeFactory.java
 package model.size;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.lang.reflect.Constructor;
 
 public class SizeFactory {
-    private static final Map<Integer, Size> sizeMap = new HashMap<>();
+    private static final List<Class<? extends Size>> sizeClasses = new ArrayList<>();
+    private static final List<String> sizeNames = new ArrayList<>();
+    private static final List<Double> sizeMultipliers = new ArrayList<>();
+    private static final Map<Integer, Size> sizeCache = new HashMap<>();
     
     static {
-        sizeMap.put(1, new SmallSize());
-        sizeMap.put(2, new MediumSize());
-        sizeMap.put(3, new LargeSize());
+        // Register all size classes
+        registerSize(SmallSize.class);
+        registerSize(MediumSize.class);
+        registerSize(LargeSize.class);
+    }
+    
+    private static void registerSize(Class<? extends Size> sizeClass) {
+        try {
+            Constructor<? extends Size> constructor = sizeClass.getConstructor();
+            Size instance = constructor.newInstance();
+            sizeClasses.add(sizeClass);
+            sizeNames.add(instance.getName());
+            sizeMultipliers.add(instance.getMultiplier());
+        } catch (Exception e) {
+            System.err.println("Failed to register size: " + sizeClass.getSimpleName());
+        }
     }
     
     public static Size getSize(int choice) {
-        Size size = sizeMap.get(choice);
-        if (size == null) {
+        if (choice < 1 || choice > sizeClasses.size()) {
             throw new IllegalArgumentException("Invalid size choice: " + choice);
         }
-        return size;
+        
+        // Return cached instance
+        if (sizeCache.containsKey(choice)) {
+            return sizeCache.get(choice);
+        }
+        
+        try {
+            Size instance = sizeClasses.get(choice - 1).getConstructor().newInstance();
+            sizeCache.put(choice, instance);
+            return instance;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create size", e);
+        }
+    }
+    
+    public static Size getSizeByName(String name) {
+        for (int i = 0; i < sizeNames.size(); i++) {
+            if (sizeNames.get(i).equalsIgnoreCase(name)) {
+                return getSize(i + 1);
+            }
+        }
+        throw new IllegalArgumentException("Invalid size name: " + name);
     }
     
     public static void displaySizeOptions() {
-        System.out.println("Size options:");
-        System.out.println("  1. Small (x1.0)");
-        System.out.println("  2. Medium (x1.3)");
-        System.out.println("  3. Large (x1.6)");
+        System.out.println("\n=== Size Options ===");
+        for (int i = 0; i < sizeNames.size(); i++) {
+            System.out.printf("%d. %s (x%.1f)%n", i + 1, sizeNames.get(i), sizeMultipliers.get(i));
+        }
+    }
+    
+    public static List<String> getSizeNames() {
+        return new ArrayList<>(sizeNames);
+    }
+    
+    public static List<Double> getSizeMultipliers() {
+        return new ArrayList<>(sizeMultipliers);
+    }
+    
+    public static int getSizeCount() {
+        return sizeClasses.size();
+    }
+    
+    public static double getMultiplierByName(String name) {
+        for (int i = 0; i < sizeNames.size(); i++) {
+            if (sizeNames.get(i).equalsIgnoreCase(name)) {
+                return sizeMultipliers.get(i);
+            }
+        }
+        return 1.0; // default
     }
 }

@@ -1,47 +1,52 @@
 package service;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import model.pizza.*;
-import util.JsonUtil;
-
-import java.io.IOException;
+import model.pizza.PizzaFactory;
+import model.size.SizeFactory;
 import java.util.*;
 
 public class MenuLoader {
-    private List<BasePizza> pizzas;
+    private List<String> pizzaNames;
+    private List<Double> pizzaPrices;
+    private List<Integer> pizzaPoints;
     private Map<String, Double> sizeMultiplier;
-    private double extraToppingPrice;
-
-    public MenuLoader(String menuFilePath) throws IOException {
-        JsonObject menu = JsonUtil.readFromFile(menuFilePath, JsonObject.class);
+    
+    public MenuLoader() {
+        // Load pizza data from PizzaFactory
+        this.pizzaNames = PizzaFactory.getPizzaNames();
+        this.pizzaPrices = PizzaFactory.getPizzaPrices();
+        this.pizzaPoints = PizzaFactory.getPizzaPoints();
         
-        // Load pizzas
-        JsonArray pizzaArray = menu.getAsJsonArray("pizzas");
-        pizzas = new ArrayList<>();
-        for (var elem : pizzaArray) {
-            JsonObject p = elem.getAsJsonObject();
-            String name = p.get("name").getAsString();
-            double price = p.get("basePrice").getAsDouble();
-            
-            // Read pointsValue (default to 0 if not present)
-            int pointsValue = 0;
-            if (p.has("pointsValue")) {
-                pointsValue = p.get("pointsValue").getAsInt();
-            }
-            pizzas.add(new BasePizza(name, price, pointsValue));
-        }
+        // Load size data from SizeFactory
+        this.sizeMultiplier = new LinkedHashMap<>();
+        List<String> sizeNames = SizeFactory.getSizeNames();
+        List<Double> sizeMultipliers = SizeFactory.getSizeMultipliers();
         
-        // Load size multipliers
-        JsonObject sizeMultiplierObj = menu.getAsJsonObject("sizeMultiplier");
-        sizeMultiplier = new HashMap<>();
-        for (var entry : sizeMultiplierObj.entrySet()) {
-            sizeMultiplier.put(entry.getKey(), entry.getValue().getAsDouble());
+        for (int i = 0; i < sizeNames.size(); i++) {
+            sizeMultiplier.put(sizeNames.get(i), sizeMultipliers.get(i));
         }
     }
     
-    // Getters
-    public List<BasePizza> getPizzas() { return pizzas; }
-    public Map<String, Double> getSizeMultiplier() { return sizeMultiplier; }
-    public double getExtraToppingPrice() { return extraToppingPrice; }
+    public List<String> getPizzaNames() {
+        return pizzaNames;
+    }
+    
+    public List<Double> getPizzaPrices() {
+        return pizzaPrices;
+    }
+    
+    public List<Integer> getPizzaPoints() {
+        return pizzaPoints;
+    }
+    
+    public Map<String, Double> getSizeMultiplier() {
+        return sizeMultiplier;
+    }
+    
+    public void displayPizzaMenu() {
+        PizzaFactory.displayPizzaMenu();
+    }
+    
+    public void displaySizeOptions() {
+        SizeFactory.displaySizeOptions();
+    }
 }

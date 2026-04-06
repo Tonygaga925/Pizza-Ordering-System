@@ -1,23 +1,38 @@
-// model/pizza/BaconTopping.java
 package model.pizza;
 
 public class BaconTopping extends ToppingDecorator {
+    
     public BaconTopping(Pizza pizza) {
         super(pizza);
     }
     
     @Override
+    public String getToppingName() {
+        return "Bacon";
+    }
+
+    @Override
     public String getDescription() {
-        return pizza.getDescription() + " + Bacon";
+        return pizza.getDescription() + " + " + getToppingName();
     }
     
     @Override
     public double getPrice() {
-        return pizza.getPrice() + 2.50;
+        return pizza.getPrice() + getToppingPrice();
     }
     
     @Override
     public int getPoints() {
-        return pizza.getPoints() + 20;
+        return pizza.getPoints() + getToppingPoints();
+    }
+    
+    @Override
+    public double getToppingPrice() {
+        return 2.50;
+    }
+    
+    @Override
+    public int getToppingPoints() {
+        return 20;
     }
 }

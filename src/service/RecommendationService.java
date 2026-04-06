@@ -48,7 +48,7 @@ public class RecommendationService {
         System.out.println("Let me help you find your next favorite pizza!\n");
         
         // Get member's order history
-        List<Order> orders = orderManager.getOrdersByMemberId(member.getId());
+        List<Order> orders = orderManager.getOrdersByMemberIdFromFile(member.getId());
         
         if (!orders.isEmpty()) {
             // Find the most frequently ordered pizza
@@ -90,18 +90,7 @@ public class RecommendationService {
             .map(Map.Entry::getKey)
             .orElse(null);
     }
-    /*
-    // Extract base pizza name from decorated pizza description
-    private String getBasePizzaName(model.pizza.Pizza pizza) {
-        String description = pizza.getDescription();
-        int plusIndex = description.indexOf(" + ");
-        if (plusIndex > 0) {
-            return description.substring(0, plusIndex);
-        }
-        return description;
-    }
-    */
-   
+    
     // Recommend similar pizza based on user's favorite
     private void recommendSimilarPizza(String currentPizza) {
         List<String> similar = PIZZA_SIMILARITIES.get(currentPizza);
@@ -249,18 +238,21 @@ public class RecommendationService {
     // Display default recommendation message
     private void displayDefaultRecommendation() {
         System.out.println("\nTop Recommendation: PEPPERONI");
-        System.out.println(" It's our most popular pizza - you can't go wrong!");
+        System.out.println("   It's our most popular pizza - you can't go wrong!");
     }
     
-    // Display pizza details (price and points)
+    // Display pizza details (price and points) - Updated to use MenuLoader
     private void displayPizzaDetails(String pizzaName) {
-        List<BasePizza> pizzas = menuLoader.getPizzas();
-        for (BasePizza p : pizzas) {
-            if (p.getName().equalsIgnoreCase(pizzaName)) {
+        List<String> pizzaNames = menuLoader.getPizzaNames();
+        List<Double> pizzaPrices = menuLoader.getPizzaPrices();
+        List<Integer> pizzaPoints = menuLoader.getPizzaPoints();
+        
+        for (int i = 0; i < pizzaNames.size(); i++) {
+            if (pizzaNames.get(i).equalsIgnoreCase(pizzaName)) {
                 System.out.println("\n--- Pizza Details ---");
-                System.out.println("Name: " + p.getName());
-                System.out.printf("Base price: $%.2f%n", p.getBasePrice());
-                System.out.println("Points: " + p.getPoints());
+                System.out.println("Name: " + pizzaNames.get(i));
+                System.out.printf("Base price: $%.2f%n", pizzaPrices.get(i));
+                System.out.println("Points: " + pizzaPoints.get(i));
                 System.out.println("=====================");
                 break;
             }

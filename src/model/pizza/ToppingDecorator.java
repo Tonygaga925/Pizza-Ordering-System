@@ -1,9 +1,10 @@
 package model.pizza;
 
-public abstract class ToppingDecorator implements Pizza {
+public abstract class ToppingDecorator extends Pizza {
     protected Pizza pizza;
     
     public ToppingDecorator(Pizza pizza) {
+        super(pizza.getName(), pizza.getBasePrice(), pizza.getBasePoints());
         this.pizza = pizza;
     }
     
@@ -21,6 +22,10 @@ public abstract class ToppingDecorator implements Pizza {
     public int getPoints() {
         return pizza.getPoints();
     }
+
+    public abstract String getToppingName();
+    public abstract double getToppingPrice();
+    public abstract int getToppingPoints();
 
     public Pizza getPizza() {
         return pizza;

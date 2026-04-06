@@ -1,9 +1,10 @@
 package model.pizza;
 
-public class MutablePizzaWrapper implements Pizza {
+public class MutablePizzaWrapper extends Pizza {
     private Pizza pizza;
     
     public MutablePizzaWrapper(Pizza pizza) {
+        super(pizza.getName(), pizza.getBasePrice(), pizza.getBasePoints());
         this.pizza = pizza;
     }
     

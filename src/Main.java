@@ -20,13 +20,12 @@ public class Main implements RecommendationService.MainCallback {
 
     public static void main(String[] args) {
         try {
-            menuLoader = new MenuLoader("data/menu.json");
+            menuLoader = new MenuLoader();
             orderManager = new OrderManager("data/orders.json");
             memberManager = new MemberManager("data/members.json");
 
             // Set references
             orderManager.setMemberManager(memberManager);
-            // memberManager.setOrderManager(orderManager);
 
             scanner = new Scanner(System.in);
 
@@ -157,16 +156,16 @@ public class Main implements RecommendationService.MainCallback {
     }
 
     private static void login() throws IOException {
-    System.out.print("Username: ");
-    String username = scanner.nextLine();
-    System.out.print("Password: ");
-    String password = scanner.nextLine();
-    
-    if (memberManager.login(username, password)) {
-        System.out.println("Login successful!");
-    } else {
-        System.out.println("Invalid username or password!");
-    }
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+        
+        if (memberManager.login(username, password)) {
+            System.out.println("Login successful!");
+        } else {
+            System.out.println("Invalid username or password!");
+        }
     }
 
     private static void register() throws IOException {
@@ -174,7 +173,7 @@ public class Main implements RecommendationService.MainCallback {
         String username = scanner.nextLine();
         System.out.print("Password: ");
         String password = scanner.nextLine();
-        System.out.print("Full Name: ");
+        System.out.print("Your Name: ");
         String name = scanner.nextLine();
         System.out.print("Phone Number: ");
         String phone = scanner.nextLine();
@@ -193,11 +192,13 @@ public class Main implements RecommendationService.MainCallback {
 
     private static void showMenu() {
         System.out.println("\n--- Menu ---");
-        List<BasePizza> pizzas = menuLoader.getPizzas();
-        for (int i = 0; i < pizzas.size(); i++) {
-            BasePizza p = pizzas.get(i);
+        List<String> pizzaNames = menuLoader.getPizzaNames();
+        List<Double> pizzaPrices = menuLoader.getPizzaPrices();
+        List<Integer> pizzaPoints = menuLoader.getPizzaPoints();
+        
+        for (int i = 0; i < pizzaNames.size(); i++) {
             System.out.printf("%d. %s - $%.2f (%d points)%n",
-                    i + 1, p.getName(), p.getBasePrice(), p.getPoints());
+                    i + 1, pizzaNames.get(i), pizzaPrices.get(i), pizzaPoints.get(i));
         }
         System.out.println("\nNote: You can add extra toppings after selecting your pizza.");
     }
@@ -306,156 +307,155 @@ public class Main implements RecommendationService.MainCallback {
         }
     }
 
-private static void displayCart(List<OrderItem> items) {
-    System.out.println("\n=== Current Cart ===");
-    double total = 0;
-    for (int i = 0; i < items.size(); i++) {
-        OrderItem item = items.get(i);
-        double itemTotal = item.getItemTotal();
-        total += itemTotal;
-        System.out.printf("%d. %s - $%.2f each, Total: $%.2f%n",
-                i + 1,
-                item.getDescription(),
-                item.getSingleItemTotal(),
-                itemTotal);
+    private static void displayCart(List<OrderItem> items) {
+        System.out.println("\n=== Current Cart ===");
+        double total = 0;
+        for (int i = 0; i < items.size(); i++) {
+            OrderItem item = items.get(i);
+            double itemTotal = item.getItemTotal();
+            total += itemTotal;
+            System.out.printf("%d. %s - $%.2f each, Total: $%.2f%n",
+                    i + 1,
+                    item.getDescription(),
+                    item.getSingleItemTotal(),
+                    itemTotal);
+        }
+        System.out.printf("Cart Total: $%.2f%n", total);
+        System.out.println("==================");
     }
-    System.out.printf("Cart Total: $%.2f%n", total);
-    System.out.println("==================");
-}
 
     private static void addNewPizza(List<OrderItem> items, boolean isMember) throws IOException {
+        System.out.println("\n--- Add New Pizza ---");
 
-    System.out.println("\n--- Add New Pizza ---");
-
-    // Show pizza menu
-    showPizzaMenu();
-    int pizzaIndex = getIntInput("Choose pizza number: ") - 1;
-
-    if (pizzaIndex < 0 || pizzaIndex >= menuLoader.getPizzas().size()) {
-        System.out.println("Invalid pizza choice!");
-        return;
-    }
-
-    // Start with base pizza
-    BasePizza selectedBase = menuLoader.getPizzas().get(pizzaIndex);
-
-    // Choose size
-    SizeFactory.displaySizeOptions();
-    int sizeChoice = getIntInput("Choose size (input number): ");
-    Size selectedSize;
-    try {
-        selectedSize = SizeFactory.getSize(sizeChoice);
-    } catch (IllegalArgumentException e) {
-        System.out.println("Invalid size choice!");
-        return;
-    }
-
-    double baseWithSizePrice = selectedBase.getBasePrice() * selectedSize.getMultiplier();
-
-    MutablePizzaWrapper pizzaWrapper = new MutablePizzaWrapper(
-            new BasePizza(selectedBase.getName(), baseWithSizePrice, selectedBase.getPoints()));
-
-    // Initialize command history for this pizza
-    CommandHistory history = new CommandHistory();
-
-    // Add toppings with Undo/Redo support
-    boolean addingToppings = true;
-    while (addingToppings) {
-        PizzaFactory.displayToppingMenu();
-        System.out.println("\nCurrent pizza: " + pizzaWrapper.getDescription());
-        System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
-        System.out.printf("Current points: %d%n", pizzaWrapper.getPoints());
-
-        if (history.canUndo()) {
-            System.out.println("\nCommands: u=Undo, r=Redo, 0=Finish, or enter topping number");
-        } else {
-            System.out.println("\nCommands: 0=Finish, or enter topping number");
+        // Show pizza menu using PizzaFactory
+        PizzaFactory.displayPizzaMenu();
+        int pizzaIndex = getIntInput("Choose pizza number: ");
+        
+        if (pizzaIndex < 1 || pizzaIndex > PizzaFactory.getPizzaCount()) {
+            System.out.println("Invalid pizza choice!");
+            return;
         }
 
-        String input = getStringInput("Enter choice: ");
+        // Create pizza using PizzaFactory
+        Pizza pizza = PizzaFactory.createPizza(pizzaIndex);
 
-        // Check for undo/redo commands
-        if (input.equalsIgnoreCase("u") || input.equalsIgnoreCase("undo")) {
-            if (history.undo()) {
-                System.out.println("Undo successful!");
-                System.out.println("Current pizza: " + pizzaWrapper.getDescription());
-                System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
-            } else {
-                System.out.println("Nothing to undo!");
-            }
-            continue;
-        }
-
-        if (input.equalsIgnoreCase("r") || input.equalsIgnoreCase("redo")) {
-            if (history.redo()) {
-                System.out.println("Redo successful!");
-                System.out.println("Current pizza: " + pizzaWrapper.getDescription());
-                System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
-            } else {
-                System.out.println("Nothing to redo!");
-            }
-            continue;
-        }
-
-        // Parse topping choice
-        int toppingChoice;
+        // Choose size
+        SizeFactory.displaySizeOptions();
+        int sizeChoice = getIntInput("Choose size (input number): ");
+        Size selectedSize;
         try {
-            toppingChoice = Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input! Please enter a number, u for undo, or r for redo.");
-            continue;
+            selectedSize = SizeFactory.getSize(sizeChoice);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid size choice!");
+            return;
         }
 
-        if (toppingChoice == 0) {
-            addingToppings = false;
-            break;
+        double baseWithSizePrice = pizza.getBasePrice() * selectedSize.getMultiplier();
+
+        MutablePizzaWrapper pizzaWrapper = new MutablePizzaWrapper(
+                new BasePizza(pizza.getName(), baseWithSizePrice, pizza.getPoints()));
+
+        // Initialize command history for this pizza
+        CommandHistory history = new CommandHistory();
+
+        // Add toppings with Undo/Redo support
+        boolean addingToppings = true;
+        while (addingToppings) {
+            PizzaFactory.displayToppingMenu();
+            System.out.println("\nCurrent pizza: " + pizzaWrapper.getDescription());
+            System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
+            System.out.printf("Current points: %d%n", pizzaWrapper.getPoints());
+
+            if (history.canUndo()) {
+                System.out.println("\nCommands: u=Undo, r=Redo, 0=Finish, or enter topping number");
+            } else {
+                System.out.println("\nCommands: 0=Finish, or enter topping number");
+            }
+
+            String input = getStringInput("Enter choice: ");
+
+            // Check for undo/redo commands
+            if (input.equalsIgnoreCase("u") || input.equalsIgnoreCase("undo")) {
+                if (history.undo()) {
+                    System.out.println("Undo successful!");
+                    System.out.println("Current pizza: " + pizzaWrapper.getDescription());
+                    System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
+                } else {
+                    System.out.println("Nothing to undo!");
+                }
+                continue;
+            }
+
+            if (input.equalsIgnoreCase("r") || input.equalsIgnoreCase("redo")) {
+                if (history.redo()) {
+                    System.out.println("Redo successful!");
+                    System.out.println("Current pizza: " + pizzaWrapper.getDescription());
+                    System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
+                } else {
+                    System.out.println("Nothing to redo!");
+                }
+                continue;
+            }
+
+            // Parse topping choice
+            int toppingChoice;
+            try {
+                toppingChoice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a number, u for undo, or r for redo.");
+                continue;
+            }
+
+            if (toppingChoice == 0) {
+                addingToppings = false;
+                break;
+            }
+
+            // Check if topping is valid
+            List<String> toppingNames = PizzaFactory.getToppingNames();
+            if (toppingChoice < 1 || toppingChoice > toppingNames.size()) {
+                System.out.println("Invalid topping choice!");
+                continue;
+            }
+
+            String toppingName = toppingNames.get(toppingChoice - 1);
+
+            // Check if topping already selected
+            if (history.isToppingSelected(toppingName)) {
+                System.out.println("You already selected " + toppingName + "! Each topping can only be added once.");
+                continue;
+            }
+
+            // Create and execute command
+            AddToppingCommand command = new AddToppingCommand(pizzaWrapper, toppingChoice, toppingName);
+            history.executeCommand(command);
+            System.out.println("Added: " + toppingName);
         }
 
-        // Check if topping is valid
-        List<String> toppingNames = PizzaFactory.getToppingNames();
-        if (toppingChoice < 1 || toppingChoice > toppingNames.size()) {
-            System.out.println("Invalid topping choice!");
-            continue;
-        }
+        // Display final pizza
+        System.out.println("\n--- Pizza Summary ---");
+        System.out.println("Pizza: " + pizzaWrapper.getDescription());
+        System.out.printf("Price: $%.2f%n", pizzaWrapper.getPrice());
+        System.out.printf("Points: %d%n", pizzaWrapper.getPoints());
 
-        String toppingName = toppingNames.get(toppingChoice - 1);
+        // Choose quantity
+        int quantity = getIntInput("Enter quantity (1-99): ");
+        if (quantity < 1)
+            quantity = 1;
 
-        // Check if topping already selected
-        if (history.isToppingSelected(toppingName)) {
-            System.out.println("You already selected " + toppingName + "! Each topping can only be added once.");
-            continue;
-        }
+        // Create order item using the new structure
+        OrderItem item = new OrderItem(
+            pizzaWrapper.getDescription(),
+            pizzaWrapper.getPrice(),
+            pizzaWrapper.getPoints(),
+            selectedSize.getName(),
+            selectedSize.getMultiplier(),
+            quantity
+        );
+        items.add(item);
 
-        // Create and execute command
-        AddToppingCommand command = new AddToppingCommand(pizzaWrapper, toppingChoice, toppingName);
-        history.executeCommand(command);
-        System.out.println("Added: " + toppingName);
+        System.out.println("Pizza added to cart!");
     }
-
-    // Display final pizza
-    System.out.println("\n--- Pizza Summary ---");
-    System.out.println("Pizza: " + pizzaWrapper.getDescription());
-    System.out.printf("Price: $%.2f%n", pizzaWrapper.getPrice());
-    System.out.printf("Points: %d%n", pizzaWrapper.getPoints());
-
-    // Choose quantity
-    int quantity = getIntInput("Enter quantity (1-99): ");
-    if (quantity < 1)
-        quantity = 1;
-
-    // Create order item using the new structure (store description, price, points, size info)
-    OrderItem item = new OrderItem(
-        pizzaWrapper.getDescription(),  // pizza description (includes all toppings)
-        pizzaWrapper.getPrice(),         // total price for one pizza
-        pizzaWrapper.getPoints(),        // total points for one pizza
-        selectedSize.getName(),          // size name (e.g., "Large")
-        selectedSize.getMultiplier(),    // size multiplier (e.g., 1.6)
-        quantity                         // quantity
-    );
-    items.add(item);
-
-    System.out.println("Pizza added to cart!");
-}
 
     private static void modifyPizzaQuantity(List<OrderItem> items) {
         if (items.isEmpty()) {
@@ -488,126 +488,124 @@ private static void displayCart(List<OrderItem> items) {
         displayCart(items);
     }
 
-private static void removePizza(List<OrderItem> items) {
-    if (items.isEmpty()) {
-        System.out.println("No pizzas to remove.");
-        return;
-    }
-
-    displayCart(items);
-    System.out.print("Enter pizza number to remove: ");
-    int index = getIntInput() - 1;
-
-    if (index < 0 || index >= items.size()) {
-        System.out.println("Invalid pizza number!");
-        return;
-    }
-
-    OrderItem removed = items.remove(index);
-    System.out.printf("Removed: %s%n", removed.getDescription());
-
-    if (!items.isEmpty()) {
-        displayCart(items);
-    } else {
-        System.out.println("Cart is now empty.");
-    }
-}
-
-    private static void showPizzaMenu() {
-        System.out.println("\n--- Pizza Menu ---");
-        List<BasePizza> pizzas = menuLoader.getPizzas();
-        for (int i = 0; i < pizzas.size(); i++) {
-            BasePizza p = pizzas.get(i);
-            System.out.printf("%d. %s - $%.2f (%d points)%n",
-                    i + 1, p.getName(), p.getBasePrice(), p.getPoints());
+    private static void removePizza(List<OrderItem> items) {
+        if (items.isEmpty()) {
+            System.out.println("No pizzas to remove.");
+            return;
         }
-        System.out.println("0. Finish / Checkout");
-    }
 
+        displayCart(items);
+        System.out.print("Enter pizza number to remove: ");
+        int index = getIntInput() - 1;
+
+        if (index < 0 || index >= items.size()) {
+            System.out.println("Invalid pizza number!");
+            return;
+        }
+
+        OrderItem removed = items.remove(index);
+        System.out.printf("Removed: %s%n", removed.getDescription());
+
+        if (!items.isEmpty()) {
+            displayCart(items);
+        } else {
+            System.out.println("Cart is now empty.");
+        }
+    }
+/* 
+    private static void showPizzaMenu() {
+        PizzaFactory.displayPizzaMenu();
+    }
+*/
     // for member use
     private static void viewMyOrders() {
-    Member member = memberManager.getCurrentMember();
-    
-    // Get orders from file
-    List<Order> orders = orderManager.getOrdersByMemberIdFromFile(member.getId());
-    
-    if (orders.isEmpty()) {
-        System.out.println("You have no orders yet.");
-        return;
-    }
-    
-    // Show only the 9 most recent orders
-    int maxDisplay = Math.min(orders.size(), 9);
-    List<Order> recentOrders = orders.subList(0, maxDisplay);
-    
-    System.out.println("\n=== Your Recent Orders (Latest order on top, max 9 shown) ===\n");
-    for (int i = 0; i < recentOrders.size(); i++) {
-        Order order = recentOrders.get(i);
-        String timestamp = order.getTimestamp();
-        if (timestamp != null && timestamp.length() > 19) {
-            timestamp = timestamp.substring(0, 19);
+        Member member = memberManager.getCurrentMember();
+        
+        // Get orders from file
+        List<Order> orders = orderManager.getOrdersByMemberIdFromFile(member.getId());
+        
+        if (orders.isEmpty()) {
+            System.out.println("You have no orders yet.");
+            return;
         }
         
-        System.out.printf("%d. %s | $%.2f | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(), timestamp);
-        System.out.println("    Item(s):");
+        // Show only the 9 most recent orders
+        int maxDisplay = Math.min(orders.size(), 9);
+        List<Order> recentOrders = orders.subList(0, maxDisplay);
         
-        List<OrderItem> items = order.getItems();
-        for (OrderItem item : items) {
-            System.out.printf("\t%s - $%.2f each = $%.2f%n",
-                item.getDescription(),
-                item.getPizzaPrice(),
-                item.getItemTotal());
+        System.out.println("\n=== Your Recent Orders (Latest order on top, max 9 shown) ===\n");
+        for (int i = 0; i < recentOrders.size(); i++) {
+            Order order = recentOrders.get(i);
+            String timestamp = order.getTimestamp();
+            if (timestamp != null && timestamp.length() > 19) {
+                timestamp = timestamp.substring(0, 19);
+            }
+            
+            System.out.printf("%d. %s | $%.2f | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(), timestamp);
+            System.out.println("    Item(s):");
+            
+            List<OrderItem> items = order.getItems();
+            for (OrderItem item : items) {
+                System.out.printf("\t%s - $%.2f each = $%.2f%n",
+                    item.getDescription(),
+                    item.getPizzaPrice(),
+                    item.getItemTotal());
+            }
+            if(order.getDiscountApplied() > 0){
+                System.out.printf("\n\tOriginal Total: $%.2f, Discount: -$%.2f%n", order.getOriginalTotal(), order.getDiscountApplied());
+            }else{
+                System.out.printf("\n\tTotal: $%.2f%n", order.getOriginalTotal());
+            }
+            System.out.println();
         }
-        System.out.println();
+        
+        System.out.println("[m] Back to main menu");
+        System.out.println("[r] Reorder a previous order");
+        System.out.print("Choose: ");
+        
+        String input = scanner.nextLine().toLowerCase();
+        
+        if (input.equals("m")) {
+            return;
+        } else if (input.equals("r")) {
+            reorderPreviousOrder(recentOrders);
+        } else {
+            System.out.println("Invalid option!");
+        }
     }
-    
-    System.out.println("[m] Back to main menu");
-    System.out.println("[r] Reorder a previous order");
-    System.out.print("Choose: ");
-    
-    String input = scanner.nextLine().toLowerCase();
-    
-    if (input.equals("m")) {
-        return;
-    } else if (input.equals("r")) {
-        reorderPreviousOrder(recentOrders);
-    } else {
-        System.out.println("Invalid option!");
-    }
-}
 
     private static void reorderPreviousOrder(List<Order> orders) {
-    if (orders.isEmpty()) {
-        System.out.println("No orders to reorder.");
-        return;
-    }
-    
-    System.out.println("\n=== Select Order to Reorder ===");
-    for (int i = 0; i < orders.size(); i++) {
-        Order order = orders.get(i);
-        String timestamp = order.getTimestamp();
-        if (timestamp != null && timestamp.length() > 19) {
-            timestamp = timestamp.substring(0, 19);
+        if (orders.isEmpty()) {
+            System.out.println("No orders to reorder.");
+            return;
         }
-        System.out.printf("%d. %s | $%.2f | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(), timestamp);
+        
+        System.out.println("\n=== Select Order to Reorder ===");
+        for (int i = 0; i < orders.size(); i++) {
+            Order order = orders.get(i);
+            String timestamp = order.getTimestamp();
+            if (timestamp != null && timestamp.length() > 19) {
+                timestamp = timestamp.substring(0, 19);
+            }
+            System.out.printf("%d. %s | $%.2f | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(), timestamp);
+        }
+        
+        System.out.print("\nEnter order number to reorder (1-" + orders.size() + "), or 0 to cancel: ");
+        int choice = getIntInput();
+        
+        if (choice == 0) {
+            System.out.println("Reorder cancelled.");
+            return;
+        }
+        
+        if (choice < 1 || choice > orders.size()) {
+            System.out.println("Invalid choice!");
+            return;
+        }
+        
+        Order selectedOrder = orders.get(choice - 1);
+        reorderOrder(selectedOrder);
     }
-    
-    System.out.print("\nEnter order number to reorder (1-" + orders.size() + "), or 0 to cancel: ");
-    int choice = getIntInput();
-    
-    if (choice == 0) {
-        System.out.println("Reorder cancelled.");
-        return;
-    }
-    
-    if (choice < 1 || choice > orders.size()) {
-        System.out.println("Invalid choice!");
-        return;
-    }
-    
-    Order selectedOrder = orders.get(choice - 1);
-    reorderOrder(selectedOrder);
-}
 
     private static void reorderOrder(Order originalOrder) {
         System.out.println("\n=== Reordering Previous Order ===");
@@ -615,19 +613,19 @@ private static void removePizza(List<OrderItem> items) {
 
         List<OrderItem> newItems = new ArrayList<>();
 
-// Copy the original items directly (no need to recreate Pizza)
-    for (OrderItem originalItem : originalOrder.getItems()) {
-        OrderItem newItem = new OrderItem(
-            originalItem.getPizzaDescription(),
-            originalItem.getPizzaPrice(),
-            originalItem.getPizzaPoints(),
-            originalItem.getSizeName(),
-            originalItem.getSizeMultiplier(),
-            originalItem.getQuantity()
-        );
-        newItems.add(newItem);
-        System.out.println("Added: " + newItem.getDescription());
-    }
+        // Copy the original items directly
+        for (OrderItem originalItem : originalOrder.getItems()) {
+            OrderItem newItem = new OrderItem(
+                originalItem.getPizzaDescription(),
+                originalItem.getPizzaPrice(),
+                originalItem.getPizzaPoints(),
+                originalItem.getSizeName(),
+                originalItem.getSizeMultiplier(),
+                originalItem.getQuantity()
+            );
+            newItems.add(newItem);
+            System.out.println("Added: " + newItem.getDescription());
+        }
 
         // Use existing continueOrderFlow to handle checkout
         try {
@@ -636,70 +634,7 @@ private static void removePizza(List<OrderItem> items) {
             System.out.println("Error processing order: " + e.getMessage());
         }
     }
-/*
-    private static Pizza recreatePizza(Pizza originalPizza) {
 
-        BasePizza basePizza = getBasePizza(originalPizza);
-        if (basePizza == null) {
-            System.out.println("Error: Cannot recreate pizza");
-            return originalPizza;
-        }
-
-        Pizza newPizza = new BasePizza(basePizza.getName(), basePizza.getBasePrice(), basePizza.getPoints());
-
-        List<String> toppings = getToppingsFromPizza(originalPizza);
-
-        for (String toppingName : toppings) {
-            int toppingChoice = getToppingChoiceByName(toppingName);
-            if (toppingChoice != -1) {
-                try {
-                    newPizza = PizzaFactory.addTopping(newPizza, toppingChoice);
-                } catch (Exception e) {
-                    System.out.println("Warning: Could not add topping " + toppingName);
-                }
-            }
-        }
-
-        return newPizza;
-    }
-
-    private static BasePizza getBasePizza(Pizza pizza) {
-        Pizza current = pizza;
-        while (current instanceof ToppingDecorator) {
-            current = ((ToppingDecorator) current).getPizza();
-        }
-        if (current instanceof BasePizza) {
-            return (BasePizza) current;
-        }
-        return null;
-    }
-
-    private static List<String> getToppingsFromPizza(Pizza pizza) {
-        List<String> toppings = new ArrayList<>();
-        Pizza current = pizza;
-
-        while (current instanceof ToppingDecorator) {
-            String description = current.getDescription();
-
-            ToppingDecorator decorator = (ToppingDecorator) current;
-            String toppingName = decorator.getClass().getSimpleName().replace("Topping", "");
-            toppings.add(toppingName);
-            current = decorator.getPizza();
-        }
-
-        return toppings;
-    }
-
-    private static int getToppingChoiceByName(String toppingName) {
-        List<String> toppingNames = PizzaFactory.getToppingNames();
-        for (int i = 0; i < toppingNames.size(); i++) {
-            if (toppingNames.get(i).equalsIgnoreCase(toppingName)) {
-                return i + 1;
-            }
-        }
-        return -1;
-    }
-*/
     private static void guestSearchOrderById() {
         System.out.print("Enter Order ID: ");
         String orderId = scanner.nextLine();
@@ -756,26 +691,24 @@ private static void removePizza(List<OrderItem> items) {
     }
 
     // copy previous order item
-private static List<OrderItem> copyOrderItems(Order originalOrder) {
-    List<OrderItem> newItems = new ArrayList<>();
+    private static List<OrderItem> copyOrderItems(Order originalOrder) {
+        List<OrderItem> newItems = new ArrayList<>();
 
-    for (OrderItem originalItem : originalOrder.getItems()) {
-        // Directly copy the OrderItem data without recreating Pizza
-        OrderItem newItem = new OrderItem(
-            originalItem.getPizzaDescription(),
-            originalItem.getPizzaPrice(),
-            originalItem.getPizzaPoints(),
-            originalItem.getSizeName(),
-            originalItem.getSizeMultiplier(),
-            originalItem.getQuantity()
-        );
-        newItems.add(newItem);
+        for (OrderItem originalItem : originalOrder.getItems()) {
+            OrderItem newItem = new OrderItem(
+                originalItem.getPizzaDescription(),
+                originalItem.getPizzaPrice(),
+                originalItem.getPizzaPoints(),
+                originalItem.getSizeName(),
+                originalItem.getSizeMultiplier(),
+                originalItem.getQuantity()
+            );
+            newItems.add(newItem);
+            System.out.println("Added: " + newItem.getDescription());
+        }
 
-        System.out.println("Added: " + newItem.getDescription());
+        return newItems;
     }
-
-    return newItems;
-}
 
     private static void displayReorderSummary(List<OrderItem> items) {
         System.out.println("\n=== Reorder Summary ===");
@@ -885,153 +818,155 @@ private static List<OrderItem> copyOrderItems(Order originalOrder) {
         continueOrderFlow(items, isMember);
     }
 
-    // Helper method to add a pizza to cart (with optional recommended pizza for
-    // first)
+    // Helper method to add a pizza to cart (with optional recommended pizza for first)
     private static void addPizzaToCart(List<OrderItem> items, String recommendedPizzaName, boolean isFirstPizza)
-        throws IOException {
-    BasePizza selectedBase = null;
+            throws IOException {
+        Pizza pizza = null;
 
-    if (isFirstPizza && recommendedPizzaName != null) {
-        // First pizza: use the recommended pizza
-        for (BasePizza p : menuLoader.getPizzas()) {
-            if (p.getName().equalsIgnoreCase(recommendedPizzaName)) {
-                selectedBase = p;
+        if (isFirstPizza && recommendedPizzaName != null) {
+            // First pizza: use the recommended pizza
+            List<String> pizzaNames = PizzaFactory.getPizzaNames();
+            int index = -1;
+            for (int i = 0; i < pizzaNames.size(); i++) {
+                if (pizzaNames.get(i).equalsIgnoreCase(recommendedPizzaName)) {
+                    index = i + 1;
+                    break;
+                }
+            }
+            
+            if (index == -1) {
+                System.out.println("Error: Recommended pizza not found!");
+                return;
+            }
+            
+            pizza = PizzaFactory.createPizza(index);
+            System.out.println("\nOrdering recommended pizza: " + pizza.getName());
+        } else {
+            // Subsequent pizzas: show full menu for user to choose
+            PizzaFactory.displayPizzaMenu();
+            int pizzaIndex = getIntInput("Choose pizza number: ");
+            
+            if (pizzaIndex < 1 || pizzaIndex > PizzaFactory.getPizzaCount()) {
+                System.out.println("Invalid pizza choice!");
+                return;
+            }
+            
+            pizza = PizzaFactory.createPizza(pizzaIndex);
+        }
+
+        // Choose size
+        SizeFactory.displaySizeOptions();
+        int sizeChoice = getIntInput("Choose size (input number): ");
+        Size selectedSize;
+        try {
+            selectedSize = SizeFactory.getSize(sizeChoice);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid size choice!");
+            return;
+        }
+
+        double baseWithSizePrice = pizza.getBasePrice() * selectedSize.getMultiplier();
+
+        MutablePizzaWrapper pizzaWrapper = new MutablePizzaWrapper(
+                new BasePizza(pizza.getName(), baseWithSizePrice, pizza.getPoints()));
+
+        // Initialize command history for this pizza
+        CommandHistory history = new CommandHistory();
+
+        // Add toppings with Undo/Redo support
+        boolean addingToppings = true;
+        while (addingToppings) {
+            PizzaFactory.displayToppingMenu();
+            System.out.println("\nCurrent pizza: " + pizzaWrapper.getDescription());
+            System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
+            System.out.printf("Current points: %d%n", pizzaWrapper.getPoints());
+
+            if (history.canUndo()) {
+                System.out.println("\nCommands: u=Undo, r=Redo, 0=Finish, or enter topping number");
+            } else {
+                System.out.println("\nCommands: 0=Finish, or enter topping number");
+            }
+
+            String input = getStringInput("Enter choice: ");
+
+            // Check for undo/redo commands
+            if (input.equalsIgnoreCase("u") || input.equalsIgnoreCase("undo")) {
+                if (history.undo()) {
+                    System.out.println("Undo successful!");
+                    System.out.println("Current pizza: " + pizzaWrapper.getDescription());
+                    System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
+                } else {
+                    System.out.println("Nothing to undo!");
+                }
+                continue;
+            }
+
+            if (input.equalsIgnoreCase("r") || input.equalsIgnoreCase("redo")) {
+                if (history.redo()) {
+                    System.out.println("Redo successful!");
+                    System.out.println("Current pizza: " + pizzaWrapper.getDescription());
+                    System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
+                } else {
+                    System.out.println("Nothing to redo!");
+                }
+                continue;
+            }
+
+            int toppingChoice;
+            try {
+                toppingChoice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a number, u for undo, or r for redo.");
+                continue;
+            }
+
+            if (toppingChoice == 0) {
+                addingToppings = false;
                 break;
             }
-        }
 
-        if (selectedBase == null) {
-            System.out.println("Error: Recommended pizza not found!");
-            return;
-        }
-
-        System.out.println("\nOrdering recommended pizza: " + selectedBase.getName());
-    } else {
-        // Subsequent pizzas: show full menu for user to choose
-        showPizzaMenu();
-        int pizzaIndex = getIntInput("Choose pizza number: ") - 1;
-
-        if (pizzaIndex < 0 || pizzaIndex >= menuLoader.getPizzas().size()) {
-            System.out.println("Invalid pizza choice!");
-            return;
-        }
-
-        selectedBase = menuLoader.getPizzas().get(pizzaIndex);
-    }
-
-    // Choose size
-    SizeFactory.displaySizeOptions();
-    int sizeChoice = getIntInput("Choose size (input number): ");
-    Size selectedSize;
-    try {
-        selectedSize = SizeFactory.getSize(sizeChoice);
-    } catch (IllegalArgumentException e) {
-        System.out.println("Invalid size choice!");
-        return;
-    }
-
-    double baseWithSizePrice = selectedBase.getBasePrice() * selectedSize.getMultiplier();
-
-    MutablePizzaWrapper pizzaWrapper = new MutablePizzaWrapper(
-            new BasePizza(selectedBase.getName(), baseWithSizePrice, selectedBase.getPoints()));
-
-    // Initialize command history for this pizza
-    CommandHistory history = new CommandHistory();
-
-    // Add toppings with Undo/Redo support
-    boolean addingToppings = true;
-    while (addingToppings) {
-        PizzaFactory.displayToppingMenu();
-        System.out.println("\nCurrent pizza: " + pizzaWrapper.getDescription());
-        System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
-        System.out.printf("Current points: %d%n", pizzaWrapper.getPoints());
-
-        if (history.canUndo()) {
-            System.out.println("\nCommands: u=Undo, r=Redo, 0=Finish, or enter topping number");
-        } else {
-            System.out.println("\nCommands: 0=Finish, or enter topping number");
-        }
-
-        String input = getStringInput("Enter choice: ");
-
-        // Check for undo/redo commands
-        if (input.equalsIgnoreCase("u") || input.equalsIgnoreCase("undo")) {
-            if (history.undo()) {
-                System.out.println("Undo successful!");
-                System.out.println("Current pizza: " + pizzaWrapper.getDescription());
-                System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
-            } else {
-                System.out.println("Nothing to undo!");
+            List<String> toppingNames = PizzaFactory.getToppingNames();
+            if (toppingChoice < 1 || toppingChoice > toppingNames.size()) {
+                System.out.println("Invalid topping choice!");
+                continue;
             }
-            continue;
-        }
 
-        if (input.equalsIgnoreCase("r") || input.equalsIgnoreCase("redo")) {
-            if (history.redo()) {
-                System.out.println("Redo successful!");
-                System.out.println("Current pizza: " + pizzaWrapper.getDescription());
-                System.out.printf("Current price: $%.2f%n", pizzaWrapper.getPrice());
-            } else {
-                System.out.println("Nothing to redo!");
+            String toppingName = toppingNames.get(toppingChoice - 1);
+
+            if (history.isToppingSelected(toppingName)) {
+                System.out.println("You already selected " + toppingName + "! Each topping can only be added once.");
+                continue;
             }
-            continue;
+
+            AddToppingCommand command = new AddToppingCommand(pizzaWrapper, toppingChoice, toppingName);
+            history.executeCommand(command);
+            System.out.println("Added: " + toppingName);
         }
 
-        int toppingChoice;
-        try {
-            toppingChoice = Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input! Please enter a number, u for undo, or r for redo.");
-            continue;
-        }
+        // Display final pizza
+        System.out.println("\n--- Pizza Summary ---");
+        System.out.println("Pizza: " + pizzaWrapper.getDescription());
+        System.out.printf("Price: $%.2f%n", pizzaWrapper.getPrice());
+        System.out.printf("Points: %d%n", pizzaWrapper.getPoints());
 
-        if (toppingChoice == 0) {
-            addingToppings = false;
-            break;
-        }
+        // Choose quantity
+        int quantity = getIntInput("Enter quantity (1-99): ");
+        if (quantity < 1)
+            quantity = 1;
 
-        List<String> toppingNames = PizzaFactory.getToppingNames();
-        if (toppingChoice < 1 || toppingChoice > toppingNames.size()) {
-            System.out.println("Invalid topping choice!");
-            continue;
-        }
+        // Create order item using the new structure
+        OrderItem item = new OrderItem(
+            pizzaWrapper.getDescription(),
+            pizzaWrapper.getPrice(),
+            pizzaWrapper.getPoints(),
+            selectedSize.getName(),
+            selectedSize.getMultiplier(),
+            quantity
+        );
+        items.add(item);
 
-        String toppingName = toppingNames.get(toppingChoice - 1);
-
-        if (history.isToppingSelected(toppingName)) {
-            System.out.println("You already selected " + toppingName + "! Each topping can only be added once.");
-            continue;
-        }
-
-        AddToppingCommand command = new AddToppingCommand(pizzaWrapper, toppingChoice, toppingName);
-        history.executeCommand(command);
-        System.out.println("Added: " + toppingName);
+        System.out.println("Pizza added to cart!");
     }
-
-    // Display final pizza
-    System.out.println("\n--- Pizza Summary ---");
-    System.out.println("Pizza: " + pizzaWrapper.getDescription());
-    System.out.printf("Price: $%.2f%n", pizzaWrapper.getPrice());
-    System.out.printf("Points: %d%n", pizzaWrapper.getPoints());
-
-    // Choose quantity
-    int quantity = getIntInput("Enter quantity (1-99): ");
-    if (quantity < 1)
-        quantity = 1;
-
-    // Create order item using the new structure
-    OrderItem item = new OrderItem(
-        pizzaWrapper.getDescription(),  // pizza description (includes all toppings)
-        pizzaWrapper.getPrice(),         // total price for one pizza
-        pizzaWrapper.getPoints(),        // total points for one pizza
-        selectedSize.getName(),          // size name (e.g., "Large")
-        selectedSize.getMultiplier(),    // size multiplier (e.g., 1.6)
-        quantity                         // quantity
-    );
-    items.add(item);
-
-    System.out.println("Pizza added to cart!");
-}
 
     // continue order flow (from cart to checkout)
     private static void continueOrderFlow(List<OrderItem> items, boolean isMember) throws IOException {
@@ -1078,5 +1013,4 @@ private static List<OrderItem> copyOrderItems(Order originalOrder) {
             System.out.println("Order cancelled.");
         }
     }
-
 }
