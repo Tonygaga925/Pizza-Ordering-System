@@ -4,10 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import model.Member;
-import model.order.*;
-import model.NormalState;
-import model.VIPState;
-import model.order.Order;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -19,7 +15,6 @@ public class MemberManager {
     private Member currentMember;
     private final String memberFilePath;
     private final Gson gson;
-    private OrderManager orderManager; 
     
     public MemberManager(String memberFilePath) throws IOException {
         this.memberFilePath = memberFilePath;
@@ -176,10 +171,5 @@ public void displayMemberInfo() {
         System.out.println("No member is currently logged in.");
     }
 }
-
-public void setOrderManager(OrderManager orderManager) {
-        this.orderManager = orderManager;
-    }
-
 
 }

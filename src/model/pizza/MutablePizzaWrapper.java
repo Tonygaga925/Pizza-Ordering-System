@@ -2,10 +2,10 @@ package model.pizza;
 
 public class MutablePizzaWrapper implements Pizza {
     private Pizza pizza;
+    
     // add pizza price with size multiplier
-    public MutablePizzaWrapper(Pizza pizza, double multiplier) {
-        this.pizza = new BasePizza(pizza.getDescription(), pizza.getPrice() * multiplier,
-                (int) (pizza.getPoints() * multiplier));
+    public MutablePizzaWrapper(Pizza p, double multiplier) {
+        this.pizza = new BasePizza(p.getDescription(), p.getPrice() * multiplier, (int) (p.getPoints() * multiplier));
     }
 
     @Override
