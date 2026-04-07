@@ -349,11 +349,8 @@ public class Main implements RecommendationService.MainCallback {
             System.out.println("Invalid size choice!");
             return;
         }
-
-        double baseWithSizePrice = pizza.getBasePrice() * selectedSize.getMultiplier();
-
-        MutablePizzaWrapper pizzaWrapper = new MutablePizzaWrapper(
-                new BasePizza(pizza.getName(), baseWithSizePrice, pizza.getPoints()));
+        // create mutable pizza wrapper with size multiplier
+        MutablePizzaWrapper pizzaWrapper = new MutablePizzaWrapper(pizza, selectedSize.getMultiplier());
 
         // Initialize command history for this pizza
         CommandHistory history = new CommandHistory();
@@ -840,7 +837,7 @@ public class Main implements RecommendationService.MainCallback {
             }
             
             pizza = PizzaFactory.createPizza(index);
-            System.out.println("\nOrdering recommended pizza: " + pizza.getName());
+            System.out.println("\nOrdering recommended pizza: " + pizza.getDescription());
         } else {
             // Subsequent pizzas: show full menu for user to choose
             PizzaFactory.displayPizzaMenu();
@@ -864,11 +861,8 @@ public class Main implements RecommendationService.MainCallback {
             System.out.println("Invalid size choice!");
             return;
         }
-
-        double baseWithSizePrice = pizza.getBasePrice() * selectedSize.getMultiplier();
-
-        MutablePizzaWrapper pizzaWrapper = new MutablePizzaWrapper(
-                new BasePizza(pizza.getName(), baseWithSizePrice, pizza.getPoints()));
+        // create mutable pizza wrapper with size multiplier
+        MutablePizzaWrapper pizzaWrapper = new MutablePizzaWrapper(pizza, selectedSize.getMultiplier());
 
         // Initialize command history for this pizza
         CommandHistory history = new CommandHistory();

@@ -39,9 +39,9 @@ public class PizzaFactory {
             Constructor<? extends Pizza> constructor = pizzaClass.getConstructor();
             Pizza instance = constructor.newInstance();
             pizzaClasses.add(pizzaClass);
-            pizzaNames.add(instance.getName());
-            pizzaPrices.add(instance.getBasePrice());
-            pizzaPoints.add(instance.getBasePoints());
+            pizzaNames.add(instance.getDescription());
+            pizzaPrices.add(instance.getPrice());
+            pizzaPoints.add(instance.getPoints());
         } catch (Exception e) {
             System.err.println("Failed to register pizza: " + pizzaClass.getSimpleName());
         }
@@ -49,9 +49,13 @@ public class PizzaFactory {
     
     private static void registerTopping(int id, Class<? extends ToppingDecorator> toppingClass) {
         try {
-            Pizza dummyPizza = new BasePizza("Dummy", 0, 0);
+            Pizza dummyPizza = new Pizza() {
+            @Override public String getDescription() { return ""; }
+            @Override public double getPrice() { return 0; }
+            @Override public int getPoints() { return 0; }
+        };
             ToppingDecorator tempTopping = toppingClass.getConstructor(Pizza.class).newInstance(dummyPizza);
-            
+        
             toppingMap.put(id, toppingClass);
             toppingNames.add(tempTopping.getToppingName());
             toppingPrices.add(tempTopping.getToppingPrice());

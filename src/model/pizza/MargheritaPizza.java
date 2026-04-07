@@ -1,12 +1,8 @@
 package model.pizza;
 
-public class MargheritaPizza extends Pizza {
+public class MargheritaPizza extends BasePizza {
     public MargheritaPizza() {
         super("Margherita", 12.99, 100);
     }
     
-    @Override
-    public String getDescription() {
-        return name;
-    }
 }

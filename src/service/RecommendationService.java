@@ -3,7 +3,6 @@ package service;
 import model.Member;
 import model.order.Order;
 import model.order.OrderItem;
-import model.pizza.BasePizza;
 import java.util.*;
 
 public class RecommendationService {
