@@ -26,10 +26,9 @@ public class Order {
         this.customerName = customerName;
         this.phone = phone;
         this.items = items;
-        //this.timestamp = java.time.LocalDateTime.now().toString().replace("T", " ");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.timestamp = LocalDateTime.now().format(formatter);
-        this.status = "completed";
+        this.status = "Processing";
         calculateTotals();
     }
     
@@ -60,6 +59,7 @@ public class Order {
     public double getFinalTotal() { return finalTotal; }
     public double getDiscountApplied() { return discountApplied; }
     public int getTotalPoints() { return totalPoints; }
+    public void setTotalPoints(int points) { this.totalPoints = points; }
     public String getTimestamp() { return timestamp; }
     public String getStatus() { return status; }
     
@@ -77,14 +77,17 @@ public class Order {
             item.getPizzaPrice(),
             item.getQuantity(), item.getItemTotal());
     }
-    System.out.printf("\nOriginal total: $%.2f%n", originalTotal);
+
+    System.out.printf("\nTotal: $%.2f%n", originalTotal);
+
+    if(isMember){
     if (discountApplied > 0) {
         System.out.printf("Discount: -$%.2f%n", discountApplied);
-    }
-    System.out.printf("Final total: $%.2f%n", finalTotal);
-    if(isMember){
+        System.out.printf("Final total: $%.2f%n", finalTotal);
+        }
         System.out.printf("Points earned: %d%n", totalPoints);
     }
+
 }
 
 }

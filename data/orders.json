@@ -1,607 +1,97 @@
 {
-  "ORD1775479482925": {
-    "orderId": "ORD1775479482925",
+  "ORD1775649300923": {
+    "orderId": "ORD1775649300923",
     "memberId": "M001",
     "customerName": "Alice Chan",
     "phone": "91234567",
     "items": [
       {
-        "pizzaDescription": "Vegetarian + Cheese + Olive + Onion",
-        "pizzaPrice": 20.837000000000003,
-        "pizzaPoints": 125,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 2
-      }
-    ],
-    "originalTotal": 41.67400000000001,
-    "finalTotal": 37.506600000000006,
-    "discountApplied": 4.167400000000001,
-    "totalPoints": 250,
-    "timestamp": "2026-04-06 20:44:42",
-    "status": "completed"
-  },
-  "ORD1775481545279": {
-    "orderId": "ORD1775481545279",
-    "customerName": "Sam",
-    "phone": "98778123",
-    "items": [
-      {
-        "pizzaDescription": "Vegetarian + Cheese + Onion",
-        "pizzaPrice": 19.837000000000003,
-        "pizzaPoints": 120,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 1
-      }
-    ],
-    "originalTotal": 19.837000000000003,
-    "finalTotal": 19.837000000000003,
-    "discountApplied": 0.0,
-    "totalPoints": 120,
-    "timestamp": "2026-04-06 21:19:16",
-    "status": "completed"
-  },
-  "ORD1775556829001": {
-    "orderId": "ORD1775556829001",
-    "customerName": "Sam",
-    "phone": "66899466",
-    "items": [
-      {
-        "pizzaDescription": "Hawaiian + Cheese + Olive + Onion",
-        "pizzaPrice": 21.487000000000002,
-        "pizzaPoints": 163,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 1
-      },
-      {
-        "pizzaDescription": "Margherita + Cheese + Chicken + Sausage",
-        "pizzaPrice": 26.784000000000002,
-        "pizzaPoints": 206,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 1
-      }
-    ],
-    "originalTotal": 48.271,
-    "finalTotal": 48.271,
-    "discountApplied": 0.0,
-    "totalPoints": 369,
-    "timestamp": "2026-04-07 18:13:55",
-    "status": "completed"
-  },
-  "ORD1775556884845": {
-    "orderId": "ORD1775556884845",
-    "memberId": "M001",
-    "customerName": "Alice Chan",
-    "phone": "91234567",
-    "items": [
-      {
-        "pizzaDescription": "Margherita + Cheese + Olive + Bacon",
-        "pizzaPrice": 19.49,
-        "pizzaPoints": 135,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 2
-      },
-      {
-        "pizzaDescription": "Pepperoni",
-        "pizzaPrice": 17.99,
-        "pizzaPoints": 130,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 1
-      },
-      {
-        "pizzaDescription": "Vegetarian",
-        "pizzaPrice": 13.49,
-        "pizzaPoints": 105,
-        "sizeName": "Small",
-        "sizeMultiplier": 1.0,
-        "quantity": 1
-      }
-    ],
-    "originalTotal": 70.46,
-    "finalTotal": 63.413999999999994,
-    "discountApplied": 7.045999999999999,
-    "totalPoints": 505,
-    "timestamp": "2026-04-07 18:14:44",
-    "status": "completed"
-  },
-  "ORD1775480639392": {
-    "orderId": "ORD1775480639392",
-    "customerName": "Sam",
-    "phone": "98861234",
-    "items": [
-      {
-        "pizzaDescription": "Hawaiian + Cheese + Olive + Onion",
-        "pizzaPrice": 21.487000000000002,
-        "pizzaPoints": 130,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 2
-      },
-      {
-        "pizzaDescription": "Meat Lovers + Sausage + Chicken",
-        "pizzaPrice": 31.683999999999997,
-        "pizzaPoints": 186,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 2
-      }
-    ],
-    "originalTotal": 106.342,
-    "finalTotal": 106.342,
-    "discountApplied": 0.0,
-    "totalPoints": 632,
-    "timestamp": "2026-04-06 21:03:59",
-    "status": "completed"
-  },
-  "ORD1775476075991": {
-    "orderId": "ORD1775476075991",
-    "memberId": "M001",
-    "customerName": "Alice Chan",
-    "phone": "91234567",
-    "items": [
-      {
-        "pizzaDescription": "Margherita + Cheese + Olive + Bacon",
-        "pizzaPrice": 19.49,
-        "pizzaPoints": 135,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 2
-      },
-      {
-        "pizzaDescription": "Pepperoni",
-        "pizzaPrice": 17.99,
-        "pizzaPoints": 130,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 1
-      },
-      {
-        "pizzaDescription": "Vegetarian",
-        "pizzaPrice": 13.49,
-        "pizzaPoints": 105,
-        "sizeName": "Small",
-        "sizeMultiplier": 1.0,
-        "quantity": 1
-      }
-    ],
-    "originalTotal": 70.46,
-    "finalTotal": 63.413999999999994,
-    "discountApplied": 7.045999999999999,
-    "totalPoints": 505,
-    "timestamp": "2026-04-06 19:47:55",
-    "status": "completed"
-  },
-  "ORD1775556851907": {
-    "orderId": "ORD1775556851907",
-    "customerName": "Sam",
-    "phone": "66899466",
-    "items": [
-      {
-        "pizzaDescription": "Hawaiian + Cheese + Olive + Onion",
-        "pizzaPrice": 21.487000000000002,
-        "pizzaPoints": 163,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 1
-      },
-      {
-        "pizzaDescription": "Margherita + Cheese + Chicken + Sausage",
-        "pizzaPrice": 26.784000000000002,
-        "pizzaPoints": 206,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 1
-      }
-    ],
-    "originalTotal": 48.271,
-    "finalTotal": 48.271,
-    "discountApplied": 0.0,
-    "totalPoints": 369,
-    "timestamp": "2026-04-07 18:14:11",
-    "status": "completed"
-  },
-  "ORD1775556934330": {
-    "orderId": "ORD1775556934330",
-    "memberId": "M001",
-    "customerName": "Alice Chan",
-    "phone": "91234567",
-    "items": [
-      {
-        "pizzaDescription": "Hawaiian + Cheese + Olive",
-        "pizzaPrice": 20.687,
-        "pizzaPoints": 158,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 2
-      }
-    ],
-    "originalTotal": 41.374,
-    "finalTotal": 37.2366,
-    "discountApplied": 4.1374,
-    "totalPoints": 316,
-    "timestamp": "2026-04-07 18:15:34",
-    "status": "completed"
-  },
-  "ORD1775499502754": {
-    "orderId": "ORD1775499502754",
-    "memberId": "M001",
-    "customerName": "Alice Chan",
-    "phone": "91234567",
-    "items": [
-      {
-        "pizzaDescription": "Margherita + Cheese + Olive + Onion",
-        "pizzaPrice": 20.187,
-        "pizzaPoints": 120,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 2
-      },
-      {
-        "pizzaDescription": "Pepperoni + Cheese",
-        "pizzaPrice": 25.484,
-        "pizzaPoints": 130,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 2
-      }
-    ],
-    "originalTotal": 91.34200000000001,
-    "finalTotal": 82.2078,
-    "discountApplied": 9.134200000000002,
-    "totalPoints": 500,
-    "timestamp": "2026-04-07 02:18:22",
-    "status": "completed"
-  },
-  "ORD1775482439564": {
-    "orderId": "ORD1775482439564",
-    "customerName": "David",
-    "phone": "54663214",
-    "items": [
-      {
-        "pizzaDescription": "Pepperoni + Cheese + Onion + Bacon",
-        "pizzaPrice": 24.287000000000003,
-        "pizzaPoints": 155,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 2
-      },
-      {
-        "pizzaDescription": "Meat Lovers + Bacon + Sausage + Chicken",
-        "pizzaPrice": 34.184,
-        "pizzaPoints": 206,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 1
-      }
-    ],
-    "originalTotal": 82.75800000000001,
-    "finalTotal": 82.75800000000001,
-    "discountApplied": 0.0,
-    "totalPoints": 516,
-    "timestamp": "2026-04-06 21:34:12",
-    "status": "completed"
-  },
-  "ORD1775554221397": {
-    "orderId": "ORD1775554221397",
-    "customerName": "Sam",
-    "phone": "66887547",
-    "items": [
-      {
-        "pizzaDescription": "Hawaiian + Cheese",
-        "pizzaPrice": 19.687,
-        "pizzaPoints": 153,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 1
-      },
-      {
-        "pizzaDescription": "Margherita",
-        "pizzaPrice": 20.784000000000002,
-        "pizzaPoints": 160,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 2
-      }
-    ],
-    "originalTotal": 61.25500000000001,
-    "finalTotal": 61.25500000000001,
-    "discountApplied": 0.0,
-    "totalPoints": 473,
-    "timestamp": "2026-04-07 17:30:29",
-    "status": "completed"
-  },
-  "ORD1775555235923": {
-    "orderId": "ORD1775555235923",
-    "memberId": "M001",
-    "customerName": "Alice Chan",
-    "phone": "91234567",
-    "items": [
-      {
-        "pizzaDescription": "Margherita + Cheese + Olive + Onion",
-        "pizzaPrice": 20.187,
-        "pizzaPoints": 120,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 2
-      },
-      {
-        "pizzaDescription": "Pepperoni + Cheese",
-        "pizzaPrice": 25.484,
-        "pizzaPoints": 130,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 2
-      }
-    ],
-    "originalTotal": 91.34200000000001,
-    "finalTotal": 82.2078,
-    "discountApplied": 9.134200000000002,
-    "totalPoints": 500,
-    "timestamp": "2026-04-07 17:47:15",
-    "status": "completed"
-  },
-  "ORD1775465602666": {
-    "orderId": "ORD1775465602666",
-    "memberId": "M001",
-    "customerName": "Alice Chan",
-    "phone": "91234567",
-    "items": [
-      {
-        "pizzaDescription": "Margherita + Cheese + Olive + Bacon",
-        "pizzaPrice": 19.49,
-        "pizzaPoints": 135,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 2
-      },
-      {
-        "pizzaDescription": "Pepperoni",
-        "pizzaPrice": 17.99,
-        "pizzaPoints": 130,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 1
-      },
-      {
-        "pizzaDescription": "Vegetarian",
-        "pizzaPrice": 13.49,
-        "pizzaPoints": 105,
-        "sizeName": "Small",
-        "sizeMultiplier": 1.0,
-        "quantity": 1
-      }
-    ],
-    "originalTotal": 70.46,
-    "finalTotal": 63.41,
-    "discountApplied": 7.05,
-    "totalPoints": 505,
-    "timestamp": "2026-04-06 16:53:22",
-    "status": "completed"
-  },
-  "ORD1775482224079": {
-    "orderId": "ORD1775482224079",
-    "memberId": "M001",
-    "customerName": "Alice Chan",
-    "phone": "91234567",
-    "items": [
-      {
-        "pizzaDescription": "Hawaiian + Cheese + Olive + Onion",
-        "pizzaPrice": 21.487000000000002,
-        "pizzaPoints": 130,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 2
-      }
-    ],
-    "originalTotal": 42.974000000000004,
-    "finalTotal": 38.6766,
-    "discountApplied": 4.2974000000000006,
-    "totalPoints": 260,
-    "timestamp": "2026-04-06 21:30:24",
-    "status": "completed"
-  },
-  "ORD1775482144253": {
-    "orderId": "ORD1775482144253",
-    "memberId": "M001",
-    "customerName": "Alice Chan",
-    "phone": "91234567",
-    "items": [
-      {
-        "pizzaDescription": "Vegetarian + Cheese + Olive + Onion",
-        "pizzaPrice": 20.837000000000003,
-        "pizzaPoints": 125,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 2
-      }
-    ],
-    "originalTotal": 41.67400000000001,
-    "finalTotal": 37.506600000000006,
-    "discountApplied": 4.167400000000001,
-    "totalPoints": 250,
-    "timestamp": "2026-04-06 21:29:04",
-    "status": "completed"
-  },
-  "ORD1775555398911": {
-    "orderId": "ORD1775555398911",
-    "memberId": "M001",
-    "customerName": "Alice Chan",
-    "phone": "91234567",
-    "items": [
-      {
-        "pizzaDescription": "Meat Lovers + Cheese + Olive + Onion",
-        "pizzaPrice": 20.29,
+        "pizzaDescription": "Meat Lovers (Medium) | Topping: Cheese + Olive + Onion",
+        "pizzaPrice": 112.8,
         "pizzaPoints": 170,
-        "sizeName": "Small",
-        "sizeMultiplier": 1.0,
-        "quantity": 2
-      }
-    ],
-    "originalTotal": 40.58,
-    "finalTotal": 36.522,
-    "discountApplied": 4.058,
-    "totalPoints": 340,
-    "timestamp": "2026-04-07 17:49:58",
-    "status": "completed"
-  },
-  "ORD1775480553113": {
-    "orderId": "ORD1775480553113",
-    "customerName": "Sam",
-    "phone": "98861234",
-    "items": [
-      {
-        "pizzaDescription": "Hawaiian + Cheese + Olive + Onion",
-        "pizzaPrice": 21.487000000000002,
-        "pizzaPoints": 130,
         "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 2
-      },
-      {
-        "pizzaDescription": "Meat Lovers + Sausage + Chicken",
-        "pizzaPrice": 31.683999999999997,
-        "pizzaPoints": 186,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 2
-      }
-    ],
-    "originalTotal": 106.342,
-    "finalTotal": 106.342,
-    "discountApplied": 0.0,
-    "totalPoints": 632,
-    "timestamp": "2026-04-06 21:02:47",
-    "status": "completed"
-  },
-  "ORD1775554250210": {
-    "orderId": "ORD1775554250210",
-    "customerName": "Sam",
-    "phone": "66887547",
-    "items": [
-      {
-        "pizzaDescription": "Hawaiian + Cheese",
-        "pizzaPrice": 19.687,
-        "pizzaPoints": 153,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
+        "sizeMultiplier": 0.0,
         "quantity": 1
-      },
-      {
-        "pizzaDescription": "Margherita",
-        "pizzaPrice": 20.784000000000002,
-        "pizzaPoints": 160,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 2
       }
     ],
-    "originalTotal": 61.25500000000001,
-    "finalTotal": 61.25500000000001,
-    "discountApplied": 0.0,
-    "totalPoints": 473,
-    "timestamp": "2026-04-07 17:30:50",
-    "status": "completed"
+    "originalTotal": 112.8,
+    "finalTotal": 101.52,
+    "discountApplied": 11.280000000000001,
+    "totalPoints": 170,
+    "timestamp": "2026-04-08 19:55:00",
+    "status": "Processing"
   },
-  "ORD1775555356730": {
-    "orderId": "ORD1775555356730",
+  "ORD1775649327758": {
+    "orderId": "ORD1775649327758",
     "memberId": "M001",
     "customerName": "Alice Chan",
     "phone": "91234567",
     "items": [
       {
-        "pizzaDescription": "Hawaiian + Onion + Bacon + Sausage",
-        "pizzaPrice": 23.687,
-        "pizzaPoints": 186,
+        "pizzaDescription": "Vegetarian (Medium) | Topping: Cheese + Olive + Onion",
+        "pizzaPrice": 79.0,
+        "pizzaPoints": 125,
         "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 2
-      },
-      {
-        "pizzaDescription": "Margherita + Olive + Onion",
-        "pizzaPrice": 18.687,
-        "pizzaPoints": 140,
-        "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 3
+        "sizeMultiplier": 0.0,
+        "quantity": 1
       }
     ],
-    "originalTotal": 103.435,
-    "finalTotal": 93.0915,
-    "discountApplied": 10.3435,
-    "totalPoints": 792,
-    "timestamp": "2026-04-07 17:49:16",
-    "status": "completed"
+    "originalTotal": 79.0,
+    "finalTotal": 71.1,
+    "discountApplied": 7.9,
+    "totalPoints": 125,
+    "timestamp": "2026-04-08 19:55:27",
+    "status": "Processing"
   },
-  "ORD1775555187561": {
-    "orderId": "ORD1775555187561",
+  "ORD1775649149302": {
+    "orderId": "ORD1775649149302",
     "customerName": "Sam",
-    "phone": "66899466",
+    "phone": "67895432",
     "items": [
       {
-        "pizzaDescription": "Pepperoni + Cheese + Olive + Onion + Bacon",
-        "pizzaPrice": 25.287000000000003,
-        "pizzaPoints": 196,
+        "pizzaDescription": "Hawaiian (Medium) | Topping: Cheese + Olive + Onion + Bacon",
+        "pizzaPrice": 94.9,
+        "pizzaPoints": 150,
         "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
+        "sizeMultiplier": 0.0,
         "quantity": 2
       },
       {
-        "pizzaDescription": "Meat Lovers + Cheese",
-        "pizzaPrice": 18.49,
-        "pizzaPoints": 160,
-        "sizeName": "Small",
-        "sizeMultiplier": 1.0,
-        "quantity": 2
+        "pizzaDescription": "Margherita (Medium) | Topping: Olive + Cheese",
+        "pizzaPrice": 73.6,
+        "pizzaPoints": 115,
+        "sizeName": "Medium",
+        "sizeMultiplier": 0.0,
+        "quantity": 1
       }
     ],
-    "originalTotal": 87.554,
-    "finalTotal": 87.554,
+    "originalTotal": 263.4,
+    "finalTotal": 263.4,
     "discountApplied": 0.0,
-    "totalPoints": 712,
-    "timestamp": "2026-04-07 17:46:36",
-    "status": "completed"
+    "totalPoints": 0,
+    "timestamp": "2026-04-08 19:52:29",
+    "status": "Processing"
   },
-  "ORD1775475127338": {
-    "orderId": "ORD1775475127338",
+  "ORD1775649244968": {
+    "orderId": "ORD1775649244968",
     "memberId": "M001",
     "customerName": "Alice Chan",
     "phone": "91234567",
     "items": [
       {
-        "pizzaDescription": "Margherita + Cheese + Olive + Bacon",
-        "pizzaPrice": 19.49,
-        "pizzaPoints": 135,
-        "sizeName": "Large",
-        "sizeMultiplier": 1.6,
-        "quantity": 2
-      },
-      {
-        "pizzaDescription": "Pepperoni",
-        "pizzaPrice": 17.99,
-        "pizzaPoints": 130,
+        "pizzaDescription": "Vegetarian (Medium) | Topping: Cheese + Olive + Onion",
+        "pizzaPrice": 79.0,
+        "pizzaPoints": 125,
         "sizeName": "Medium",
-        "sizeMultiplier": 1.3,
-        "quantity": 1
-      },
-      {
-        "pizzaDescription": "Vegetarian",
-        "pizzaPrice": 13.49,
-        "pizzaPoints": 105,
-        "sizeName": "Small",
-        "sizeMultiplier": 1.0,
+        "sizeMultiplier": 0.0,
         "quantity": 1
       }
     ],
-    "originalTotal": 70.46,
-    "finalTotal": 63.413999999999994,
-    "discountApplied": 7.045999999999999,
-    "totalPoints": 505,
-    "timestamp": "2026-04-06 19:32:07",
-    "status": "completed"
+    "originalTotal": 79.0,
+    "finalTotal": 71.1,
+    "discountApplied": 7.9,
+    "totalPoints": 125,
+    "timestamp": "2026-04-08 19:54:04",
+    "status": "Processing"
   }
 }

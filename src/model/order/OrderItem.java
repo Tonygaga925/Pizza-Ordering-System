@@ -14,6 +14,15 @@ public class OrderItem {
     // No-arg constructor for Gson
     public OrderItem() {
     }
+
+    public OrderItem(String pizzaDescription, double pizzaPrice, int pizzaPoints, 
+                     String sizeName, int quantity) {
+        this.pizzaDescription = pizzaDescription;
+        this.pizzaPrice = pizzaPrice;
+        this.pizzaPoints = pizzaPoints;
+        this.sizeName = sizeName;
+        this.quantity = quantity;
+    }
     
     // Constructor for creating new order items
     public OrderItem(String pizzaDescription, double pizzaPrice, int pizzaPoints, 
@@ -78,6 +87,6 @@ public class OrderItem {
     
     // Get description for display
     public String getDescription() {
-        return String.format("%s (%s) x %d ", pizzaDescription, sizeName, quantity);
+        return String.format("%s | x %d ", pizzaDescription, quantity);
     }
 }

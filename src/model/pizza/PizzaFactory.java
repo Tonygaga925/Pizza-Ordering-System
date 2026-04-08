@@ -49,7 +49,12 @@ public class PizzaFactory {
 
     private static void registerTopping(int id, Class<? extends ToppingDecorator> toppingClass) {
         try {
-            Pizza dummyPizza = new BasePizza("", 0, 0);
+            // for display menu information purpose
+            Pizza dummyPizza = new Pizza() {
+            @Override public String getDescription() { return ""; }
+            @Override public double getPrice() { return 0; }
+            @Override public int getPoints() { return 0; }
+            };
             ToppingDecorator tempTopping = toppingClass.getConstructor(Pizza.class).newInstance(dummyPizza);
 
             toppingMap.put(id, toppingClass);
@@ -152,5 +157,23 @@ public class PizzaFactory {
             return 0;
         }
         return toppingPoints.get(choice - 1);
+    }
+    // for orderItemBuilder
+    public static double getToppingPriceByName(String toppingName) {
+    for (int i = 0; i < toppingNames.size(); i++) {
+        if (toppingNames.get(i).equalsIgnoreCase(toppingName)) {
+            return toppingPrices.get(i);
+        }
+    }
+    return 0.0;
+    }
+
+    public static int getToppingPointsByName(String toppingName) {
+    for (int i = 0; i < toppingNames.size(); i++) {
+        if (toppingNames.get(i).equalsIgnoreCase(toppingName)) {
+            return toppingPoints.get(i);
+        }
+    }
+    return 0;
     }
 }

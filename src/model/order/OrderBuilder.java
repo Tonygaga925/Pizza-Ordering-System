@@ -1,48 +1,32 @@
 package model.order;
 
-import model.pizza.Pizza;
-import model.size.Size;
 import java.util.*;
 
 public class OrderBuilder {
-    private String memberId;
+    private String memberId = null; // null for guest
     private String customerName;
     private String phone;
-    private List<OrderItem> items;
-    
-    public OrderBuilder() {
-        this.items = new ArrayList<>();
-    }
-    
-    public OrderBuilder setMember(String memberId, String customerName, String phone) {
-        this.memberId = memberId;
+    private List<OrderItem> items = new ArrayList<>();
+ 
+    public OrderBuilder setCustName(String customerName) {
         this.customerName = customerName;
-        this.phone = phone;
         return this;
     }
-    
-    public OrderBuilder setGuest(String customerName, String phone) {
-        this.memberId = null;
-        this.customerName = customerName;
-        this.phone = phone;
-        return this;
-    }
-    
-public OrderBuilder addPizza(Pizza pizza, Size size, int quantity) {
-    OrderItem item = new OrderItem(
-        pizza.getDescription(),
-        pizza.getPrice(),
-        pizza.getPoints(),
-        size.getName(),
-        size.getMultiplier(),
-        quantity
-    );
-    items.add(item);
-    return this;
-}
 
-    public OrderBuilder addPizza(Pizza pizza, Size size) {
-        return addPizza(pizza, size, 1);
+    public OrderBuilder setPhone(String phone) {
+        this.phone = phone;
+        return this;
+    }
+
+    public OrderBuilder setMemberId(String memberId) {
+        this.memberId = memberId;
+        return this;
+    }
+
+
+    public OrderBuilder addItem(List<OrderItem> orderItems) {
+        this.items = orderItems;
+        return this;
     }
     
     public Order build() {
@@ -53,7 +37,7 @@ public OrderBuilder addPizza(Pizza pizza, Size size, int quantity) {
             throw new IllegalStateException("Phone number is required");
         }
         if (items.isEmpty()) {
-            throw new IllegalStateException("Order must have at least one pizza");
+            throw new IllegalStateException("Order must have at least one item");
         }
         
         return new Order(memberId, customerName, phone, items);

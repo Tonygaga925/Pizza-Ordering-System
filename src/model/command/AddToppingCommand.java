@@ -1,34 +1,21 @@
 package model.command;
 
 import model.pizza.*;
+import model.order.OrderItemBuilder;
 
 public class AddToppingCommand implements Command {
-    private MutablePizzaWrapper pizzaWrapper;
-    private int toppingChoice;
     private String toppingName;
-    private double addedPrice;
-    private int addedPoints;
-    private Pizza previousPizza;
+    private OrderItemBuilder itemBuilder;
     
-    public AddToppingCommand(MutablePizzaWrapper pizzaWrapper, int toppingChoice, String toppingName) {
-        this.pizzaWrapper = pizzaWrapper;
-        this.toppingChoice = toppingChoice;
+    public AddToppingCommand(Pizza pizza, String toppingName, OrderItemBuilder itemBuilder) {
         this.toppingName = toppingName;
-        this.previousPizza = pizzaWrapper.getPizza();
+        this.itemBuilder = itemBuilder;
     }
     
     @Override
     public void execute() {
         try {
-            double oldPrice = pizzaWrapper.getPrice();
-            int oldPoints = pizzaWrapper.getPoints();
-            
-            Pizza newPizza = PizzaFactory.addTopping(pizzaWrapper.getPizza(), toppingChoice);
-            pizzaWrapper.setPizza(newPizza);
-            
-            this.addedPrice = pizzaWrapper.getPrice() - oldPrice;
-            this.addedPoints = pizzaWrapper.getPoints() - oldPoints;
-            
+            itemBuilder.addTopping(toppingName); // add topping to order item builder
         } catch (Exception e) {
             throw new RuntimeException("Failed to add topping: " + toppingName, e);
         }
@@ -36,17 +23,16 @@ public class AddToppingCommand implements Command {
     
     @Override
     public void undo() {
-        if (previousPizza != null) {
-            pizzaWrapper.setPizza(previousPizza);
-        }
-    }
-    
-    @Override
-    public String getDescription() {
-        return String.format("Added %s (+$%.2f, +%d points)", toppingName, addedPrice, addedPoints);
+            itemBuilder.removeTopping(toppingName); // remove topping from order item builder
     }
     
     public String getToppingName() {
         return toppingName;
     }
+
+    @Override
+    public String getDescription() {
+        return String.format("Added %s", this.getToppingName());
+    }
+    
 }

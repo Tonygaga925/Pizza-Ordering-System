@@ -12,6 +12,16 @@ public class BaconTopping extends ToppingDecorator {
     }
 
     @Override
+    public double getToppingPrice() {
+        return 12;
+    }
+    
+    @Override
+    public int getToppingPoints() {
+        return 20;
+    }
+
+    @Override
     public String getDescription() {
         return pizza.getDescription() + " + " + getToppingName();
     }
@@ -25,14 +35,5 @@ public class BaconTopping extends ToppingDecorator {
     public int getPoints() {
         return pizza.getPoints() + getToppingPoints();
     }
-    
-    @Override
-    public double getToppingPrice() {
-        return 2.50;
-    }
-    
-    @Override
-    public int getToppingPoints() {
-        return 20;
-    }
+
 }

@@ -1,6 +1,6 @@
 package model.pizza;
 
-public class BasePizza implements Pizza {
+public abstract class BasePizza implements Pizza {
     protected String name;
     protected double price;
     protected int points;

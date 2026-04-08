@@ -12,6 +12,16 @@ public class CheeseTopping extends ToppingDecorator {
     }
 
     @Override
+    public double getToppingPrice() {
+        return 9;
+    }
+    
+    @Override
+    public int getToppingPoints() {
+        return 10;
+    }
+
+    @Override
     public String getDescription() {
         return pizza.getDescription() + " + " + getToppingName();
     }
@@ -25,16 +35,5 @@ public class CheeseTopping extends ToppingDecorator {
     public int getPoints() {
         return pizza.getPoints() + getToppingPoints();
     }
-    
-    @Override
-    public double getToppingPrice() {
-        return 1.50;
-    }
-    
-    @Override
-    public int getToppingPoints() {
-        return 10;
-    }
-    
 
 }

@@ -57,7 +57,7 @@ public class Member {
     public int getPoints() { return points; }
     public void setPoints(int points) { 
         this.points = points;
-        if (points >= 1000) {
+        if (points >= 4000) {
             this.state = new VIPState();
             this.level = "VIP";
         } else {

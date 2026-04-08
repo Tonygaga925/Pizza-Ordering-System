@@ -12,6 +12,16 @@ public class SausageTopping extends ToppingDecorator {
     }
 
     @Override
+    public double getToppingPrice() {
+        return 9;
+    }
+    
+    @Override
+    public int getToppingPoints() {
+        return 18;
+    }
+
+    @Override
     public String getDescription() {
         return pizza.getDescription() + " + " + getToppingName();
     }
@@ -26,13 +36,4 @@ public class SausageTopping extends ToppingDecorator {
         return pizza.getPoints() + getToppingPoints();
     }
     
-    @Override
-    public double getToppingPrice() {
-        return 2.20;
-    }
-    
-    @Override
-    public int getToppingPoints() {
-        return 18;
-    }
 }

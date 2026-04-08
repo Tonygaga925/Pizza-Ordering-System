@@ -144,9 +144,9 @@ public class RecommendationService {
         System.out.println("  2. Sausage");
         System.out.println("  3. Chicken");
         System.out.println("  4. Bacon");
-        System.out.println("  5. Mixed (all of the above)");
+        System.out.println("  5. All of the above");
         System.out.print("Choose (1-5): ");
-        
+
         int meatChoice = getIntInput();
         String recommended = "";
         
