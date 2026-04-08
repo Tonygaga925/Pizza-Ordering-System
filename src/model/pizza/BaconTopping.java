@@ -13,7 +13,7 @@ public class BaconTopping extends ToppingDecorator {
 
     @Override
     public double getToppingPrice() {
-        return 12;
+        return 15;
     }
     
     @Override

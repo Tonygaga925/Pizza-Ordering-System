@@ -13,12 +13,12 @@ public class OnionTopping extends ToppingDecorator {
     
     @Override
     public double getToppingPrice() {
-        return 8;
+        return 6;
     }
     
     @Override
     public int getToppingPoints() {
-        return 5;
+        return 8;
     }
 
     @Override

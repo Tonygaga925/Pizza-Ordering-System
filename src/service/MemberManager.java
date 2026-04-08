@@ -138,7 +138,7 @@ public class MemberManager {
             
             if (!oldLevel.equals(member.getLevel())) {
                 System.out.println( member.getName() + " has been upgraded to VIP!");
-                System.out.println("   10% discount will be applied to future orders!");
+                System.out.println("10% discount will be applied to future orders!");
             }
             
             saveMembers();

@@ -13,12 +13,12 @@ public class CheeseTopping extends ToppingDecorator {
 
     @Override
     public double getToppingPrice() {
-        return 9;
+        return 6;
     }
     
     @Override
     public int getToppingPoints() {
-        return 10;
+        return 8;
     }
 
     @Override

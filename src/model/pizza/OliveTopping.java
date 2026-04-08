@@ -18,7 +18,7 @@ public class OliveTopping extends ToppingDecorator {
     
     @Override
     public int getToppingPoints() {
-        return 5;
+        return 15;
     }
 
     @Override

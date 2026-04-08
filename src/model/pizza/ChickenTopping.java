@@ -18,7 +18,7 @@ public class ChickenTopping extends ToppingDecorator {
 
     @Override
     public int getToppingPoints() {
-        return 18;
+        return 22;
     }
 
     @Override

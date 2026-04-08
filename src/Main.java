@@ -63,7 +63,7 @@ public class Main implements RecommendationService.MainCallback {
                     register();
                     break;
                 case 3:
-                    placeOrderWithBuilder(false,null);
+                    placeOrderWithBuilder(false, null);
                     break;
                 case 4:
                     searchOrderById(false);
@@ -111,7 +111,7 @@ public class Main implements RecommendationService.MainCallback {
                     showMenu();
                     break;
                 case 2:
-                    placeOrderWithBuilder(true,null);
+                    placeOrderWithBuilder(true, null);
                     break;
                 case 3:
                     viewMyOrders();
@@ -269,7 +269,8 @@ public class Main implements RecommendationService.MainCallback {
                 timestamp = timestamp.substring(0, 19);
             }
 
-            System.out.printf("%d. %s | Total: $%.2f | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(), timestamp);
+            System.out.printf("%d. %s | Total: $%.2f | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(),
+                    timestamp);
             System.out.println("    Item(s):");
 
             List<OrderItem> items = order.getItems();
@@ -297,7 +298,7 @@ public class Main implements RecommendationService.MainCallback {
         if (input.equals("m")) {
             return;
         } else if (input.equals("r")) {
-            reorderPreviousOrder(recentOrders,true);
+            reorderPreviousOrder(recentOrders, true);
         } else {
             System.out.println("Invalid option!");
         }
@@ -319,7 +320,8 @@ public class Main implements RecommendationService.MainCallback {
             System.out.printf("%d. %s | $%.2f | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(), timestamp);
         }
 
-        System.out.print("\nEnter order number to reorder (1-" + orders.size() + "), or 0 to cancel: ");
+        System.out.print("\nEnter number to reorder "
+                + (orders.size() == 1 ? "(e.g. 1) " : "(1-" + orders.size() + "), ") + "or input 0 to cancel: ");
         int choice = getIntInput();
 
         if (choice == 0) {
@@ -336,7 +338,7 @@ public class Main implements RecommendationService.MainCallback {
         reorderOrder(selectedOrder, isMember);
     }
 
-    private static void reorderOrder(Order originalOrder,boolean isMember) {
+    private static void reorderOrder(Order originalOrder, boolean isMember) {
         System.out.println("\n=== Reorder Previous Order ===");
 
         List<OrderItem> newItems = new ArrayList<>();
@@ -353,18 +355,18 @@ public class Main implements RecommendationService.MainCallback {
             newItems.add(newItem);
             System.out.println("\nCurrent Item(s): " + newItem.getDescription());
 
-            if(isMember) {
+            if (isMember) {
                 Member member = memberManager.getCurrentMember();
-                if(member.getState().getDiscount() > 0) {
+                if (member.getState().getDiscount() > 0) {
                     System.out.printf("Total: $%.2f%n", newItem.getItemTotal());
                     Double discountAmount = newItem.getItemTotal() * member.getState().getDiscount();
                     System.out.printf("Discount: -$%.2f%n", discountAmount);
                     System.out.printf("Final Total: $%.2f%n", newItem.getItemTotal() - discountAmount);
-                }else{
+                } else {
                     System.out.printf("Total: $%.2f%n", newItem.getItemTotal());
                 }
                 System.out.println("Points: " + newItem.getItemPoints());
-            }else{
+            } else {
                 // for guest users
                 System.out.printf("Total: $%.2f%n", newItem.getItemTotal());
             }
@@ -389,20 +391,19 @@ public class Main implements RecommendationService.MainCallback {
         }
         String notAuthorizedMsg = "You are not authorized to view this order.";
 
-        if(isMember){
-        Member member = memberManager.getCurrentMember();
+        if (isMember) {
+            Member member = memberManager.getCurrentMember();
             // Check if the order belongs to the current member
             if (order.getMemberId() != null && !order.getMemberId().equals(member.getId())) {
-            System.out.println(notAuthorizedMsg);
-            return;
+                System.out.println(notAuthorizedMsg);
+                return;
             }
             // Check if the order is a guest order
-            else if(order.getMemberId() == null){
-            System.out.println(notAuthorizedMsg);
-            return;
+            else if (order.getMemberId() == null) {
+                System.out.println(notAuthorizedMsg);
+                return;
             }
-        }
-        else{
+        } else {
             // Guest user cannot check members' orders
             if (order.getMemberId() != null) {
                 System.out.println(notAuthorizedMsg);
@@ -442,7 +443,6 @@ public class Main implements RecommendationService.MainCallback {
         }
     }
 
-
     // continue order flow (from cart to checkout)
     private static void continueOrderFlow(List<OrderItem> items, boolean isMember) throws IOException {
 
@@ -460,20 +460,22 @@ public class Main implements RecommendationService.MainCallback {
         checkOutOrder(order, isMember);
     }
 
-    public static void displayPizzaInfo(OrderItemBuilder itemBuilder, boolean isMember){
-        System.out.println("\nPizza: " + itemBuilder.getPizzaDescription() + " (" +itemBuilder.getSizeName() +") "+ itemBuilder.getAllSelectedToppingNames());
+    public static void displayPizzaInfo(OrderItemBuilder itemBuilder, boolean isMember) {
+        System.out.println("\nPizza: " + itemBuilder.getPizzaDescription() + " (" + itemBuilder.getSizeName() + ") "
+                + itemBuilder.getAllSelectedToppingNames());
         System.out.printf("Price: $%.2f%n", itemBuilder.getTotalPrice());
-        if(isMember){
+        if (isMember) {
             System.out.printf("Points: %d%n", itemBuilder.getTotalPoints());
         }
     }
 
-private static void addNewPizza(List<OrderItem> items, boolean isMember, String recommendedPizzaName) throws IOException {
-    
-    Pizza pizza;
+    private static void addNewPizza(List<OrderItem> items, boolean isMember, String recommendedPizzaName)
+            throws IOException {
 
-    if (recommendedPizzaName != null) {
-            // First pizza: use the recommended pizza
+        Pizza pizza;
+
+        if (recommendedPizzaName != null) {
+            // Use the recommended pizza if not null
             List<String> pizzaNames = PizzaFactory.getPizzaNames();
             int index = -1;
             for (int i = 0; i < pizzaNames.size(); i++) {
@@ -492,134 +494,133 @@ private static void addNewPizza(List<OrderItem> items, boolean isMember, String 
             System.out.println("\nOrdering recommended pizza: " + recommendedPizzaName);
 
         } else {
-    // For creating pizza without recommendation
-    System.out.println("\n--- Add New Pizza ---");
+            // For creating pizza without recommendation
+            System.out.println("\n--- Add New Pizza ---");
 
-    // Show pizza menu using PizzaFactory
-    PizzaFactory.displayPizzaMenu();
-    int pizzaIndex = getIntInput("Choose pizza number: ");
+            // Show pizza menu using PizzaFactory
+            PizzaFactory.displayPizzaMenu();
+            int pizzaIndex = getIntInput("Choose pizza number: ");
 
-    if (pizzaIndex < 1 || pizzaIndex > PizzaFactory.getPizzaCount()) {
-        System.out.println("Invalid pizza choice!");
-        return;
-    }
-
-    // Create pizza using PizzaFactory
-    pizza = PizzaFactory.createPizza(pizzaIndex);
-    }
-
-    // Choose size
-    SizeFactory.displaySizeOptions();
-    int sizeChoice = getIntInput("Choose size (input number): ");
-    Size selectedSize;
-    try {
-        selectedSize = SizeFactory.getSize(sizeChoice);
-    } catch (IllegalArgumentException e) {
-        System.out.println("Invalid size choice!");
-        return;
-    }
-
-    // Create OrderItemBuilder before the topping loop
-    OrderItemBuilder itemBuilder = new OrderItemBuilder()
-        .setPizza(pizza.getDescription())
-        .setSize(selectedSize.getName(), selectedSize.getMultiplier())
-        .setPrice(pizza.getPrice())
-        .setPoints(pizza.getPoints());
-
-    // Initialize command history for this pizza
-    CommandHistory history = new CommandHistory();
-
-    // Add toppings with Undo/Redo support
-    boolean addingToppings = true;
-    while (addingToppings) {
-        PizzaFactory.displayToppingMenu();
-        displayPizzaInfo(itemBuilder,isMember);
- 
-        if (history.canUndo()) {
-            System.out.println("\nCommands: u=Undo, r=Redo, 0=Finish, or enter topping number");
-        } else {
-            System.out.println("\nCommands: 0=Finish, or enter topping number");
-        }
-
-        String input = getStringInput("Enter choice: ");
-
-        // Check for undo/redo commands
-        if (input.equalsIgnoreCase("u") || input.equalsIgnoreCase("undo")) {
-            if (history.undo()) {
-                System.out.println("Undo successful!");
-                displayPizzaInfo(itemBuilder,isMember);
-
-            } else {
-                System.out.println("Nothing to undo!");
+            if (pizzaIndex < 1 || pizzaIndex > PizzaFactory.getPizzaCount()) {
+                System.out.println("Invalid pizza choice!");
+                return;
             }
-            continue;
+
+            // Create pizza using PizzaFactory
+            pizza = PizzaFactory.createPizza(pizzaIndex);
         }
 
-        if (input.equalsIgnoreCase("r") || input.equalsIgnoreCase("redo")) {
-            if (history.redo()) {
-                System.out.println("Redo successful!");
-                displayPizzaInfo(itemBuilder,isMember);
-
-            } else {
-                System.out.println("Nothing to redo!");
-            }
-            continue;
-        }
-
-        // Parse topping choice
-        int toppingChoice;
+        // Choose size
+        SizeFactory.displaySizeOptions();
+        int sizeChoice = getIntInput("Choose size (input number): ");
+        Size selectedSize;
         try {
-            toppingChoice = Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input! Please enter a number, u for undo, or r for redo.");
-            continue;
+            selectedSize = SizeFactory.getSize(sizeChoice);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid size choice!");
+            return;
         }
 
-        if (toppingChoice == 0) {
-            addingToppings = false;
-            break;
+        // Create OrderItemBuilder before the topping loop
+        OrderItemBuilder itemBuilder = new OrderItemBuilder()
+                .setPizza(pizza.getDescription())
+                .setSize(selectedSize.getName(), selectedSize.getMultiplier())
+                .setPrice(pizza.getPrice())
+                .setPoints(pizza.getPoints());
+
+        // Initialize command history for this pizza
+        CommandHistory history = new CommandHistory();
+
+        // Add toppings with Undo/Redo support
+        boolean addingToppings = true;
+        while (addingToppings) {
+            PizzaFactory.displayToppingMenu();
+            displayPizzaInfo(itemBuilder, isMember);
+
+            if (history.canUndo()) {
+                System.out.println("\nCommands: u=Undo, r=Redo, 0=Finish, or enter topping number");
+            } else {
+                System.out.println("\nCommands: 0=Finish, or enter topping number");
+            }
+
+            String input = getStringInput("Enter choice: ");
+
+            // Check for undo/redo commands
+            if (input.equalsIgnoreCase("u") || input.equalsIgnoreCase("undo")) {
+                if (history.undo()) {
+                    System.out.println("Undo successful!");
+                    displayPizzaInfo(itemBuilder, isMember);
+
+                } else {
+                    System.out.println("Nothing to undo!");
+                }
+                continue;
+            }
+
+            if (input.equalsIgnoreCase("r") || input.equalsIgnoreCase("redo")) {
+                if (history.redo()) {
+                    System.out.println("Redo successful!");
+                    displayPizzaInfo(itemBuilder, isMember);
+
+                } else {
+                    System.out.println("Nothing to redo!");
+                }
+                continue;
+            }
+
+            // Parse topping choice
+            int toppingChoice;
+            try {
+                toppingChoice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a number, u for undo, or r for redo.");
+                continue;
+            }
+
+            if (toppingChoice == 0) {
+                addingToppings = false;
+                break;
+            }
+
+            // Check if topping is valid
+            List<String> toppingNames = PizzaFactory.getToppingNames();
+            if (toppingChoice < 1 || toppingChoice > toppingNames.size()) {
+                System.out.println("Invalid topping choice!");
+                continue;
+            }
+
+            String toppingName = toppingNames.get(toppingChoice - 1);
+
+            // Check if topping already selected
+            if (history.isToppingSelected(toppingName)) {
+                System.out.println("You already selected " + toppingName + "! Each topping can only be added once.");
+                continue;
+            }
+
+            // Create and execute command, add topping by command
+            // Perform undo / redo , add / remove topping action in this command
+            AddToppingCommand command = new AddToppingCommand(pizza, toppingName, itemBuilder);
+            history.executeCommand(command);
+
+            System.out.println("Added: " + toppingName);
         }
 
-        // Check if topping is valid
-        List<String> toppingNames = PizzaFactory.getToppingNames();
-        if (toppingChoice < 1 || toppingChoice > toppingNames.size()) {
-            System.out.println("Invalid topping choice!");
-            continue;
-        }
+        // Display final pizza
+        System.out.println("\n--- Pizza Summary ---");
+        displayPizzaInfo(itemBuilder, isMember);
 
-        String toppingName = toppingNames.get(toppingChoice - 1);
+        // Choose quantity
+        int quantity = inputQuantity(false);
 
-        // Check if topping already selected
-        if (history.isToppingSelected(toppingName)) {
-            System.out.println("You already selected " + toppingName + "! Each topping can only be added once.");
-            continue;
-        }
+        // Set quantity and add to list
+        itemBuilder.setQuantity(quantity);
+        OrderItem orderitem = itemBuilder.build();
+        items.add(orderitem);
 
-        // Create and execute command, add topping by command
-        // Perform undo / redo , add / remove topping action in this command
-        AddToppingCommand command = new AddToppingCommand(pizza, toppingName, itemBuilder);
-        history.executeCommand(command);
-
-        System.out.println("Added: " + toppingName);
+        System.out.println("Pizza added to cart!");
     }
 
-    // Display final pizza
-    System.out.println("\n--- Pizza Summary ---");
-    displayPizzaInfo(itemBuilder, isMember);
-
-    // Choose quantity
-    int quantity = getIntInput("Enter quantity (1-99): ");
-    if (quantity < 1) quantity = 1;
-
-    // Set quantity and add to list
-    itemBuilder.setQuantity(quantity);
-    OrderItem orderitem = itemBuilder.build();
-    items.add(orderitem);
-
-    System.out.println("Pizza added to cart!");
-}
-
-        private static void modifyPizzaQuantity(List<OrderItem> items) {
+    private static void modifyPizzaQuantity(List<OrderItem> items) {
         if (items.isEmpty()) {
             System.out.println("No pizzas to modify.");
             return;
@@ -636,8 +637,8 @@ private static void addNewPizza(List<OrderItem> items, boolean isMember, String 
 
         OrderItem item = items.get(index);
         System.out.printf("Current quantity: %d%n", item.getQuantity());
-        System.out.print("Enter new quantity (0 to remove): ");
-        int newQuantity = getIntInput();
+
+        int newQuantity = inputQuantity(true);
 
         if (newQuantity <= 0) {
             items.remove(index);
@@ -647,6 +648,26 @@ private static void addNewPizza(List<OrderItem> items, boolean isMember, String 
             System.out.println("Quantity updated!");
         }
         displayCart(items);
+    }
+
+    public static int inputQuantity(boolean isModify) {
+        int quantity;
+        // For modifying, allow 0 (remove item), for adding, start from 1
+        int minimum = isModify ? 0 : 1;
+        int maximum = 50;
+        while (true) {
+            quantity = getIntInput(
+                    isModify ? "Enter new quantity (0 to remove): "
+                            : "Enter quantity (" + minimum + "-" + maximum + "): ");
+
+            if (quantity >= minimum && quantity <= maximum) {
+                break;
+            } else {
+                System.out.println(
+                        "Invalid quantity! Please enter a number between " + minimum + " and " + maximum + ".");
+            }
+        }
+        return quantity;
     }
 
     private static void placeOrderWithBuilder(boolean isMember, String recommendedPizzaName) throws IOException {
@@ -702,15 +723,15 @@ private static void addNewPizza(List<OrderItem> items, boolean isMember, String 
         if (isMember) {
             Member member = memberManager.getCurrentMember();
             orderBuilder.setMemberId(member.getId())
-                        .setCustName(member.getName())
-                        .setPhone(member.getPhone());
-        }else{ // for guests
+                    .setCustName(member.getName())
+                    .setPhone(member.getPhone());
+        } else { // for guests
             System.out.print("Enter your name: ");
             String name = scanner.nextLine();
             System.out.print("Enter your phone number: ");
             String phone = scanner.nextLine();
             orderBuilder.setCustName(name)
-                        .setPhone(phone);
+                    .setPhone(phone);
         }
         orderBuilder.addItem(items); // add all items to order builder
 
@@ -723,24 +744,17 @@ private static void addNewPizza(List<OrderItem> items, boolean isMember, String 
         checkOutOrder(orderBuilder.build(), isMember);
     }
 
-    public static void checkOutOrder(Order order, boolean isMember) throws IOException{
+    public static void checkOutOrder(Order order, boolean isMember) throws IOException {
 
         String orderId = generateOrderId();
         order.setOrderId(orderId);
+        Member member = isMember ? memberManager.getCurrentMember() : null;
 
         if (isMember) {
-            Member member = memberManager.getCurrentMember();
-            double discountRate = member.getDiscount();
-            if (discountRate > 0) {
-                order.applyDiscount(discountRate);
-                //System.out.println("\nVIP discount applied!");
-                //System.out.printf("Total: $%.2f%n", order.getOriginalTotal());
-                //System.out.printf("Discount: -$%.2f%n", order.getDiscountApplied());
-                //System.out.printf("Final Total: $%.2f%n", order.getFinalTotal());
+            if (member.getDiscount() > 0) {
+                order.applyDiscount(member.getDiscount());
             }
-            memberManager.updateMemberPoints(member.getId(), order.getTotalPoints());
-        }
-        else{ // for guest, no points earned
+        } else { // for guest, no points earned
             order.setTotalPoints(0);
         }
 
@@ -750,9 +764,13 @@ private static void addNewPizza(List<OrderItem> items, boolean isMember, String 
             orderManager.placeOrder(order);
             System.out.println("\nOrder placed successfully!");
             System.out.println("Your Order ID: " + orderId);
+            // for updating member points and change member state if over the vip threshold
+            if (isMember) {
+                memberManager.updateMemberPoints(member.getId(), order.getTotalPoints());
+            }
+            order.displayOrder(isMember);
         } else {
             System.out.println("Order cancelled.");
         }
-        order.displayOrder(isMember);
     }
 }

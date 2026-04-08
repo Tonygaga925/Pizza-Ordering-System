@@ -1,5 +1,8 @@
 package model;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Member {
     private String id;
     private String username;
@@ -9,7 +12,10 @@ public class Member {
     private int points;
     private String level;
     private String registerDate;
-    
+    private static final int VIP_THRESHOLD = 2000;
+    private static final String normalString = "Normal";
+    private static final String vipString = "VIP";
+
     private transient MemberState state;
     
     // For Gson deserialization
@@ -23,18 +29,19 @@ public class Member {
         this.name = name;
         this.phone = phone;
         this.points = 0;
-        this.level = "NORMAL";
-        this.registerDate = java.time.LocalDateTime.now().toString().replace("T", " ");
+        this.level = normalString;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.registerDate = LocalDateTime.now().format(formatter);
         initState();
     }
     
     public void initState() {
-        if (points >= 1000) {
+        if (points >= VIP_THRESHOLD) {
             this.state = new VIPState();
-            this.level = "VIP";
+            this.level = vipString;
         } else {
             this.state = new NormalState();
-            this.level = "NORMAL";
+            this.level = normalString;
         }
     }
     
@@ -57,12 +64,12 @@ public class Member {
     public int getPoints() { return points; }
     public void setPoints(int points) { 
         this.points = points;
-        if (points >= 4000) {
+        if (points >= VIP_THRESHOLD) {
             this.state = new VIPState();
-            this.level = "VIP";
+            this.level = vipString;
         } else {
             this.state = new NormalState();
-            this.level = "NORMAL";
+            this.level = normalString;
         }
     }
     
@@ -79,9 +86,9 @@ public class Member {
     public void addPoints(int pointsEarned) {
         state.addPoints(this, pointsEarned);
         if (state instanceof VIPState) {
-            this.level = "VIP";
+            this.level = vipString;
         } else {
-            this.level = "NORMAL";
+            this.level = normalString;
         }
     }
     
@@ -95,7 +102,7 @@ public class Member {
     
     public int getPointsToNextLevel() {
         if (state instanceof NormalState) {
-            return Math.max(0, 1000 - points);
+            return Math.max(0, VIP_THRESHOLD - points);
         }
         return 0;
     }

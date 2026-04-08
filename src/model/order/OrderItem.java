@@ -51,14 +51,19 @@ public class OrderItem {
     public void setSizeMultiplier(double sizeMultiplier) { this.sizeMultiplier = sizeMultiplier; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
     
-    // Get base pizza name (first part before " + ")
+    // Get base pizza name (first part before " ( ") , pizza name before the size of pizza
     public String getBasePizzaName() {
-        int plusIndex = pizzaDescription.indexOf(" + ");
-        if (plusIndex > 0) {
-            return pizzaDescription.substring(0, plusIndex);
+    String[] parts = pizzaDescription.split(" \\| ");
+    if (parts.length > 0) {
+        String firstPart = parts[0].trim();
+        int parenIndex = firstPart.indexOf(" (");
+        if (parenIndex > 0) {
+            return firstPart.substring(0, parenIndex);
         }
-        return pizzaDescription;
+        return firstPart;
     }
+    return pizzaDescription;
+}
     
     // Get list of toppings
     public List<String> getToppings() {

@@ -1,7 +1,7 @@
 package model;
 
 public class NormalState implements MemberState {
-    private static final int VIP_THRESHOLD = 1000;
+    private static final int VIP_THRESHOLD = 2000;
 
     @Override
     public void addPoints(Member member, int points) {
@@ -21,6 +21,6 @@ public class NormalState implements MemberState {
 
     @Override
     public String getLevelName() {
-        return "NORMAL";
+        return "Normal";
     }
 }
