@@ -51,6 +51,88 @@
     "timestamp": "2026-04-08 21:07:39",
     "status": "Processing"
   },
+  "ORD1775746171617": {
+    "orderId": "ORD1775746171617",
+    "memberId": "M005",
+    "customerName": "Bob",
+    "phone": "67880123",
+    "items": [
+      {
+        "pizzaDescription": "Hawaiian (Medium)  | Topping: Sausage + Cheese + Olive",
+        "pizzaPrice": 81.9,
+        "pizzaPoints": 148,
+        "sizeName": "Medium",
+        "sizeMultiplier": 1.3,
+        "quantity": 5
+      },
+      {
+        "pizzaDescription": "Margherita (Small) ",
+        "pizzaPrice": 42.0,
+        "pizzaPoints": 110,
+        "sizeName": "Small",
+        "sizeMultiplier": 1.0,
+        "quantity": 3
+      }
+    ],
+    "originalTotal": 535.5,
+    "finalTotal": 535.5,
+    "discountApplied": 0.0,
+    "totalPoints": 1070,
+    "timestamp": "2026-04-09 22:49:31",
+    "status": "Processing"
+  },
+  "ORD1775746409170": {
+    "orderId": "ORD1775746409170",
+    "memberId": "M005",
+    "customerName": "Bob",
+    "phone": "67880123",
+    "items": [
+      {
+        "pizzaDescription": "Pepperoni (Small)  | Topping: Cheese + Olive + Onion + Bacon + Sausage + Chicken",
+        "pizzaPrice": 106.0,
+        "pizzaPoints": 208,
+        "sizeName": "Small",
+        "sizeMultiplier": 1.0,
+        "quantity": 20
+      }
+    ],
+    "originalTotal": 2120.0,
+    "finalTotal": 1908.0,
+    "discountApplied": 212.0,
+    "totalPoints": 4160,
+    "timestamp": "2026-04-09 22:53:29",
+    "status": "Processing"
+  },
+  "ORD1775746224910": {
+    "orderId": "ORD1775746224910",
+    "memberId": "M005",
+    "customerName": "Bob",
+    "phone": "67880123",
+    "items": [
+      {
+        "pizzaDescription": "Hawaiian (Medium)  | Topping: Sausage + Cheese + Olive",
+        "pizzaPrice": 81.9,
+        "pizzaPoints": 148,
+        "sizeName": "Medium",
+        "sizeMultiplier": 1.3,
+        "quantity": 5
+      },
+      {
+        "pizzaDescription": "Margherita (Small) ",
+        "pizzaPrice": 42.0,
+        "pizzaPoints": 110,
+        "sizeName": "Small",
+        "sizeMultiplier": 1.0,
+        "quantity": 3
+      }
+    ],
+    "originalTotal": 535.5,
+    "finalTotal": 481.95,
+    "discountApplied": 53.550000000000004,
+    "totalPoints": 1070,
+    "timestamp": "2026-04-09 22:50:24",
+    "status": "Processing"
+  },
   "ORD1775658778092": {
     "orderId": "ORD1775658778092",
     "customerName": "Sam",
@@ -142,6 +224,35 @@
     "discountApplied": 0.0,
     "totalPoints": 0,
     "timestamp": "2026-04-08 19:52:29",
+    "status": "Processing"
+  },
+  "ORD1775745697697": {
+    "orderId": "ORD1775745697697",
+    "customerName": "Sam",
+    "phone": "56784321",
+    "items": [
+      {
+        "pizzaDescription": "Hawaiian (Medium)  | Topping: Onion + Olive + Cheese + Sausage + Chicken",
+        "pizzaPrice": 102.9,
+        "pizzaPoints": 178,
+        "sizeName": "Medium",
+        "sizeMultiplier": 1.3,
+        "quantity": 2
+      },
+      {
+        "pizzaDescription": "Hawaiian (Large)  | Topping: Cheese",
+        "pizzaPrice": 74.8,
+        "pizzaPoints": 118,
+        "sizeName": "Large",
+        "sizeMultiplier": 1.6,
+        "quantity": 2
+      }
+    ],
+    "originalTotal": 355.4,
+    "finalTotal": 355.4,
+    "discountApplied": 0.0,
+    "totalPoints": 0,
+    "timestamp": "2026-04-09 22:41:37",
     "status": "Processing"
   },
   "ORD1775649244968": {
@@ -319,6 +430,36 @@
     "discountApplied": 0.0,
     "totalPoints": 218,
     "timestamp": "2026-04-08 21:49:09",
+    "status": "Processing"
+  },
+  "ORD1775746156378": {
+    "orderId": "ORD1775746156378",
+    "memberId": "M005",
+    "customerName": "Bob",
+    "phone": "67880123",
+    "items": [
+      {
+        "pizzaDescription": "Hawaiian (Medium)  | Topping: Sausage + Cheese + Olive",
+        "pizzaPrice": 81.9,
+        "pizzaPoints": 148,
+        "sizeName": "Medium",
+        "sizeMultiplier": 1.3,
+        "quantity": 5
+      },
+      {
+        "pizzaDescription": "Margherita (Small) ",
+        "pizzaPrice": 42.0,
+        "pizzaPoints": 110,
+        "sizeName": "Small",
+        "sizeMultiplier": 1.0,
+        "quantity": 3
+      }
+    ],
+    "originalTotal": 535.5,
+    "finalTotal": 535.5,
+    "discountApplied": 0.0,
+    "totalPoints": 1070,
+    "timestamp": "2026-04-09 22:49:16",
     "status": "Processing"
   }
 }

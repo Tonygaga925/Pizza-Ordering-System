@@ -63,28 +63,10 @@ public class CommandHistory {
         return !undoStack.isEmpty();
     }
     
-    public boolean canRedo() {
-        return !redoStack.isEmpty();
-    }
-    
+
     public boolean isToppingSelected(String toppingName) {
         return selectedToppings.contains(toppingName);
     }
     
-    public void clear() {
-        undoStack.clear();
-        redoStack.clear();
-        selectedToppings.clear();
-    }
-    
-    public void displayHistory() {
-        if (undoStack.isEmpty()) {
-            System.out.println("No actions to undo.");
-        } else {
-            System.out.println("\n--- Recent Actions ---");
-            for (int i = undoStack.size() - 1; i >= 0; i--) {
-                System.out.println("  " + undoStack.get(i).getDescription());
-            }
-        }
-    }
+
 }

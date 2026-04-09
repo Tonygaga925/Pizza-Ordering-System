@@ -77,15 +77,23 @@ public class PizzaFactory {
         }
     }
 
-    public static Pizza addTopping(Pizza pizza, int choice) {
+
+    public static Pizza addToppingByName(Pizza pizza, String toppingName) {
         try {
-            Class<? extends ToppingDecorator> toppingClass = toppingMap.get(choice);
-            if (toppingClass == null) {
-                throw new IllegalArgumentException("Invalid topping choice: " + choice);
+            int choice = -1;
+            for (int i = 0; i < toppingNames.size(); i++) {
+                if (toppingNames.get(i).equalsIgnoreCase(toppingName)) {
+                    choice = i + 1;
+                    break;
+                }
             }
+            if (choice == -1) {
+                throw new IllegalArgumentException("Invalid topping choice: " + toppingName);
+            }
+            Class<? extends ToppingDecorator> toppingClass = toppingMap.get(choice);
             return toppingClass.getConstructor(Pizza.class).newInstance(pizza);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to add topping", e);
+            throw new RuntimeException("Failed to add topping by name", e);
         }
     }
 
@@ -107,13 +115,6 @@ public class PizzaFactory {
         return new ArrayList<>(toppingNames);
     }
 
-    public static List<Double> getToppingPrices() {
-        return new ArrayList<>(toppingPrices);
-    }
-
-    public static List<Integer> getToppingPoints() {
-        return new ArrayList<>(toppingPoints);
-    }
 
     // Display methods
     public static void displayPizzaMenu() {
@@ -145,35 +146,4 @@ public class PizzaFactory {
         return toppingNames.size();
     }
 
-    public static double getToppingPrice(int choice) {
-        if (choice < 1 || choice > toppingPrices.size()) {
-            return 0;
-        }
-        return toppingPrices.get(choice - 1);
-    }
-
-    public static int getToppingPoints(int choice) {
-        if (choice < 1 || choice > toppingPoints.size()) {
-            return 0;
-        }
-        return toppingPoints.get(choice - 1);
-    }
-    // for orderItemBuilder
-    public static double getToppingPriceByName(String toppingName) {
-    for (int i = 0; i < toppingNames.size(); i++) {
-        if (toppingNames.get(i).equalsIgnoreCase(toppingName)) {
-            return toppingPrices.get(i);
-        }
-    }
-    return 0.0;
-    }
-
-    public static int getToppingPointsByName(String toppingName) {
-    for (int i = 0; i < toppingNames.size(); i++) {
-        if (toppingNames.get(i).equalsIgnoreCase(toppingName)) {
-            return toppingPoints.get(i);
-        }
-    }
-    return 0;
-    }
 }

@@ -10,7 +10,7 @@ public class OliveTopping extends ToppingDecorator {
     public String getToppingName() {
         return "Olive";
     }
-    
+
     @Override
     public double getToppingPrice() {
         return 10;
@@ -20,20 +20,4 @@ public class OliveTopping extends ToppingDecorator {
     public int getToppingPoints() {
         return 15;
     }
-
-    @Override
-    public String getDescription() {
-        return pizza.getDescription() + " + " + getToppingName();
-    }
-    
-    @Override
-    public double getPrice() {
-        return pizza.getPrice() + getToppingPrice();
-    }
-    
-    @Override
-    public int getPoints() {
-        return pizza.getPoints() + getToppingPoints();
-    }
-    
 }

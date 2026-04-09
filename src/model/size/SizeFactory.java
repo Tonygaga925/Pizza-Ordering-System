@@ -56,10 +56,10 @@ public class SizeFactory {
         throw new IllegalArgumentException("Invalid size name: " + name);
     }
     
-    public static void displaySizeOptions() {
+    public static void displaySizeOptions(double currentPrice) {
         System.out.println("\n=== Size Options ===");
         for (int i = 0; i < sizeNames.size(); i++) {
-            System.out.printf("%d. %s (x%.1f)%n", i + 1, sizeNames.get(i), sizeMultipliers.get(i));
+            System.out.printf("%d. %s - $%.2f%n", i + 1, sizeNames.get(i), currentPrice*sizeMultipliers.get(i));
         }
     }
     

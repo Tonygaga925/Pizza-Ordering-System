@@ -64,13 +64,6 @@ public class Member {
     public int getPoints() { return points; }
     public void setPoints(int points) { 
         this.points = points;
-        if (points >= VIP_THRESHOLD) {
-            this.state = new VIPState();
-            this.level = vipString;
-        } else {
-            this.state = new NormalState();
-            this.level = normalString;
-        }
     }
     
     public String getLevel() { return level; }

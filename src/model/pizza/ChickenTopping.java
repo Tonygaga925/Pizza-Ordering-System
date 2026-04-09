@@ -1,11 +1,11 @@
 package model.pizza;
 
 public class ChickenTopping extends ToppingDecorator {
-
+    
     public ChickenTopping(Pizza pizza) {
         super(pizza);
     }
-
+    
     @Override
     public String getToppingName() {
         return "Chicken";
@@ -15,24 +15,9 @@ public class ChickenTopping extends ToppingDecorator {
     public double getToppingPrice() {
         return 15;
     }
-
+    
     @Override
     public int getToppingPoints() {
         return 22;
-    }
-
-    @Override
-    public String getDescription() {
-        return pizza.getDescription() + " + " + getToppingName();
-    }
-
-    @Override
-    public double getPrice() {
-        return pizza.getPrice() + getToppingPrice();
-    }
-
-    @Override
-    public int getPoints() {
-        return pizza.getPoints() + getToppingPoints();
     }
 }

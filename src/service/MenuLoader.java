@@ -45,8 +45,4 @@ public class MenuLoader {
     public void displayPizzaMenu() {
         PizzaFactory.displayPizzaMenu();
     }
-    
-    public void displaySizeOptions() {
-        SizeFactory.displaySizeOptions();
-    }
 }

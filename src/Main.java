@@ -511,7 +511,7 @@ public class Main implements RecommendationService.MainCallback {
         }
 
         // Choose size
-        SizeFactory.displaySizeOptions();
+        SizeFactory.displaySizeOptions(pizza.getPrice());
         int sizeChoice = getIntInput("Choose size (input number): ");
         Size selectedSize;
         try {
@@ -523,10 +523,8 @@ public class Main implements RecommendationService.MainCallback {
 
         // Create OrderItemBuilder before the topping loop
         OrderItemBuilder itemBuilder = new OrderItemBuilder()
-                .setPizza(pizza.getDescription())
-                .setSize(selectedSize.getName(), selectedSize.getMultiplier())
-                .setPrice(pizza.getPrice())
-                .setPoints(pizza.getPoints());
+                .setPizza(pizza)
+                .setSize(selectedSize.getName(), selectedSize.getMultiplier());
 
         // Initialize command history for this pizza
         CommandHistory history = new CommandHistory();

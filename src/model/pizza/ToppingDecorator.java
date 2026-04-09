@@ -9,17 +9,17 @@ public abstract class ToppingDecorator implements Pizza {
     
     @Override
     public String getDescription() {
-        return pizza.getDescription();
+        return pizza.getDescription() + " + " + getToppingName();
     }
     
     @Override
     public double getPrice() {
-        return pizza.getPrice();
+        return pizza.getPrice() + getToppingPrice();
     }
     
     @Override
     public int getPoints() {
-        return pizza.getPoints();
+        return pizza.getPoints() + getToppingPoints();
     }
     
     public abstract String getToppingName();
