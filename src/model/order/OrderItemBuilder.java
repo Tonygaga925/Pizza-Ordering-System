@@ -1,7 +1,6 @@
 package model.order;
 
 import model.pizza.*;
-import java.util.*;
 
 public class OrderItemBuilder {
     private Pizza pizza;
@@ -30,17 +29,11 @@ public class OrderItemBuilder {
     }
 
     public String getPizzaDescription() {
-        Pizza p = pizza;
-        while(p instanceof ToppingDecorator) {
-            p = ((ToppingDecorator)p).getPizza();
-        }
-        return p.getDescription();
+        return pizza.getDescription();
     }
 
     public double getTotalPrice() {
-        double basePrice = getBasePizzaPrice(pizza);
-        double totalToppingPrice = pizza.getPrice() - basePrice;
-        return (basePrice * sizeMultiplier) + totalToppingPrice;
+        return pizza.getPrice() * sizeMultiplier;
     }
 
     public int getTotalPoints() {
@@ -51,61 +44,37 @@ public class OrderItemBuilder {
         return sizeName;
     }
 
-    private double getBasePizzaPrice(Pizza p) {
-        while(p instanceof ToppingDecorator) {
-            p = ((ToppingDecorator) p).getPizza();
-        }
-        return p.getPrice();
-    }
-
-    public OrderItemBuilder addTopping(String toppingName) {
+    public void addTopping(String toppingName) {
         this.pizza = PizzaFactory.addToppingByName(this.pizza, toppingName);
-        return this;
     }
-
-    public OrderItemBuilder addToppings(List<String> toppingNames) {
-        for(String t : toppingNames) {
-            addTopping(t);
-        }
-        return this;
-    }
-
-    public OrderItemBuilder removeTopping(String toppingName) {
-        return removeLastTopping();
-    }
-
-    public OrderItemBuilder removeLastTopping() {
+    
+    public void removeLastTopping() {
         if (this.pizza instanceof ToppingDecorator) {
             this.pizza = ((ToppingDecorator) this.pizza).getPizza();
         }
-        return this;
     }
-
-    public String getAllSelectedToppingNames(){
-        String s = "";
+    
+    public boolean hasTopping(String toppingName) {
         Pizza current = pizza;
-        List<String> toppings = new ArrayList<>();
-        while(current instanceof ToppingDecorator) {
+        while (current instanceof ToppingDecorator) {
             ToppingDecorator decorator = (ToppingDecorator) current;
-            toppings.add(0, decorator.getToppingName());
+            if (decorator.getToppingName().equalsIgnoreCase(toppingName)) {
+                return true;
+            }
             current = decorator.getPizza();
         }
-        if(!toppings.isEmpty()){
-            for (int i=0; i<toppings.size(); i++) {
-                s += (i==0? " | Topping: " : " + " ) + toppings.get(i);
-            }
-        }
-        return s;
+        return false;
     }
 
+    public OrderItem build() {
 
-    public OrderItem build(){
         return new OrderItem(
-                getPizzaDescription() + " (" + sizeName + ") " + getAllSelectedToppingNames(),
+                getPizzaDescription() + " (" + sizeName + ")",
                 getTotalPrice(),
                 getTotalPoints(),
                 sizeName,
                 sizeMultiplier,
                 quantity);
+ 
     }
 }

@@ -186,22 +186,47 @@ public class Main implements RecommendationService.MainCallback {
     }
 
     private static void register() throws IOException {
-        System.out.println("\n--- Register (-1 to back to main menu) ---");
-        System.out.print("Username: ");
-        String username = scanner.nextLine();
-        if (username.equals("-1")) return;
+        System.out.println("\n--- Register (-1 to go back to previous step) ---");
+        String username = "";
+        String password = "";
+        String name = "";
+        String phone = "";
+        int step = 0;
 
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
-        if (password.equals("-1")) return;
-
-        System.out.print("Your Name: ");
-        String name = scanner.nextLine();
-        if (name.equals("-1")) return;
-
-        System.out.print("Phone Number: ");
-        String phone = scanner.nextLine();
-        if (phone.equals("-1")) return;
+        while (step < 4) {
+            if (step == 0) {
+                System.out.print("Username: ");
+                username = scanner.nextLine();
+                if (username.equals("-1")) return;
+                step++;
+            } else if (step == 1) {
+                System.out.print("Password: ");
+                password = scanner.nextLine();
+                if (password.equals("-1")) {
+                    step--;
+                } else {
+                    step++;
+                }
+            } else if (step == 2) {
+                System.out.print("Your Name: ");
+                name = scanner.nextLine();
+                if (name.equals("-1")) {
+                    step--;
+                } else {
+                    step++;
+                }
+            } else if (step == 3) {
+                System.out.print("Phone Number: ");
+                phone = scanner.nextLine();
+                if (phone.equals("-1")) {
+                    step--;
+                } else if (phone.matches("\\d{8}")) {
+                    step++;
+                } else {
+                    System.out.println("Phone number must be exactly 8 digits.");
+                }
+            }
+        }
 
         if (memberManager.register(username, password, name, phone)) {
             System.out.println("Registration successful. Please login.");
@@ -469,7 +494,7 @@ public class Main implements RecommendationService.MainCallback {
     }
 
     // continue order flow (from cart to checkout)
-    private static void continueOrderFlow(List<OrderItem> items, boolean isMember) throws IOException {
+private static void continueOrderFlow(List<OrderItem> items, boolean isMember) throws IOException {
 
         Order order;
         if (isMember) {
@@ -478,16 +503,23 @@ public class Main implements RecommendationService.MainCallback {
         } else {
             System.out.print("Enter your name: ");
             String name = scanner.nextLine();
-            System.out.print("Enter your phone number: ");
-            String phone = scanner.nextLine();
+            String phone;
+            while (true) {
+                System.out.print("Enter your phone number: ");
+                phone = scanner.nextLine();
+                if (phone.matches("\\d{8}")) {
+                    break;
+                }
+                System.out.println("Phone number must be exactly 8 digits.");
+            }
             order = new Order(null, name, phone, items);
         }
         checkOutOrder(order, isMember);
     }
 
     public static void displayPizzaInfo(OrderItemBuilder itemBuilder, boolean isMember) {
-        System.out.println("\nPizza: " + itemBuilder.getPizzaDescription() + " (" + itemBuilder.getSizeName() + ") "
-                + itemBuilder.getAllSelectedToppingNames());
+        
+        System.out.println("\nPizza: " + itemBuilder.getPizzaDescription() + " (" + itemBuilder.getSizeName() + ") ");
         System.out.printf("Price: $%.2f%n", itemBuilder.getTotalPrice());
         if (isMember) {
             System.out.printf("Points: %d%n", itemBuilder.getTotalPoints());
@@ -525,10 +557,10 @@ public class Main implements RecommendationService.MainCallback {
                 System.out.println("\n--- Add New Pizza ---");
 
                 // Show pizza menu using PizzaFactory
-                PizzaFactory.displayPizzaMenu(items.isEmpty());
+                PizzaFactory.displayPizzaMenu(items.isEmpty(),isMember);
                 int pizzaIndex;
                 while (true) {
-                    pizzaIndex = getIntInput("Choose pizza number (-1 to back to main menu): ");
+                    pizzaIndex = getIntInput("\nChoose pizza number (-1 to back to main menu): ");
                     if (pizzaIndex == -1) {
                         return false;
                     }
@@ -586,7 +618,7 @@ public class Main implements RecommendationService.MainCallback {
         // Add toppings with Undo/Redo support
         boolean addingToppings = true;
         while (addingToppings) {
-            PizzaFactory.displayToppingMenu();
+            PizzaFactory.displayToppingMenu(isMember);
             displayPizzaInfo(itemBuilder, isMember);
 
             if (history.canUndo()) {
@@ -651,7 +683,7 @@ public class Main implements RecommendationService.MainCallback {
 
             // Create and execute command, add topping by command
             // Perform undo / redo , add / remove topping action in this command
-            AddToppingCommand command = new AddToppingCommand(pizza, toppingName, itemBuilder);
+            AddToppingCommand command = new AddToppingCommand(toppingName, itemBuilder);
             history.executeCommand(command);
 
             System.out.println("Added: " + toppingName);
@@ -798,8 +830,15 @@ public class Main implements RecommendationService.MainCallback {
         } else { // for guests
             System.out.print("Enter your name: ");
             String name = scanner.nextLine();
-            System.out.print("Enter your phone number: ");
-            String phone = scanner.nextLine();
+            String phone;
+            while (true) {
+                System.out.print("Enter your phone number: ");
+                phone = scanner.nextLine();
+                if (phone.matches("\\d{8}")) {
+                    break;
+                }
+                System.out.println("Phone number must be exactly 8 digits.");
+            }
             orderBuilder.setCustName(name)
                     .setPhone(phone);
         }
