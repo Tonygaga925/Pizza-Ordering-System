@@ -15,4 +15,10 @@ public class VIPState implements MemberState {
     public String getLevelName() {
         return "VIP";
     }
+
+    @Override
+    public int getPointsToNextLevel(int currentPoints, int threshold) {
+        // VIP is already the highest tier, so they need 0 points
+        return 0; 
+    }
 }

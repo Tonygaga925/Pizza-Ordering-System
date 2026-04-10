@@ -78,11 +78,7 @@ public class Member {
     // Business methods
     public void addPoints(int pointsEarned) {
         state.addPoints(this, pointsEarned);
-        if (state instanceof VIPState) {
-            this.level = vipString;
-        } else {
-            this.level = normalString;
-        }
+        this.level = state.getLevelName();
     }
     
     public double getDiscount() {
@@ -94,9 +90,6 @@ public class Member {
     }
     
     public int getPointsToNextLevel() {
-        if (state instanceof NormalState) {
-            return Math.max(0, VIP_THRESHOLD - points);
-        }
-        return 0;
+        return state.getPointsToNextLevel(this.points, VIP_THRESHOLD);
     }
 }

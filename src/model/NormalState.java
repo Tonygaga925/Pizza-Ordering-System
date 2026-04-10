@@ -23,4 +23,10 @@ public class NormalState implements MemberState {
     public String getLevelName() {
         return "Normal";
     }
+
+    @Override
+    public int getPointsToNextLevel(int currentPoints, int threshold) {
+        // Normal members need to calculate the difference
+        return Math.max(0, threshold - currentPoints);
+    }
 }
