@@ -1,8 +1,8 @@
 package service;
 
+import java.util.*;
 import model.pizza.PizzaFactory;
 import model.size.SizeFactory;
-import java.util.*;
 
 public class MenuLoader {
     private List<String> pizzaNames;
@@ -41,8 +41,5 @@ public class MenuLoader {
     public Map<String, Double> getSizeMultiplier() {
         return sizeMultiplier;
     }
-    
-    public void displayPizzaMenu() {
-        PizzaFactory.displayPizzaMenu();
-    }
+
 }

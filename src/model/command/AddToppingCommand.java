@@ -1,13 +1,12 @@
 package model.command;
 
-import model.pizza.*;
 import model.order.OrderItemBuilder;
 
 public class AddToppingCommand implements Command {
     private String toppingName;
     private OrderItemBuilder itemBuilder;
     
-    public AddToppingCommand(Pizza pizza, String toppingName, OrderItemBuilder itemBuilder) {
+    public AddToppingCommand(String toppingName, OrderItemBuilder itemBuilder) {
         this.toppingName = toppingName;
         this.itemBuilder = itemBuilder;
     }
@@ -15,7 +14,7 @@ public class AddToppingCommand implements Command {
     @Override
     public void execute() {
         try {
-            itemBuilder.addTopping(toppingName); // add topping to order item builder
+            itemBuilder.addTopping(toppingName);
         } catch (Exception e) {
             throw new RuntimeException("Failed to add topping: " + toppingName, e);
         }
@@ -23,7 +22,7 @@ public class AddToppingCommand implements Command {
     
     @Override
     public void undo() {
-            itemBuilder.removeTopping(toppingName); // remove topping from order item builder
+        itemBuilder.removeLastTopping();
     }
     
     public String getToppingName() {
@@ -34,5 +33,4 @@ public class AddToppingCommand implements Command {
     public String getDescription() {
         return String.format("Added %s", this.getToppingName());
     }
-    
 }

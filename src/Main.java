@@ -496,7 +496,7 @@ public class Main implements RecommendationService.MainCallback {
     }
 
     // continue order flow (from cart to checkout)
-    private static void continueOrderFlow(List<OrderItem> items, boolean isMember) throws IOException {
+private static void continueOrderFlow(List<OrderItem> items, boolean isMember) throws IOException {
 
         Order order;
         if (isMember) {
@@ -523,8 +523,8 @@ public class Main implements RecommendationService.MainCallback {
     }
 
     public static void displayPizzaInfo(OrderItemBuilder itemBuilder, boolean isMember) {
-        System.out.println("\nPizza: " + itemBuilder.getPizzaDescription() + " (" + itemBuilder.getSizeName() + ") "
-                + itemBuilder.getAllSelectedToppingNames());
+        
+        System.out.println("\nPizza: " + itemBuilder.getPizzaDescription() + " (" + itemBuilder.getSizeName() + ") ");
         System.out.printf("Price: $%.2f%n", itemBuilder.getTotalPrice());
         if (isMember) {
             System.out.printf("Points: %d%n", itemBuilder.getTotalPoints());
@@ -623,7 +623,7 @@ public class Main implements RecommendationService.MainCallback {
         // Add toppings with Undo/Redo support
         boolean addingToppings = true;
         while (addingToppings) {
-            PizzaFactory.displayToppingMenu();
+            PizzaFactory.displayToppingMenu(isMember);
             displayPizzaInfo(itemBuilder, isMember);
 
             if (history.canUndo()) {
@@ -688,7 +688,7 @@ public class Main implements RecommendationService.MainCallback {
 
             // Create and execute command, add topping by command
             // Perform undo / redo , add / remove topping action in this command
-            AddToppingCommand command = new AddToppingCommand(pizza, toppingName, itemBuilder);
+            AddToppingCommand command = new AddToppingCommand(toppingName, itemBuilder);
             history.executeCommand(command);
 
             System.out.println("Added: " + toppingName);
@@ -777,7 +777,7 @@ public class Main implements RecommendationService.MainCallback {
 
             if (!items.isEmpty()) {
                 displayCart(items);
-                System.out.println("\nOptions:");
+                System.out.println("\nOptions (0. Back to Main Menu) :");
                 System.out.println("1. Add new pizza");
                 System.out.println("2. Modify existing pizza");
                 System.out.println("3. Remove a pizza");
@@ -786,6 +786,22 @@ public class Main implements RecommendationService.MainCallback {
 
                 int option = getIntInput();
                 switch (option) {
+                    case 0:
+                    if (!items.isEmpty()) {
+                    System.out.print("\nPizza is still in the cart. Confirm leave? (y/n): ");
+                    String confirm = scanner.nextLine().toLowerCase();
+                    if (confirm.equals("y")) {
+                        return;
+                    } else if (confirm.equals("n")){
+                        continue;
+                    }else{
+                        System.out.println("Invalid option!");
+                        continue;
+                    }
+                    }
+                    else{
+                        return; // leave directly if no item
+                    }
                     case 1:
                         addNewPizza(items, isMember, recommendedPizzaName);
                         break;
