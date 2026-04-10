@@ -1,7 +1,7 @@
 package model.pizza;
 
-import java.util.*;
 import java.lang.reflect.Constructor;
+import java.util.*;
 
 public class PizzaFactory {
     // Pizza registration
@@ -124,6 +124,18 @@ public class PizzaFactory {
                     i + 1, pizzaNames.get(i), pizzaPrices.get(i), pizzaPoints.get(i));
         }
         System.out.println("0. Finish / Checkout");
+    }
+
+     // Display methods
+    public static void displayPizzaMenu(boolean isCartEmpty) {
+        System.out.println("\n--- Pizza Menu ---");
+        for (int i = 0; i < pizzaNames.size(); i++) {
+            System.out.printf("%d. %s - $%.2f (%d points)%n",
+                    i + 1, pizzaNames.get(i), pizzaPrices.get(i), pizzaPoints.get(i));
+        }
+        if(!isCartEmpty){
+        System.out.println("0. Finish / Checkout");
+        }
     }
 
     public static void displayToppingMenu() {

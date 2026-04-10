@@ -1,4 +1,14 @@
 {
+  "M005": {
+    "id": "M005",
+    "username": "bob123",
+    "password": "password123",
+    "name": "Bob",
+    "phone": "67880123",
+    "points": 7370,
+    "level": "VIP",
+    "registerDate": "2026-04-09 22:45:28"
+  },
   "M004": {
     "id": "M004",
     "username": "john123",
@@ -35,18 +45,8 @@
     "password": "password123",
     "name": "Alice Chan",
     "phone": "91234567",
-    "points": 15899,
+    "points": 16017,
     "level": "VIP",
     "registerDate": "2026-01-15 10:30:00"
-  },
-  "M005": {
-    "id": "M005",
-    "username": "bob123",
-    "password": "password123",
-    "name": "Bob",
-    "phone": "67880123",
-    "points": 7370,
-    "level": "VIP",
-    "registerDate": "2026-04-09 22:45:28"
   }
 }

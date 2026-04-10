@@ -156,10 +156,27 @@ public class Main implements RecommendationService.MainCallback {
     }
 
     private static void login() throws IOException {
-        System.out.print("Username: ");
-        String username = scanner.nextLine();
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
+        System.out.println("\n--- Login (-1 to go back to previous step) ---");
+        String username = "";
+        String password = "";
+        int step = 0;
+        
+        while (step < 2) {
+            if (step == 0) {
+                System.out.print("Username: ");
+                username = scanner.nextLine();
+                if (username.equals("-1")) return;
+                step++;
+            } else if (step == 1) {
+                System.out.print("Password: ");
+                password = scanner.nextLine();
+                if (password.equals("-1")) {
+                    step--;
+                } else {
+                    step++;
+                }
+            }
+        }
 
         if (memberManager.login(username, password)) {
             System.out.println("Login successful");
@@ -169,14 +186,22 @@ public class Main implements RecommendationService.MainCallback {
     }
 
     private static void register() throws IOException {
+        System.out.println("\n--- Register (-1 to back to main menu) ---");
         System.out.print("Username: ");
         String username = scanner.nextLine();
+        if (username.equals("-1")) return;
+
         System.out.print("Password: ");
         String password = scanner.nextLine();
+        if (password.equals("-1")) return;
+
         System.out.print("Your Name: ");
         String name = scanner.nextLine();
+        if (name.equals("-1")) return;
+
         System.out.print("Phone Number: ");
         String phone = scanner.nextLine();
+        if (phone.equals("-1")) return;
 
         if (memberManager.register(username, password, name, phone)) {
             System.out.println("Registration successful. Please login.");
@@ -469,56 +494,85 @@ public class Main implements RecommendationService.MainCallback {
         }
     }
 
-    private static void addNewPizza(List<OrderItem> items, boolean isMember, String recommendedPizzaName)
+    private static boolean addNewPizza(List<OrderItem> items, boolean isMember, String recommendedPizzaName)
             throws IOException {
 
-        Pizza pizza;
+        Pizza pizza = null;
+        Size selectedSize = null;
 
-        if (recommendedPizzaName != null) {
-            // Use the recommended pizza if not null
-            List<String> pizzaNames = PizzaFactory.getPizzaNames();
-            int index = -1;
-            for (int i = 0; i < pizzaNames.size(); i++) {
-                if (pizzaNames.get(i).equalsIgnoreCase(recommendedPizzaName)) {
-                    index = i + 1;
+        while (true) {
+            if (recommendedPizzaName != null) {
+                // Use the recommended pizza if not null
+                List<String> pizzaNames = PizzaFactory.getPizzaNames();
+                int index = -1;
+                for (int i = 0; i < pizzaNames.size(); i++) {
+                    if (pizzaNames.get(i).equalsIgnoreCase(recommendedPizzaName)) {
+                        index = i + 1;
+                        break;
+                    }
+                }
+
+                if (index == -1) {
+                    System.out.println("Error: Recommended pizza not found!");
+                    return false;
+                }
+                // Create pizza using PizzaFactory
+                pizza = PizzaFactory.createPizza(index);
+                System.out.println("\nOrdering recommended pizza: " + recommendedPizzaName);
+
+            } else {
+                // For creating pizza without recommendation
+                System.out.println("\n--- Add New Pizza ---");
+
+                // Show pizza menu using PizzaFactory
+                PizzaFactory.displayPizzaMenu(items.isEmpty());
+                int pizzaIndex;
+                while (true) {
+                    pizzaIndex = getIntInput("Choose pizza number (-1 to back to main menu): ");
+                    if (pizzaIndex == -1) {
+                        return false;
+                    }
+
+                    if (pizzaIndex == 0) {
+                        if (items.isEmpty()) {
+                            System.out.println("No pizza in the cart! Please add a pizza first.");
+                            continue;
+                        } else {
+                            return false;
+                        }
+                    }
+
+                    if (pizzaIndex >= 1 && pizzaIndex <= PizzaFactory.getPizzaCount()) {
+                        break;
+                    }
+                    System.out.println("Invalid pizza choice! Please try again.");
+                }
+
+                // Create pizza using PizzaFactory
+                pizza = PizzaFactory.createPizza(pizzaIndex);
+            }
+
+            // Choose size
+            SizeFactory.displaySizeOptions(pizza.getPrice());
+            boolean goBack = false;
+            while (true) {
+                int sizeChoice = getIntInput("Choose size (-1 to go back to pizza menu): ");
+                if (sizeChoice == -1) {
+                    goBack = true;
+                    recommendedPizzaName = null; // Clear recommendation if going back
                     break;
+                }
+                try {
+                    selectedSize = SizeFactory.getSize(sizeChoice);
+                    break; // Valid size selected
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Invalid size choice! Please try again.");
                 }
             }
 
-            if (index == -1) {
-                System.out.println("Error: Recommended pizza not found!");
-                return;
+            if (!goBack) {
+                break;
             }
-            // Create pizza using PizzaFactory
-            pizza = PizzaFactory.createPizza(index);
-            System.out.println("\nOrdering recommended pizza: " + recommendedPizzaName);
-
-        } else {
-            // For creating pizza without recommendation
-            System.out.println("\n--- Add New Pizza ---");
-
-            // Show pizza menu using PizzaFactory
-            PizzaFactory.displayPizzaMenu();
-            int pizzaIndex = getIntInput("Choose pizza number: ");
-
-            if (pizzaIndex < 1 || pizzaIndex > PizzaFactory.getPizzaCount()) {
-                System.out.println("Invalid pizza choice!");
-                return;
-            }
-
-            // Create pizza using PizzaFactory
-            pizza = PizzaFactory.createPizza(pizzaIndex);
-        }
-
-        // Choose size
-        SizeFactory.displaySizeOptions(pizza.getPrice());
-        int sizeChoice = getIntInput("Choose size (input number): ");
-        Size selectedSize;
-        try {
-            selectedSize = SizeFactory.getSize(sizeChoice);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid size choice!");
-            return;
         }
 
         // Create OrderItemBuilder before the topping loop
@@ -616,6 +670,7 @@ public class Main implements RecommendationService.MainCallback {
         items.add(orderitem);
 
         System.out.println("Pizza added to cart!");
+        return true;
     }
 
     private static void modifyPizzaQuantity(List<OrderItem> items) {
@@ -672,7 +727,11 @@ public class Main implements RecommendationService.MainCallback {
         OrderBuilder orderBuilder = new OrderBuilder();
 
         List<OrderItem> items = new ArrayList<>();
-        addNewPizza(items, isMember, recommendedPizzaName);
+        boolean addedFirstPizza = addNewPizza(items, isMember, recommendedPizzaName);
+        if (!addedFirstPizza && items.isEmpty()) {
+            return;
+        }
+
         recommendedPizzaName = null; // null after using recommendation
         boolean ordering = true;
 
@@ -681,7 +740,7 @@ public class Main implements RecommendationService.MainCallback {
 
             if (!items.isEmpty()) {
                 displayCart(items);
-                System.out.println("\nOptions:");
+                System.out.println("\nOptions (0. Back to Main Menu) :");
                 System.out.println("1. Add new pizza");
                 System.out.println("2. Modify existing pizza");
                 System.out.println("3. Remove a pizza");
@@ -690,6 +749,22 @@ public class Main implements RecommendationService.MainCallback {
 
                 int option = getIntInput();
                 switch (option) {
+                    case 0:
+                    if (!items.isEmpty()) {
+                    System.out.print("\nPizza is still in the cart. Confirm leave? (y/n): ");
+                    String confirm = scanner.nextLine().toLowerCase();
+                    if (confirm.equals("y")) {
+                        return;
+                    } else if (confirm.equals("n")){
+                        continue;
+                    }else{
+                        System.out.println("Invalid option!");
+                        continue;
+                    }
+                    }
+                    else{
+                        return; // leave directly if no item
+                    }
                     case 1:
                         addNewPizza(items, isMember, recommendedPizzaName);
                         break;
@@ -708,12 +783,9 @@ public class Main implements RecommendationService.MainCallback {
                 }
             } else {
                 System.out.println("Your cart is empty. Please add a pizza.");
-                addNewPizza(items, isMember, recommendedPizzaName);
-
-                System.out.print("\nAdd another pizza or Modify the cart? (y/n): ");
-                String another = scanner.nextLine().toLowerCase();
-                if (!another.equals("y")) {
-                    ordering = false;
+                boolean addedPizza = addNewPizza(items, isMember, recommendedPizzaName);
+                if (!addedPizza && items.isEmpty()) {
+                    return;
                 }
             }
         }
