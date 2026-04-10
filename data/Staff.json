@@ -1,0 +1,16 @@
+{
+    "S001": {
+        "username": "jdoe_staff",
+        "password": "password123",
+        "role": "normal",
+        "name": "John",
+        "isActive": true
+    },
+    "S002": {
+        "username": "mary_manager",
+        "password": "password123",
+        "role": "manager",
+        "name": "Mary",
+        "isActive": true
+    }
+}

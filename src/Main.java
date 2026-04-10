@@ -8,6 +8,8 @@ import service.MenuLoader;
 import service.OrderManager;
 import service.RecommendationService;
 import service.MemberManager;
+import service.EmployeeManager;
+import model.employee.Employee;
 
 import java.io.IOException;
 import java.util.*;
@@ -16,13 +18,15 @@ public class Main implements RecommendationService.MainCallback {
     private static MenuLoader menuLoader;
     private static OrderManager orderManager;
     private static MemberManager memberManager;
+    private static EmployeeManager employeeManager;
     private static Scanner scanner;
-
+    
     public static void main(String[] args) {
         try {
             menuLoader = new MenuLoader();
             orderManager = new OrderManager("data/orders.json");
             memberManager = new MemberManager("data/members.json");
+            employeeManager = new EmployeeManager("data/Staff.json");
 
             // Set references
             orderManager.setMemberManager(memberManager);
@@ -30,7 +34,9 @@ public class Main implements RecommendationService.MainCallback {
             scanner = new Scanner(System.in);
 
             while (true) {
-                if (memberManager.isLoggedIn()) {
+                if (employeeManager.isLoggedIn()) {
+                    showEmployeeMenu();
+                } else if (memberManager.isLoggedIn()) {
                     showMemberMenu();
                 } else {
                     showMainMenu();
@@ -43,11 +49,12 @@ public class Main implements RecommendationService.MainCallback {
 
     private static void showMainMenu() {
         System.out.println("\n=== Pizza Ordering System ===");
-        System.out.println("1. Login");
-        System.out.println("2. Register");
+        System.out.println("1. Member Login");
+        System.out.println("2. Member Register");
         System.out.println("3. Continue as Guest");
         System.out.println("4. Search Order by ID");
-        System.out.println("5. Exit");
+        System.out.println("5. Employee Login");
+        System.out.println("6. Exit");
         System.out.print("Choose: ");
 
         int choice = getIntInput();
@@ -69,11 +76,14 @@ public class Main implements RecommendationService.MainCallback {
                     searchOrderById(false);
                     break;
                 case 5:
+                    employeeLogin();
+                    break;
+                case 6:
                     System.out.println("Goodbye!");
                     System.exit(0);
                     break;
                 default:
-                    System.out.println("Invalid choice! Please enter 1-5.");
+                    System.out.println("Invalid choice! Please enter 1-6.");
             }
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
@@ -156,7 +166,7 @@ public class Main implements RecommendationService.MainCallback {
     }
 
     private static void login() throws IOException {
-        System.out.println("\n--- Login (-1 to go back to previous step) ---");
+        System.out.println("\n--- Member Login (-1 to go back to previous step) ---");
         String username = "";
         String password = "";
         int step = 0;
@@ -234,6 +244,83 @@ public class Main implements RecommendationService.MainCallback {
             System.out.println("Registration successful. Please login.");
         } else {
             System.out.println("Username already exists!");
+        }
+    }
+
+    private static void employeeLogin() {
+        int step = 0;
+        String username = "";
+        String password = "";
+        System.out.println("\n--- Employee Login (-1 to go back to previous step) ---");
+        while(step<2){
+            if(step == 0){
+                System.out.print("Username: ");
+                username = scanner.nextLine();
+                if(username.equals("-1")) return;
+                step++;
+            }
+            else if(step == 1){
+                System.out.print("Password: ");
+                password = scanner.nextLine();
+                if(password.equals("-1")) 
+                    step--;
+                else 
+                    step++;
+            }
+        }
+
+        if (employeeManager.login(username, password)) {
+            System.out.println("Employee login successful! Welcome, " + employeeManager.getCurrentEmployee().getName());
+        } else {
+            System.out.println("Invalid employee username or password!");
+        }
+    }
+
+    private static void showEmployeeMenu() {
+        Employee current = employeeManager.getCurrentEmployee();
+        System.out.println("\n=== Employee Menu ===");
+        System.out.println("Welcome, " + current.getName());
+        System.out.println("1. View Order");
+        
+        if (current.isManager()) {
+            System.out.println("2. Access Admin Panel");
+            System.out.println("3. Logout");
+        } else {
+            System.out.println("2. Logout");
+        }
+        
+        System.out.print("Choose: ");
+
+        int choice = getIntInput();
+        if (choice == -1) return;
+
+        if (current.isManager()) {
+            switch (choice) {
+                case 1:
+                    current.handleOrder(orderManager);
+                    break;
+                case 2:
+                    current.accessAdminPanel();
+                    break;
+                case 3:
+                    employeeManager.logout();
+                    System.out.println("Employee logged out.");
+                    break;
+                default:
+                    System.out.println("Invalid choice! Please enter 1-3.");
+            }
+        } else {
+            switch (choice) {
+                case 1:
+                    current.handleOrder(orderManager);
+                    break;
+                case 2:
+                    employeeManager.logout();
+                    System.out.println("Employee logged out.");
+                    break;
+                default:
+                    System.out.println("Invalid choice! Please enter 1-2.");
+            }
         }
     }
 
@@ -562,7 +649,7 @@ private static void continueOrderFlow(List<OrderItem> items, boolean isMember) t
                 System.out.println("\n--- Add New Pizza ---");
 
                 // Show pizza menu using PizzaFactory
-                PizzaFactory.displayPizzaMenu();
+                PizzaFactory.displayPizzaMenu(items.isEmpty(),isMember);
                 int pizzaIndex;
                 while (true) {
                     pizzaIndex = getIntInput("Choose pizza number (-1 to back to main menu): ");

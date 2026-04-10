@@ -45,8 +45,10 @@ public class OrderManager {
             Map<String, Order> loaded = gson.fromJson(reader, type);
             if (loaded != null) {
                 orders = new ConcurrentHashMap<>(loaded);
+                System.out.println("System: Loaded " + orders.size() + " orders from file.");
             } else {
                 orders = new ConcurrentHashMap<>();
+                System.out.println("System: Starting with empty orders list.");
             }
         } catch (Exception e) {
             System.err.println("Warning: Could not load orders, starting with empty orders.");
@@ -102,6 +104,18 @@ public class OrderManager {
         return orderId;
     }
 
+    public List<Order> getOrdersByStatus(String status) {
+        List<Order> result = new ArrayList<>();
+        if (orders == null) return result;
+        
+        for (Order order : orders.values()) {
+            if (order != null && order.getStatus() != null && status.equalsIgnoreCase(order.getStatus())) {
+                result.add(order);
+            }
+        }
+        return result;
+    }
+
     public Order getOrderById(String orderId) {
         return orders.get(orderId);
     }
@@ -115,6 +129,15 @@ public class OrderManager {
         order.displayOrder(isMember);
     }
 
+    public void changeOrderStatus(Order order, String status) throws IOException {
+        if (order == null || status == null || status.trim().isEmpty()) {
+            System.out.println("Error: Invalid order or status.");
+            return;
+        }
+        order.setStatus(status);
+        orders.put(order.getOrderId(), order);
+        saveOrders();
+    }
 
     private String generateOrderId() {
         return "ORD" + System.currentTimeMillis();

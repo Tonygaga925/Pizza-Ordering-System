@@ -9,13 +9,13 @@ public class Order {
     private String memberId;
     private String customerName;
     private String phone;
-    private List<OrderItem> items;
+    private List<OrderItem> items = new java.util.ArrayList<>();
     private double originalTotal;
     private double finalTotal;
     private double discountApplied;
     private int totalPoints;
     private String timestamp;
-    private String status;
+    private String status = "Processing";
 
     public Order() {
         // Default constructor for Gson
@@ -62,7 +62,8 @@ public class Order {
     public void setTotalPoints(int points) { this.totalPoints = points; }
     public String getTimestamp() { return timestamp; }
     public String getStatus() { return status; }
-    
+    public void setStatus(String status){this.status = status;}
+
     public void displayOrder(boolean isMember) {
     System.out.println("\n=== Order Details ===");
     System.out.println("Order ID: " + orderId);
