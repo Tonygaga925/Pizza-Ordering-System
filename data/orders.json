@@ -673,6 +673,29 @@
     "status": "Completed",
     "discountRate": 0.0
   },
+  "ORD1775925224396": {
+    "orderId": "ORD1775925224396",
+    "memberId": "M001",
+    "customerName": "Alice Chan",
+    "phone": "91234567",
+    "items": [
+      {
+        "pizzaDescription": "Pepperoni + Olive + Onion (Small)",
+        "pizzaPrice": 60.0,
+        "pizzaPoints": 143,
+        "sizeName": "Small",
+        "sizeMultiplier": 1.0,
+        "quantity": 2
+      }
+    ],
+    "originalTotal": 120.0,
+    "finalTotal": 108.0,
+    "discountApplied": 12.0,
+    "totalPoints": 286,
+    "timestamp": "2026-04-12 00:33:44",
+    "status": "Processing",
+    "discountRate": 0.1
+  },
   "ORD1775845969351": {
     "orderId": "ORD1775845969351",
     "memberId": "M005",
@@ -822,7 +845,7 @@
     "discountApplied": 0.0,
     "totalPoints": 0,
     "timestamp": "2026-04-11 14:44:38",
-    "status": "Processing",
+    "status": "Cancelled",
     "discountRate": 0.0
   },
   "ORD1775846135612": {

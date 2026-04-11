@@ -8,6 +8,7 @@ import model.order.OrderItem;
 import service.OrderManager;
 
 public class ViewOrdersCommand implements Command {
+
     private Member member;
     private OrderManager orderManager;
     private Scanner scanner;
@@ -42,7 +43,7 @@ public class ViewOrdersCommand implements Command {
                 timestamp = timestamp.substring(0, 19);
             }
 
-            System.out.printf("%d. %s | Total: $%.2f | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(),
+            System.out.printf("%d. %s | Total: $%.2f | Status: %s | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(), order.getStatus(),
                     timestamp);
             System.out.println("    Item(s):");
 
@@ -61,21 +62,21 @@ public class ViewOrdersCommand implements Command {
             }
             System.out.println();
         }
-        while(true){
-        System.out.println("[-1] Back to main menu");
-        System.out.println("[0] Reorder a previous order");
-        System.out.print("Choose: ");
+        while (true) {
+            System.out.println("[-1] Back to main menu");
+            System.out.println("[0] Reorder a previous order");
+            System.out.print("Choose: ");
 
-        String input = scanner.nextLine().toLowerCase();
+            String input = scanner.nextLine().toLowerCase();
 
-        if (input.equals("-1")) {
-            return;
-        } else if (input.equals("0")) {
-            new model.command.ReorderCommand(recentOrders, true, scanner, reorderCallback).execute();
-            break;
-        } else {
-            System.out.println("Invalid option!\n");
-        }
+            if (input.equals("-1")) {
+                return;
+            } else if (input.equals("0")) {
+                new model.command.ReorderCommand(recentOrders, true, scanner, reorderCallback).execute();
+                break;
+            } else {
+                System.out.println("Invalid option!\n");
+            }
         }
     }
 

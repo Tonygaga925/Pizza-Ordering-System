@@ -72,6 +72,7 @@ public class Order {
     System.out.println("Date: " + timestamp);
     System.out.println("Customer: " + customerName);
     System.out.println("Phone: " + phone);
+    System.out.println("Status: " + status);
     System.out.println("\nItems:");
     for (int i = 0; i < items.size(); i++) {
         OrderItem item = items.get(i);
