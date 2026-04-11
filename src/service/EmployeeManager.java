@@ -1,9 +1,13 @@
 package service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import model.employee.Employee;
 import util.JsonUtil;
 
+import java.io.Writer;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -13,10 +17,13 @@ public class EmployeeManager {
     private Map<String, Employee> employees;
     private Employee currentEmployee;
     private final String filePath;
+    private final Gson gson;
 
     public EmployeeManager(String filePath) throws IOException {
         this.filePath = filePath;
         this.employees = new ConcurrentHashMap<>();
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
+        this.currentEmployee = null;
         loadEmployees();
     }
 
@@ -53,5 +60,45 @@ public class EmployeeManager {
 
     public Employee getCurrentEmployee() {
         return currentEmployee;
+    }
+
+    public boolean registerStaff(String username, String password, String name) throws IOException{
+        for (Employee e : employees.values()) {
+            if (e.getUsername().equals(username)) {
+                return false;
+            }
+        }
+        String newId = generateEmployeeId();
+        Employee newEmployee = new Employee(newId, username, password, name, true, "normal");
+        employees.put(newId, newEmployee);
+        saveEmployees();
+        return true;
+    }
+
+    private void saveEmployees() throws IOException {
+        try (Writer writer = new FileWriter(filePath)) {
+            gson.toJson(employees, writer);
+        }
+    }
+
+    private String generateEmployeeId() {
+        if (employees == null || employees.isEmpty()) {
+            return "S001";
+        }
+
+        int maxId = 0;
+        for (String key : employees.keySet()) {
+            if (key.startsWith("S")) {
+                try {
+                    int currentNum = Integer.parseInt(key.substring(1));
+                    if (currentNum > maxId) {
+                        maxId = currentNum;
+                    }
+                } catch (NumberFormatException e) {
+                    
+                }
+            }
+        }
+        return String.format("S%03d", maxId + 1); 
     }
 }

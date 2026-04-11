@@ -1,16 +1,18 @@
 {
     "S001": {
+        "id": "S001",
         "username": "jdoe_staff",
         "password": "password123",
-        "role": "normal",
         "name": "John",
+        "role": "normal",
         "isActive": true
     },
     "S002": {
+        "id": "S002",
         "username": "mary_manager",
         "password": "password123",
-        "role": "manager",
         "name": "Mary",
+        "role": "manager",
         "isActive": true
     }
 }

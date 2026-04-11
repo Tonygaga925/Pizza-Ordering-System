@@ -51,9 +51,10 @@ public class Employee {
         }
     }
 
-    public void accessAdminPanel() {
+    public boolean accessAdminPanel() {
         if (roleStrategy != null) {
-            this.roleStrategy.accessAdminPanel();
+            return this.roleStrategy.accessAdminPanel();
         }
+        return false;
     }
 }

@@ -195,6 +195,54 @@ public class Main implements RecommendationService.MainCallback {
         }
     }
 
+    private static void registerEmployee() throws IOException{
+        System.out.println("\n=== Create Staff Account [-1 to go back to previous step] ===");
+        String username = "";
+        String password = "";
+        String name = "";
+        int step = 0;
+        while (step < 3) {
+            if (step == 0) {
+                System.out.print("Username: ");
+                username = scanner.nextLine().trim();
+                if (username.equals("-1")) return;
+                
+                if (username.isEmpty()) {
+                    System.out.println("Username cannot be empty.");
+                } else {
+                    step++;
+                }
+            }
+            else if (step == 1) {
+                System.out.print("Password: ");
+                password = scanner.nextLine().trim();
+                if (password.equals("-1")) {
+                    step--; // Go back to Username
+                } else if (password.isEmpty()) {
+                    System.out.println("Password cannot be empty.");
+                } else {
+                    step++;
+                }
+            }
+            else if (step == 2) {
+                System.out.print("Staff Name: ");
+                name = scanner.nextLine().trim();
+                if (name.equals("-1")) {
+                    step--; // Go back to Password
+                } else if (name.isEmpty()) {
+                    System.out.println("Name cannot be empty.");
+                } else {
+                    step++;
+                }
+            }
+        }
+        if (employeeManager.registerStaff(username, password, name)) {
+            System.out.println("Staff account for '" + name + "' created successfully.");
+        } else {
+            System.out.println("Registration failed: Username already exists!");
+        }
+    }
+
     private static void register() throws IOException {
         System.out.println("\n--- Register (-1 to go back to previous step) ---");
         String username = "";
@@ -303,7 +351,9 @@ public class Main implements RecommendationService.MainCallback {
                     current.searchOrder(orderManager);
                     break;
                 case 3:
-                    current.accessAdminPanel();
+                    if(current.accessAdminPanel()){
+                        showAdminMenu();
+                    }
                     break;
                 case 4:
                     employeeManager.logout();
@@ -326,6 +376,35 @@ public class Main implements RecommendationService.MainCallback {
                     break;
                 default:
                     System.out.println("Invalid choice! Please enter 1-2.");
+            }
+        }
+    }
+
+    private static void showAdminMenu(){
+        Scanner sc = new Scanner(System.in);
+        boolean running = true;
+        while (running) {
+            System.out.println("\n=== Admin Menu (-1 to Return) ===");
+            System.out.println("1. Create Staff");
+            System.out.println("2. Manage Pizzas & Toppings");
+            System.out.print("Choose: ");
+            String choice = sc.nextLine().trim();
+            switch (choice) {
+                case "1":
+                    try{
+                        registerEmployee();
+                    }catch (IOException e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                    break;
+                case "2":
+
+                    break;
+                case "-1":
+                    running = false;
+                    break;
+                default:    
+                    System.out.println("Invalid option. Please try again.");
             }
         }
     }

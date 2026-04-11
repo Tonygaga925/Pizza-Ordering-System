@@ -217,5 +217,6 @@ public abstract class Role {
         }
     }
 
-    public abstract void accessAdminPanel();
+    public abstract boolean accessAdminPanel();
+    
 }
