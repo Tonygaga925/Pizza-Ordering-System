@@ -15,22 +15,40 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class OrderManager {
+
+    private static OrderManager instance;
+    private static final String DEFAULT_FILE_PATH = "data/orders.json";
+    
     private Map<String, Order> orders;
     private final String orderFilePath;
     private final Gson gson;
     private MemberManager memberManager;
 
-    public OrderManager(String orderFilePath) throws IOException {
+    private OrderManager(String orderFilePath) throws IOException {
         this.orderFilePath = orderFilePath;
         this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.orders = new ConcurrentHashMap<>();
         loadOrders();
     }
 
+    public static OrderManager getInstance() throws IOException {
+        if (instance == null) {
+            instance = new OrderManager(DEFAULT_FILE_PATH);
+        }
+        return instance;
+    }
+    
+    public static OrderManager getInstance(String filePath) throws IOException {
+        if (instance == null) {
+            instance = new OrderManager(filePath);
+        }
+        return instance;
+    }
+    
     public void setMemberManager(MemberManager memberManager) {
         this.memberManager = memberManager;
     }
-
+    
     private void loadOrders() throws IOException {
         File file = new File(orderFilePath);
         if (!file.exists()) {
@@ -38,7 +56,7 @@ public class OrderManager {
             saveOrders();
             return;
         }
-
+        
         try (Reader reader = new FileReader(file)) {
             Type type = new TypeToken<Map<String, Order>>() {
             }.getType();
@@ -55,14 +73,13 @@ public class OrderManager {
             orders = new ConcurrentHashMap<>();
         }
     }
-
+    
     private void saveOrders() throws IOException {
         try (Writer writer = new FileWriter(orderFilePath)) {
             gson.toJson(orders, writer);
         }
     }
-
-
+    
     public List<Order> getOrdersByMemberIdFromFile(String memberId) {
         List<Order> memberOrders = new ArrayList<>();
         File file = new File(orderFilePath);
@@ -91,8 +108,7 @@ public class OrderManager {
         
         return memberOrders;
     }
-
-
+    
     public String placeOrder(Order order) throws IOException {
         String orderId = order.getOrderId();
         if (orderId == null || orderId.isEmpty()) {
@@ -103,7 +119,7 @@ public class OrderManager {
         saveOrders();
         return orderId;
     }
-
+    
     public List<Order> getOrdersByStatus(String status) {
         List<Order> result = new ArrayList<>();
         if (orders == null) return result;
@@ -115,12 +131,11 @@ public class OrderManager {
         }
         return result;
     }
-
+    
     public Order getOrderById(String orderId) {
         return orders.get(orderId);
     }
-
-
+    
     public void displayOrder(Order order, boolean isMember) {
         if (order == null) {
             System.out.println("Order not found!");
@@ -128,7 +143,7 @@ public class OrderManager {
         }
         order.displayOrder(isMember);
     }
-
+    
     public void changeOrderStatus(Order order, String status) throws IOException {
         if (order == null || status == null || status.trim().isEmpty()) {
             System.out.println("Error: Invalid order or status.");
@@ -138,7 +153,7 @@ public class OrderManager {
         orders.put(order.getOrderId(), order);
         saveOrders();
     }
-
+    
     private String generateOrderId() {
         return "ORD" + System.currentTimeMillis();
     }

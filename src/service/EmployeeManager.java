@@ -6,27 +6,43 @@ import com.google.gson.reflect.TypeToken;
 import model.employee.Employee;
 import util.JsonUtil;
 
-import java.io.Writer;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EmployeeManager {
+    
+    private static EmployeeManager instance;
+    private static final String DEFAULT_FILE_PATH = "data/Staff.json";
+    
     private Map<String, Employee> employees;
     private Employee currentEmployee;
     private final String filePath;
     private final Gson gson;
 
-    public EmployeeManager(String filePath) throws IOException {
+    private EmployeeManager(String filePath) throws IOException {
         this.filePath = filePath;
         this.employees = new ConcurrentHashMap<>();
-        this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.currentEmployee = null;
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
         loadEmployees();
     }
+   
+    public static EmployeeManager getInstance() throws IOException {
+        if (instance == null) {
+            instance = new EmployeeManager(DEFAULT_FILE_PATH);
+        }
+        return instance;
+    }
 
+    public static EmployeeManager getInstance(String filePath) throws IOException {
+        if (instance == null) {
+            instance = new EmployeeManager(filePath);
+        }
+        return instance;
+    }
+    
     private void loadEmployees() throws IOException {
         Type type = new TypeToken<Map<String, Employee>>(){}.getType();
         Map<String, Employee> loaded = JsonUtil.readFromFile(filePath, type);

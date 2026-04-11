@@ -11,17 +11,35 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MemberManager {
+
+    private static MemberManager instance;
+    private static final String DEFAULT_FILE_PATH = "data/members.json";
+    
     private Map<String, Member> members;
     private Member currentMember;
     private final String memberFilePath;
     private final Gson gson;
     
-    public MemberManager(String memberFilePath) throws IOException {
+    private MemberManager(String memberFilePath) throws IOException {
         this.memberFilePath = memberFilePath;
         this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.members = new ConcurrentHashMap<>();
         this.currentMember = null;
         loadMembers();
+    }
+
+    public static MemberManager getInstance() throws IOException {
+        if (instance == null) {
+            instance = new MemberManager(DEFAULT_FILE_PATH);
+        }
+        return instance;
+    }
+
+    public static MemberManager getInstance(String filePath) throws IOException {
+        if (instance == null) {
+            instance = new MemberManager(filePath);
+        }
+        return instance;
     }
     
     private void loadMembers() throws IOException {
@@ -149,27 +167,26 @@ public class MemberManager {
         }
     }
     
-public void displayMemberInfo() {
-    if (currentMember != null) {
-        System.out.println("\n=== Member Information ===");
-        System.out.println("ID: " + currentMember.getId());
-        System.out.println("Name: " + currentMember.getName());
-        System.out.println("Username: " + currentMember.getUsername());
-        System.out.println("Phone: " + currentMember.getPhone());
-        System.out.println("Level: " + currentMember.getLevelDisplay());
-        System.out.println("Points: " + currentMember.getPoints());
-        System.out.println("Register Date: " + currentMember.getRegisterDate());
-        
-        int pointsToNext = currentMember.getPointsToNextLevel();
-        if (pointsToNext > 0) {
-            System.out.println("Points to VIP: " + pointsToNext + " more points");
-        } else if ("VIP".equals(currentMember.getLevel())) {
-            System.out.println("You are a VIP member! Enjoy 10% discount on all orders!");
+    public void displayMemberInfo() {
+        if (currentMember != null) {
+            System.out.println("\n=== Member Information ===");
+            System.out.println("ID: " + currentMember.getId());
+            System.out.println("Name: " + currentMember.getName());
+            System.out.println("Username: " + currentMember.getUsername());
+            System.out.println("Phone: " + currentMember.getPhone());
+            System.out.println("Level: " + currentMember.getLevelDisplay());
+            System.out.println("Points: " + currentMember.getPoints());
+            System.out.println("Register Date: " + currentMember.getRegisterDate());
+            
+            int pointsToNext = currentMember.getPointsToNextLevel();
+            if (pointsToNext > 0) {
+                System.out.println("Points to VIP: " + pointsToNext + " more points");
+            } else if ("VIP".equals(currentMember.getLevel())) {
+                System.out.println("You are a VIP member! Enjoy 10% discount on all orders!");
+            }
+            System.out.println("=========================");
+        } else {
+            System.out.println("No member is currently logged in.");
         }
-        System.out.println("=========================");
-    } else {
-        System.out.println("No member is currently logged in.");
     }
-}
-
 }
