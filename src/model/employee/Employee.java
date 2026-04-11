@@ -57,4 +57,11 @@ public class Employee {
         }
         return false;
     }
+
+    public boolean cancelOrder(OrderManager orderManager){
+        if (roleStrategy != null) {
+            return this.roleStrategy.cancelOrder(orderManager);
+        }
+        return false;
+    }
 }

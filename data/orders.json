@@ -625,7 +625,7 @@
     "discountApplied": 0.0,
     "totalPoints": 573,
     "timestamp": "2026-04-08 21:44:31",
-    "status": "Completed"
+    "status": "Cancelled"
   },
   "ORD1775889878666": {
     "orderId": "ORD1775889878666",
@@ -711,7 +711,7 @@
     "discountApplied": 0.0,
     "totalPoints": 218,
     "timestamp": "2026-04-08 21:49:09",
-    "status": "Processing"
+    "status": "Completed"
   },
   "ORD1775746156378": {
     "orderId": "ORD1775746156378",
@@ -741,6 +741,6 @@
     "discountApplied": 0.0,
     "totalPoints": 1070,
     "timestamp": "2026-04-09 22:49:16",
-    "status": "Processing"
+    "status": "Cancelled"
   }
 }

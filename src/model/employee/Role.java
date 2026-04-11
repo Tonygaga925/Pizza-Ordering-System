@@ -1,15 +1,18 @@
 package model.employee;
 
-import service.OrderManager;
-import model.order.Order;
 import java.util.List;
+import java.util.ArrayList; 
 import java.util.Scanner;
+import model.order.Order;
+import service.OrderManager;
 
 public abstract class Role {
     public void handleOrder(OrderManager orderManager) {
-        List<Order> processingOrders = orderManager.getOrdersByStatus("Processing");
+        List<Order> activeOrders = new ArrayList<>();
+        activeOrders.addAll(orderManager.getOrdersByStatus("Handling"));
+        activeOrders.addAll(orderManager.getOrdersByStatus("Processing"));
         
-        if (processingOrders.isEmpty()) {
+        if (activeOrders.isEmpty()) {
             System.out.println("\n==================================");
             System.out.println("   No processing orders found.    ");
             System.out.println("==================================");
@@ -17,16 +20,16 @@ public abstract class Role {
         }
 
         // Sort to show earliest orders first (oldest on top)
-        processingOrders.sort((o1, o2) -> {
+        activeOrders.sort((o1, o2) -> {
             if (o1.getTimestamp() == null && o2.getTimestamp() == null) return 0;
             if (o1.getTimestamp() == null) return 1;
             if (o2.getTimestamp() == null) return -1;
             return o1.getTimestamp().compareTo(o2.getTimestamp());
         });
         System.out.println();
-        System.out.println("There are currently " + processingOrders.size() + " orders in processing.");
+        System.out.println("There are currently " + activeOrders.size() + " orders in processing.");
         // Limit to only the 1 earliest order
-        List<Order> earliestOrderList = processingOrders.subList(0, 1);
+        List<Order> earliestOrderList = activeOrders.subList(0, 1);
 
         System.out.println("\n╔════════════════════════════════════════════════╗");
         System.out.println("║            EARLIEST PROCESSING ORDER           ║");
@@ -110,6 +113,12 @@ public abstract class Role {
             }
         }
         Order currentOrder = earliestOrderList.get(0);
+        try {
+            orderManager.changeOrderStatus(currentOrder, "Handling");
+        } catch (java.io.IOException e){
+            System.out.println("An unexpected error occurred. Please try again later.");
+            return;
+        }
         Scanner scanner = new Scanner(System.in);
         System.out.print("\nType 'y' to finish this order : ");
         String input = scanner.nextLine().trim();
@@ -215,6 +224,41 @@ public abstract class Role {
                 System.out.println("└────────────────────────────────────────────────┘");
             }
         }
+    }
+
+    public boolean cancelOrder(OrderManager orderManager) {
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.print("\nEnter the Order ID to cancel (or -1 to go back): ");
+        String orderId = scanner.nextLine().trim();
+        
+        if (orderId.equals("-1")) {
+            return false; // User backed out
+        }
+
+        // 1. Find the order first
+        Order order = orderManager.getOrderById(orderId);
+        
+        if (order == null) {
+            System.out.println("Order not found.");
+            return false;
+        }
+        
+        // 2. Check if it's already completed or cancelled
+        if (order.getStatus().equalsIgnoreCase("Completed") || order.getStatus().equalsIgnoreCase("Cancelled")) {
+            System.out.println("This order cannot be cancelled because its status is: " + order.getStatus());
+            return false;
+        }
+
+        // 3. Confirm and cancel
+        try {
+            orderManager.changeOrderStatus(order, "Cancelled");
+            System.out.println("Order " + orderId + " has been successfully cancelled.");
+        } catch (Exception e) {
+            System.out.println("An error occurred while cancelling the order.");
+            return false;
+        }
+        return true;
     }
 
     public abstract boolean accessAdminPanel();

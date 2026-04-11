@@ -330,11 +330,12 @@ public class Main implements RecommendationService.MainCallback {
         System.out.println("Welcome, " + current.getName());
         System.out.println("1. View Order");
         System.out.println("2. Search Order");
+        System.out.println("3. Cancel Processing Order");
         if (current.isManager()) {
-            System.out.println("3. Access Admin Panel");
-            System.out.println("4. Logout");
+            System.out.println("4. Access Admin Panel");
+            System.out.println("5. Logout");
         } else {
-            System.out.println("3. Logout");
+            System.out.println("4. Logout");
         }
         
         System.out.print("Choose: ");
@@ -351,11 +352,14 @@ public class Main implements RecommendationService.MainCallback {
                     current.searchOrder(orderManager);
                     break;
                 case 3:
+                    current.cancelOrder(orderManager);
+                    break;
+                case 4:
                     if(current.accessAdminPanel()){
                         showAdminMenu();
                     }
                     break;
-                case 4:
+                case 5:
                     employeeManager.logout();
                     System.out.println("Employee logged out.");
                     break;
@@ -371,6 +375,9 @@ public class Main implements RecommendationService.MainCallback {
                     current.searchOrder(orderManager);
                     break;
                 case 3:
+                    current.cancelOrder(orderManager);
+                    break;
+                case 4:
                     employeeManager.logout();
                     System.out.println("Employee logged out.");
                     break;
@@ -386,7 +393,7 @@ public class Main implements RecommendationService.MainCallback {
         while (running) {
             System.out.println("\n=== Admin Menu (-1 to Return) ===");
             System.out.println("1. Create Staff");
-            System.out.println("2. Manage Pizzas & Toppings");
+            System.out.println("2. Manage Processing Order");
             System.out.print("Choose: ");
             String choice = sc.nextLine().trim();
             switch (choice) {
@@ -398,7 +405,7 @@ public class Main implements RecommendationService.MainCallback {
                     }
                     break;
                 case "2":
-
+                    //editOrder();
                     break;
                 case "-1":
                     running = false;
