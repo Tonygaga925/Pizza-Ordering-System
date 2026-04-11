@@ -63,6 +63,9 @@ public class CommandHistory {
         return !undoStack.isEmpty();
     }
     
+    public boolean canRedo() {
+        return !redoStack.isEmpty();
+    }
 
     public boolean isToppingSelected(String toppingName) {
         return selectedToppings.contains(toppingName);

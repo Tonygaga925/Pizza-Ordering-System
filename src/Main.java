@@ -388,12 +388,13 @@ public class Main implements RecommendationService.MainCallback {
     }
 
     private static void showAdminMenu(){
+        Employee current = employeeManager.getCurrentEmployee();
         Scanner sc = new Scanner(System.in);
         boolean running = true;
         while (running) {
             System.out.println("\n=== Admin Menu (-1 to Return) ===");
             System.out.println("1. Create Staff");
-            System.out.println("2. Manage Processing Order");
+            System.out.println("2. Edit Processing Order");
             System.out.print("Choose: ");
             String choice = sc.nextLine().trim();
             switch (choice) {
@@ -405,7 +406,7 @@ public class Main implements RecommendationService.MainCallback {
                     }
                     break;
                 case "2":
-                    //editOrder();
+                    current.editProcessingOrder(orderManager);
                     break;
                 case "-1":
                     running = false;

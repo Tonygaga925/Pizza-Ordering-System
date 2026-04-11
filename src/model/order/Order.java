@@ -16,6 +16,7 @@ public class Order {
     private int totalPoints;
     private String timestamp;
     private String status = "Processing";
+    private double discountRate = 0;
 
     public Order() {
         // Default constructor for Gson
@@ -29,23 +30,24 @@ public class Order {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.timestamp = LocalDateTime.now().format(formatter);
         this.status = "Processing";
+        this.discountRate = 0;
         calculateTotals();
     }
     
-    private void calculateTotals() {
+    public void calculateTotals() {
         this.originalTotal = 0;
         this.totalPoints = 0;
         for (OrderItem item : items) {
             this.originalTotal += item.getItemTotal();
             this.totalPoints += item.getItemPoints();
         }
-        this.finalTotal = this.originalTotal;
-        this.discountApplied = 0;
+        this.discountApplied = this.originalTotal * this.discountRate;
+        this.finalTotal = this.originalTotal - this.discountApplied;
     }
     
     public void applyDiscount(double discountRate) {
-        this.discountApplied = originalTotal * discountRate;
-        this.finalTotal = originalTotal - discountApplied;
+        this.discountRate = discountRate;
+        calculateTotals();
     }
     
     // Getters and setters

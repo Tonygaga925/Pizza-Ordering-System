@@ -4,6 +4,14 @@ import java.util.List;
 import java.util.ArrayList; 
 import java.util.Scanner;
 import model.order.Order;
+import model.order.OrderItem;
+import model.order.OrderItemBuilder;
+import model.pizza.Pizza;
+import model.pizza.PizzaFactory;
+import model.size.Size;
+import model.size.SizeFactory;
+import model.command.AddToppingCommand;
+import model.command.CommandHistory;
 import service.OrderManager;
 
 public abstract class Role {
@@ -261,6 +269,235 @@ public abstract class Role {
         return true;
     }
 
+    public void editProcessingOrder(OrderManager orderManager) {
+        if (!canEditOrder()) {
+            System.out.println("Access Denied: You do not have permission to edit orders.");
+            return;
+        }
+
+        java.util.List<Order> processingOrders = orderManager.getOrdersByStatus("Processing");
+        
+        if (processingOrders.isEmpty()) {
+            System.out.println("\n==================================");
+            System.out.println("   No processing orders found.    ");
+            System.out.println("==================================");
+            return;
+        }
+
+        processingOrders.sort((o1, o2) -> {
+            if (o1.getTimestamp() == null && o2.getTimestamp() == null) return 0;
+            if (o1.getTimestamp() == null) return 1;
+            if (o2.getTimestamp() == null) return -1;
+            return o1.getTimestamp().compareTo(o2.getTimestamp());
+        });
+
+        System.out.println("\n=== Edit Processing Order ===");
+        for (int i = 0; i < processingOrders.size(); i++) {
+            Order order = processingOrders.get(i);
+            String timestamp = order.getTimestamp();
+            if (timestamp != null && timestamp.length() > 19) {
+                timestamp = timestamp.substring(0, 19);
+            }
+            System.out.printf("%d. Order ID: %s | Customer: %s | Date: %s | Total: $%.2f%n", 
+                i + 1, order.getOrderId(), order.getCustomerName(), timestamp, order.getFinalTotal());
+        }
+
+        System.out.print("\nEnter the number of the order to edit (or 0 to cancel): ");
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine().trim();
+        
+        int choice;
+        try {
+            choice = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input!");
+            return;
+        }
+
+        if (choice == 0) {
+            return;
+        }
+
+        if (choice < 1 || choice > processingOrders.size()) {
+            System.out.println("Invalid order number!");
+            return;
+        }
+
+        Order selectedOrder = processingOrders.get(choice - 1);
+        boolean editing = true;
+        while (editing) {
+            System.out.println("\n=== Editing Order: " + selectedOrder.getOrderId() + " ===");
+            selectedOrder.displayOrder(true);
+            System.out.println("\n1. Edit Ordered Item (Remove/Update Quantity)");
+            System.out.println("2. Add New Item");
+            System.out.println("3. Save and Exit");
+            System.out.println("0. Cancel / Exit without saving");
+            System.out.print("Choose: ");
+            
+            String action = scanner.nextLine().trim();
+            switch (action) {
+                case "1":
+                    editOrderedItem(selectedOrder, scanner);
+                    break;
+                case "2":
+                    addNewItemToOrder(selectedOrder, scanner);
+                    break;
+                case "3":
+                    try {
+                        orderManager.placeOrder(selectedOrder);
+                        System.out.println("Order updated successfully!");
+                    } catch (java.io.IOException e) {
+                        System.out.println("Error saving order: " + e.getMessage());
+                    }
+                    editing = false;
+                    break;
+                case "0":
+                    System.out.println("Changes discarded.");
+                    editing = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice!");
+            }
+        }
+    }
+
+    private void editOrderedItem(Order order, Scanner scanner) {
+        List<OrderItem> items = order.getItems();
+        System.out.println("\n--- Select Item to Edit ---");
+        for (int i = 0; i < items.size(); i++) {
+            System.out.printf("%d. %s%n", i + 1, items.get(i).getDescription());
+        }
+        System.out.print("Enter item number (0 to cancel): ");
+        int itemIdx = getIntInput(scanner) - 1;
+        
+        if (itemIdx == -1) return;
+        if (itemIdx < 0 || itemIdx >= items.size()) {
+            System.out.println("Invalid item number!");
+            return;
+        }
+
+        OrderItem selectedItem = items.get(itemIdx);
+        System.out.println("\nSelected Item: " + selectedItem.getDescription());
+        System.out.println("1. Update Quantity");
+        System.out.println("2. Remove Item");
+        System.out.print("Choose: ");
+        
+        String action = scanner.nextLine().trim();
+        if (action.equals("1")) {
+            int newQty = getValidQuantity(scanner, "Enter new quantity (1-50): ");
+            selectedItem.setQuantity(newQty);
+            order.calculateTotals();
+            System.out.println("Quantity updated.");
+        } else if (action.equals("2")) {
+            if (items.size() <= 1) {
+                System.out.println("Cannot remove the only item in the order!");
+            } else {
+                items.remove(itemIdx);
+                order.calculateTotals();
+                System.out.println("Item removed.");
+            }
+        } else {
+            System.out.println("Invalid action.");
+        }
+    }
+
+    private void addNewItemToOrder(Order order, Scanner scanner) {
+        // Pizza selection
+        PizzaFactory.displayPizzaMenu(false, true); // Assuming manager view (shows points)
+        System.out.print("Choose pizza number (0 to cancel): ");
+        int pizzaChoice = getIntInput(scanner);
+        if (pizzaChoice == 0) return;
+        if (pizzaChoice < 1 || pizzaChoice > PizzaFactory.getPizzaCount()) {
+            System.out.println("Invalid pizza choice!");
+            return;
+        }
+        Pizza pizza = PizzaFactory.createPizza(pizzaChoice);
+
+        // Size selection
+        SizeFactory.displaySizeOptions(pizza.getPrice());
+        System.out.print("Choose size: ");
+        int sizeChoice = getIntInput(scanner);
+        Size selectedSize;
+        try {
+            selectedSize = SizeFactory.getSize(sizeChoice);
+        } catch (Exception e) {
+            System.out.println("Invalid size choice!");
+            return;
+        }
+
+        OrderItemBuilder itemBuilder = new OrderItemBuilder()
+                .setPizza(pizza)
+                .setSize(selectedSize.getName(), selectedSize.getMultiplier());
+
+        // Toppings selection
+        CommandHistory history = new CommandHistory();
+        boolean addingToppings = true;
+        while (addingToppings) {
+            PizzaFactory.displayToppingMenu(true);
+            System.out.println("\nCurrent Pizza: " + itemBuilder.getPizzaDescription());
+            System.out.printf("Current Price: $%.2f%n", itemBuilder.getTotalPrice());
+            
+            String prompt = "\nCommands: 0=Done, enter topping number";
+            if (history.canUndo()) prompt += ", u=Undo";
+            if (history.canRedo()) prompt += ", r=Redo";
+            System.out.print(prompt + ": ");
+            
+            String input = scanner.nextLine().trim().toLowerCase();
+            if (input.equals("0")) {
+                addingToppings = false;
+            } else if (input.equals("u")) {
+                if (!history.undo()) System.out.println("Nothing to undo!");
+            } else if (input.equals("r")) {
+                if (!history.redo()) System.out.println("Nothing to redo!");
+            } else {
+                try {
+                    int toppingChoice = Integer.parseInt(input);
+                    if (toppingChoice >= 1 && toppingChoice <= PizzaFactory.getToppingCount()) {
+                        String toppingName = PizzaFactory.getToppingNames().get(toppingChoice - 1);
+                        if (itemBuilder.hasTopping(toppingName)) {
+                            System.out.println("Topping already added!");
+                        } else {
+                            AddToppingCommand command = new AddToppingCommand(toppingName, itemBuilder);
+                            history.executeCommand(command);
+                        }
+                    } else {
+                        System.out.println("Invalid topping choice!");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input!");
+                }
+            }
+        }
+
+        int quantity = getValidQuantity(scanner, "Enter quantity (1-50): ");
+
+        itemBuilder.setQuantity(quantity);
+        order.getItems().add(itemBuilder.build());
+        order.calculateTotals();
+        System.out.println("Item added to order.");
+    }
+
+    private int getIntInput(Scanner scanner) {
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    private int getValidQuantity(Scanner scanner, String prompt) {
+        int quantity;
+        while (true) {
+            System.out.print(prompt);
+            quantity = getIntInput(scanner);
+            if (quantity >= 1 && quantity <= 50) {
+                return quantity;
+            }
+            System.out.println("Invalid quantity! Please enter a number between 1 and 50.");
+        }
+    }
+
     public abstract boolean accessAdminPanel();
-    
+
+    public abstract boolean canEditOrder();
 }

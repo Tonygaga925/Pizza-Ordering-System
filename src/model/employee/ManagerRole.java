@@ -6,4 +6,9 @@ public class ManagerRole extends Role {
     public boolean accessAdminPanel() {
         return true;
     }
+
+    @Override 
+    public boolean canEditOrder(){
+        return true;
+    }
 }

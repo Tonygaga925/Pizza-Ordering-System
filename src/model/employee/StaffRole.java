@@ -5,4 +5,9 @@ public class StaffRole extends Role {
     public boolean accessAdminPanel() {
         return false;
     }
+
+    @Override 
+    public boolean canEditOrder(){
+        return false;
+    }
 }

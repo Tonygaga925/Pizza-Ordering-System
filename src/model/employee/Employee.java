@@ -36,6 +36,7 @@ public class Employee {
     public boolean isActive() { return isActive; }
     public Role getRole() { return roleStrategy; }
     public void setId(String id) { this.id = id; }
+    public void setRole(Role role) { this.roleStrategy = role; }
     public boolean isManager() { return "manager".equalsIgnoreCase(this.role); }
 
     // Actions delegated to the Role Strategy
@@ -63,5 +64,18 @@ public class Employee {
             return this.roleStrategy.cancelOrder(orderManager);
         }
         return false;
+    }
+    
+    public boolean editOrder(OrderManager orderManager){
+        if (roleStrategy != null) {
+            return this.roleStrategy.cancelOrder(orderManager);
+        }
+        return false;
+    }
+
+    public void editProcessingOrder(OrderManager orderManager) {
+        if (roleStrategy != null) {
+            this.roleStrategy.editProcessingOrder(orderManager);
+        }
     }
 }
