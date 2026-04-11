@@ -570,7 +570,7 @@ private static void continueOrderFlow(List<OrderItem> items, boolean isMember) t
 
             if (!items.isEmpty()) {
                 displayCart(items);
-                System.out.println("\nOptions (0. Back to Main Menu) :");
+                System.out.println("\nOptions (-1 Back to main menu) :");
                 System.out.println("1. Add new pizza");
                 System.out.println("2. Modify existing pizza");
                 System.out.println("3. Remove a pizza");
@@ -579,7 +579,7 @@ private static void continueOrderFlow(List<OrderItem> items, boolean isMember) t
 
                 int option = getIntInput();
                 switch (option) {
-                    case 0:
+                    case -1:
                     if (!items.isEmpty()) {
                     System.out.print("\nPizza is still in the cart. Confirm leave? (y/n): ");
                     String confirm = scanner.nextLine().toLowerCase();

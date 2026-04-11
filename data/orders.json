@@ -107,6 +107,29 @@
     "status": "Cancelled",
     "discountRate": 0.0
   },
+  "ORD1775922097952": {
+    "orderId": "ORD1775922097952",
+    "memberId": "M001",
+    "customerName": "Alice Chan",
+    "phone": "91234567",
+    "items": [
+      {
+        "pizzaDescription": "Vegetarian + Olive (Small)",
+        "pizzaPrice": 50.0,
+        "pizzaPoints": 115,
+        "sizeName": "Small",
+        "sizeMultiplier": 1.0,
+        "quantity": 3
+      }
+    ],
+    "originalTotal": 150.0,
+    "finalTotal": 135.0,
+    "discountApplied": 15.0,
+    "totalPoints": 345,
+    "timestamp": "2026-04-11 23:41:37",
+    "status": "Processing",
+    "discountRate": 0.1
+  },
   "ORD1775846384726": {
     "orderId": "ORD1775846384726",
     "memberId": "M004",
@@ -544,6 +567,28 @@
     "status": "Processing",
     "discountRate": 0.0
   },
+  "ORD1775920913790": {
+    "orderId": "ORD1775920913790",
+    "customerName": "Sam",
+    "phone": "67895432",
+    "items": [
+      {
+        "pizzaDescription": "Pepperoni + Olive (Large)",
+        "pizzaPrice": 86.4,
+        "pizzaPoints": 135,
+        "sizeName": "Large",
+        "sizeMultiplier": 1.6,
+        "quantity": 2
+      }
+    ],
+    "originalTotal": 172.8,
+    "finalTotal": 172.8,
+    "discountApplied": 0.0,
+    "totalPoints": 0,
+    "timestamp": "2026-04-11 23:21:53",
+    "status": "Processing",
+    "discountRate": 0.0
+  },
   "ORD1775836403955": {
     "orderId": "ORD1775836403955",
     "memberId": "M005",
@@ -871,6 +916,75 @@
     "status": "Processing",
     "discountRate": 0.1
   },
+  "ORD1775922609303": {
+    "orderId": "ORD1775922609303",
+    "memberId": "M001",
+    "customerName": "Alice Chan",
+    "phone": "91234567",
+    "items": [
+      {
+        "pizzaDescription": "Vegetarian + Cheese (Small)",
+        "pizzaPrice": 46.0,
+        "pizzaPoints": 108,
+        "sizeName": "Small",
+        "sizeMultiplier": 1.0,
+        "quantity": 3
+      }
+    ],
+    "originalTotal": 138.0,
+    "finalTotal": 124.2,
+    "discountApplied": 13.8,
+    "totalPoints": 324,
+    "timestamp": "2026-04-11 23:50:09",
+    "status": "Processing",
+    "discountRate": 0.1
+  },
+  "ORD1775922678319": {
+    "orderId": "ORD1775922678319",
+    "memberId": "M001",
+    "customerName": "Alice Chan",
+    "phone": "91234567",
+    "items": [
+      {
+        "pizzaDescription": "Margherita + Cheese (Small)",
+        "pizzaPrice": 48.0,
+        "pizzaPoints": 118,
+        "sizeName": "Small",
+        "sizeMultiplier": 1.0,
+        "quantity": 1
+      }
+    ],
+    "originalTotal": 48.0,
+    "finalTotal": 43.2,
+    "discountApplied": 4.800000000000001,
+    "totalPoints": 118,
+    "timestamp": "2026-04-11 23:51:18",
+    "status": "Processing",
+    "discountRate": 0.1
+  },
+  "ORD1775923612436": {
+    "orderId": "ORD1775923612436",
+    "memberId": "M001",
+    "customerName": "Alice Chan",
+    "phone": "91234567",
+    "items": [
+      {
+        "pizzaDescription": "Margherita + Cheese (Small)",
+        "pizzaPrice": 48.0,
+        "pizzaPoints": 118,
+        "sizeName": "Small",
+        "sizeMultiplier": 1.0,
+        "quantity": 1
+      }
+    ],
+    "originalTotal": 48.0,
+    "finalTotal": 43.2,
+    "discountApplied": 4.800000000000001,
+    "totalPoints": 118,
+    "timestamp": "2026-04-12 00:06:52",
+    "status": "Processing",
+    "discountRate": 0.1
+  },
   "ORD1775746156378": {
     "orderId": "ORD1775746156378",
     "memberId": "M005",
@@ -900,6 +1014,28 @@
     "totalPoints": 1070,
     "timestamp": "2026-04-09 22:49:16",
     "status": "Cancelled",
+    "discountRate": 0.0
+  },
+  "ORD1775924215639": {
+    "orderId": "ORD1775924215639",
+    "customerName": "Sam",
+    "phone": "67895432",
+    "items": [
+      {
+        "pizzaDescription": "Hawaiian + Cheese + Olive + Onion (Medium)",
+        "pizzaPrice": 84.5,
+        "pizzaPoints": 141,
+        "sizeName": "Medium",
+        "sizeMultiplier": 1.3,
+        "quantity": 2
+      }
+    ],
+    "originalTotal": 169.0,
+    "finalTotal": 169.0,
+    "discountApplied": 0.0,
+    "totalPoints": 0,
+    "timestamp": "2026-04-12 00:16:55",
+    "status": "Processing",
     "discountRate": 0.0
   }
 }

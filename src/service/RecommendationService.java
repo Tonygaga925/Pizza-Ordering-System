@@ -1,15 +1,15 @@
 package service;
 
+import java.util.*;
 import model.Member;
 import model.order.Order;
 import model.order.OrderItem;
-import java.util.*;
 
 public class RecommendationService {
-    
+
     // Similar pizza mappings for "try something similar" feature
     private static final Map<String, List<String>> PIZZA_SIMILARITIES = new HashMap<>();
-    
+
     static {
         PIZZA_SIMILARITIES.put("Margherita", Arrays.asList("Vegetarian", "Hawaiian"));
         PIZZA_SIMILARITIES.put("Pepperoni", Arrays.asList("Meat Lovers", "BBQ Chicken"));
@@ -18,78 +18,85 @@ public class RecommendationService {
         PIZZA_SIMILARITIES.put("Meat Lovers", Arrays.asList("Pepperoni", "BBQ Chicken"));
         PIZZA_SIMILARITIES.put("BBQ Chicken", Arrays.asList("Hawaiian", "Pepperoni", "Meat Lovers"));
     }
-    
+
     // Callback interface for communicating with Main
     public interface MainCallback {
+
         void startOrderWithRecommendedPizza(String pizzaName, boolean isMember);
     }
-    
+
     private OrderManager orderManager;
     private MenuLoader menuLoader;
     private Scanner scanner;
     private MainCallback callback;
     private boolean currentIsMember;
-    
+
     public RecommendationService(OrderManager orderManager, MenuLoader menuLoader, Scanner scanner) {
         this.orderManager = orderManager;
         this.menuLoader = menuLoader;
         this.scanner = scanner;
     }
-    
+
     public void setCallback(MainCallback callback) {
         this.callback = callback;
     }
-    
+
     public void getRecommendation(Member member, boolean isMember) {
         this.currentIsMember = isMember;
-        
+
         System.out.println("\n=== Pizza Recommendation ===");
         System.out.println("Let me help you find your next favorite pizza!\n");
-        
+
         // Get member's order history
         List<Order> orders = orderManager.getOrdersByMemberIdFromFile(member.getId());
-        
+
         if (!orders.isEmpty()) {
             // Find the most frequently ordered pizza
             String mostOrdered = getMostOrderedPizza(orders);
             if (mostOrdered != null) {
                 System.out.println("I see you've ordered '" + mostOrdered + "' quite often!");
+                String answer;
+            while (true) {
                 System.out.print("Would you like to try something similar but different? (y/n): ");
-                String answer = scanner.nextLine().toLowerCase();
-                
+                answer = scanner.nextLine().toLowerCase();
                 if (answer.equals("y")) {
                     recommendSimilarPizza(mostOrdered);
                     return;
+                } else if (answer.equals("n")) {
+                    break;
+                } else {
+                    System.out.println("\nPlease input 'y' or 'n'");
                 }
             }
+            }
         }
-        
+
         // No order history or user doesn't want similar flavors
         recommendByQuestionnaire();
     }
-    
+
     // Get the most frequently ordered pizza from history
     private String getMostOrderedPizza(List<Order> orders) {
         Map<String, Integer> pizzaCount = new HashMap<>();
-        
+
         for (Order order : orders) {
             for (OrderItem item : order.getItems()) {
                 String pizzaName = item.getBasePizzaName();
                 pizzaCount.put(pizzaName, pizzaCount.getOrDefault(pizzaName, 0) + item.getQuantity());
             }
         }
-        
+
         if (pizzaCount.isEmpty()) {
             return null;
         }
-        
+
         return pizzaCount.entrySet()
-            .stream()
-            .max(Map.Entry.comparingByValue())
-            .map(Map.Entry::getKey)
-            .orElse(null);
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
     }
-    
+
     // Recommend similar pizza based on user's favorite
     private void recommendSimilarPizza(String currentPizza) {
         List<String> similar = PIZZA_SIMILARITIES.get(currentPizza);
@@ -98,15 +105,15 @@ public class RecommendationService {
             recommendByQuestionnaire();
             return;
         }
-        
+
         System.out.println("\nBased on your preference, you might like:");
         for (int i = 0; i < similar.size(); i++) {
             System.out.printf("  %d. %s%n", i + 1, similar.get(i));
         }
-        
+
         System.out.print("\nChoose a number (1-" + similar.size() + ") or 0 to skip: ");
         int choice = getIntInput();
-        
+
         if (choice >= 1 && choice <= similar.size()) {
             String recommended = similar.get(choice - 1);
             System.out.println("\nRecommendation: " + recommended);
@@ -118,68 +125,81 @@ public class RecommendationService {
             recommendByQuestionnaire();
         }
     }
-    
+
     // Questionnaire-based recommendation
     private void recommendByQuestionnaire() {
-        System.out.println("Please answer a few questions to help me recommend the best pizza for you:\n");
-        
+    String vegetarianChoice;
+    while (true) {
         System.out.print("Q1. Are you vegetarian? (y/n): ");
-        boolean isVegetarian = scanner.nextLine().toLowerCase().equals("y");
-        
-        if (isVegetarian) {
+        vegetarianChoice = scanner.nextLine().toLowerCase();
+        if (vegetarianChoice.equals("y")) {
             recommendVegetarianPizza();
             return;
+        } else if (vegetarianChoice.equals("n")) {
+            break;
+        } else {
+            System.out.println("\nPlease input 'y' or 'n'");
         }
-        
+    }
+    
+    String dietChoice;
+    while (true) {
         System.out.print("Q2. Are you on a diet / health-conscious? (y/n): ");
-        boolean isOnDiet = scanner.nextLine().toLowerCase().equals("y");
-        
-        if (isOnDiet) {
+        dietChoice = scanner.nextLine().toLowerCase();
+        if (dietChoice.equals("y")) {
             recommendHealthyPizza();
             return;
+        } else if (dietChoice.equals("n")) {
+            break;
+        } else {
+            System.out.println("\nPlease input 'y' or 'n'");
         }
-        
+    }
+
+        String recommended = "";
         System.out.println("\nQ3. Which meat do you prefer?");
         System.out.println("  1. Pepperoni");
         System.out.println("  2. Sausage");
         System.out.println("  3. Chicken");
         System.out.println("  4. Bacon");
         System.out.println("  5. All of the above");
-        System.out.print("Choose (1-5): ");
 
-        int meatChoice = getIntInput();
-        String recommended = "";
-        
-        switch (meatChoice) {
-            case 1:
-                recommended = "Pepperoni";
-                displayMeatRecommendation("Pepperoni");
-                break;
-            case 2:
-                recommended = "Meat Lovers";
-                displayMeatRecommendation("Sausage");
-                break;
-            case 3:
-                recommended = "BBQ Chicken";
-                displayMeatRecommendation("Chicken");
-                break;
-            case 4:
-                recommended = "Meat Lovers";
-                displayMeatRecommendation("Bacon");
-                break;
-            case 5:
-                recommended = "Meat Lovers";
-                displayMeatRecommendation("Mixed");
-                break;
-            default:
-                recommended = "Pepperoni";
-                displayDefaultRecommendation();
+        while (true) {
+            System.out.print("Choose (1-5): ");
+
+            int meatChoice = getIntInput();
+            switch (meatChoice) {
+                case 1:
+                    recommended = "Pepperoni";
+                    displayMeatRecommendation("Pepperoni");
+                    break;
+                case 2:
+                    recommended = "Meat Lovers";
+                    displayMeatRecommendation("Sausage");
+                    break;
+                case 3:
+                    recommended = "BBQ Chicken";
+                    displayMeatRecommendation("Chicken");
+                    break;
+                case 4:
+                    recommended = "Meat Lovers";
+                    displayMeatRecommendation("Bacon");
+                    break;
+                case 5:
+                    recommended = "Meat Lovers";
+                    displayMeatRecommendation("Mixed");
+                    break;
+                default:
+                    System.out.println("Invalid input.");
+                    continue;
+            }
+            break;
         }
-        
+
         displayPizzaDetails(recommended);
         askToOrder(recommended);
     }
-    
+
     // Display vegetarian pizza recommendation
     private void recommendVegetarianPizza() {
         System.out.println("\n=== Vegetarian Options ===");
@@ -188,11 +208,11 @@ public class RecommendationService {
         System.out.println("  2. Vegetarian - Loaded with fresh vegetables");
         System.out.println("\nTop Recommendation: VEGETARIAN");
         System.out.println("   Why? It's packed with mushrooms, olives, and bell peppers - delicious and meat-free!");
-        
+
         displayPizzaDetails("Vegetarian");
         askToOrder("Vegetarian");
     }
-    
+
     // Display healthy pizza recommendation
     private void recommendHealthyPizza() {
         System.out.println("\n=== Healthy Options ===");
@@ -201,15 +221,14 @@ public class RecommendationService {
         System.out.println("  2. Vegetarian - Lots of vegetables");
         System.out.println("\nTop Recommendation: MARGHERITA");
         System.out.println("   Why? It's the lightest option with fresh ingredients and no processed meats.");
-        
+
         displayPizzaDetails("Margherita");
         askToOrder("Margherita");
     }
-    
+
     // Display meat-based pizza recommendation message
     private void displayMeatRecommendation(String meatType) {
         System.out.println("\n=== Meat Lovers Recommendations ===");
-        
         switch (meatType) {
             case "Pepperoni":
                 System.out.println("Top Recommendation: PEPPERONI");
@@ -233,19 +252,19 @@ public class RecommendationService {
                 break;
         }
     }
-    
+
     // Display default recommendation message
     private void displayDefaultRecommendation() {
         System.out.println("\nTop Recommendation: PEPPERONI");
         System.out.println("   It's our most popular pizza - you can't go wrong!");
     }
-    
+
     // Display pizza details (price and points) - Updated to use MenuLoader
     private void displayPizzaDetails(String pizzaName) {
         List<String> pizzaNames = menuLoader.getPizzaNames();
         List<Double> pizzaPrices = menuLoader.getPizzaPrices();
         List<Integer> pizzaPoints = menuLoader.getPizzaPoints();
-        
+
         for (int i = 0; i < pizzaNames.size(); i++) {
             if (pizzaNames.get(i).equalsIgnoreCase(pizzaName)) {
                 System.out.println("\n--- Pizza Details ---");
@@ -257,22 +276,28 @@ public class RecommendationService {
             }
         }
     }
-    
+
     // Ask user if they want to order the recommended pizza
     private void askToOrder(String recommendedPizza) {
-        System.out.print("\nWould you like to order this pizza now? (y/n): ");
-        String answer = scanner.nextLine().toLowerCase();
-        
-        if (answer.equals("y")) {
-            System.out.println("\nGreat! Let's customize your " + recommendedPizza + "...\n");
-            if (callback != null) {
-                callback.startOrderWithRecommendedPizza(recommendedPizza, currentIsMember);
+        while (true) {
+            System.out.print("\nWould you like to order this pizza now? (y/n): ");
+            String answer = scanner.nextLine().toLowerCase();
+
+            if (answer.equals("y")) {
+                System.out.println("\nGreat! Let's customize your " + recommendedPizza + "...\n");
+                if (callback != null) {
+                    callback.startOrderWithRecommendedPizza(recommendedPizza, currentIsMember);
+                }
+                break;
+            } else if (answer.equals("n")) {
+                System.out.println("\nNo problem! Returning to main menu.");
+                break;
+            } else {
+                System.out.println("\nPlease input 'y' or 'n'");
             }
-        } else {
-            System.out.println("\nNo problem! Returning to main menu.");
         }
     }
-    
+
     // Safe integer input handling
     private int getIntInput() {
         while (true) {

@@ -1,8 +1,8 @@
 package model.command;
 
+import java.util.List;
 import model.order.Order;
 import model.order.OrderItem;
-import java.util.List;
 
 public class AddItemCommand implements Command {
     private Order order;

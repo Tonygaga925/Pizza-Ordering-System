@@ -1,13 +1,14 @@
 package model.command;
 
-import model.order.Order;
-import model.Member;
-import service.OrderManager;
-import service.MemberManager;
 import java.io.IOException;
 import java.util.Scanner;
+import model.Member;
+import model.order.Order;
+import service.MemberManager;
+import service.OrderManager;
 
 public class PlaceOrderCommand implements Command {
+
     private Order order;
     private boolean isMember;
     private OrderManager orderManager;
@@ -37,21 +38,29 @@ public class PlaceOrderCommand implements Command {
                 order.setTotalPoints(0);
             }
 
-            System.out.print("\nConfirm order? (y/n): ");
-            String confirm = scanner.nextLine().toLowerCase();
-            if (confirm.equals("y")) {
-                orderManager.placeOrder(order);
-                System.out.println("\nOrder placed successfully!");
-                System.out.println("Your Order ID: " + orderId);
-                
-                // for updating member points and change member state if over the vip threshold
-                if (isMember && member != null) {
-                    memberManager.updateMemberPoints(member.getId(), order.getTotalPoints());
+            String confirm;
+            while (true) {
+                System.out.print("\nConfirm order? (y/n): ");
+                confirm = scanner.nextLine().toLowerCase();
+                if (confirm.equals("y")) {
+                    orderManager.placeOrder(order);
+                    System.out.println("\nOrder placed successfully!");
+                    System.out.println("Your Order ID: " + orderId);
+
+                    // for updating member points and change member state if over the vip threshold
+                    if (isMember && member != null) {
+                        memberManager.updateMemberPoints(member.getId(), order.getTotalPoints());
+                    }
+                    order.displayOrder(isMember);
+                    break;
+                } else if (confirm.equals("n")) {
+                    System.out.println("Order cancelled.");
+                    break;
+                } else {
+                    System.out.println("Please input 'y' or 'n'");
                 }
-                order.displayOrder(isMember);
-            } else {
-                System.out.println("Order cancelled.");
             }
+
         } catch (IOException e) {
             System.err.println("Error placing order: " + e.getMessage());
         }
