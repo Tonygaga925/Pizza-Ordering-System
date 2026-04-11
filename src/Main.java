@@ -24,9 +24,9 @@ public class Main implements RecommendationService.MainCallback {
     public static void main(String[] args) {
         try {
             menuLoader = new MenuLoader();
-            orderManager = new OrderManager("data/orders.json");
-            memberManager = new MemberManager("data/members.json");
-            employeeManager = new EmployeeManager("data/Staff.json");
+            orderManager = OrderManager.getInstance();
+            memberManager = MemberManager.getInstance();
+            employeeManager = EmployeeManager.getInstance();
 
             // Set references
             orderManager.setMemberManager(memberManager);
