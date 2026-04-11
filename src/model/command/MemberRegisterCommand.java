@@ -24,13 +24,17 @@ public class MemberRegisterCommand implements Command {
 
         while (step < 4) {
             if (step == 0) {
-                boolean checkUserName = true;
-                while(checkUserName){
+                boolean inputUserName = true;
+                while(inputUserName){
                 System.out.print("Username: ");
-                username = scanner.nextLine();
+                username = scanner.nextLine().trim();
                 if (username.equals("-1")) {
-                    checkUserName = false;
+                    inputUserName = false;
                     break;
+                }
+                if (username.isEmpty()) {
+                    System.out.println("Username cannot be empty.");
+                    continue;
                 }
                 if(memberManager.isExistUserName(username)){
                     System.out.println("Username already exist!");
@@ -39,7 +43,7 @@ public class MemberRegisterCommand implements Command {
                 step++;
                 break;
                 }
-                if (!checkUserName) return;
+                if (!inputUserName) return;
             } else if (step == 1) {
                 System.out.print("Password: ");
                 password = scanner.nextLine();

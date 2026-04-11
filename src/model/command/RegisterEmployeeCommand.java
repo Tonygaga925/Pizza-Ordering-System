@@ -1,8 +1,8 @@
 package model.command;
 
-import service.EmployeeManager;
 import java.io.IOException;
 import java.util.Scanner;
+import service.EmployeeManager;
 
 public class RegisterEmployeeCommand implements Command {
     private EmployeeManager employeeManager;
@@ -22,15 +22,27 @@ public class RegisterEmployeeCommand implements Command {
         int step = 0;
         while (step < 3) {
             if (step == 0) {
+                boolean inputUserName = true;
+                while(inputUserName){
                 System.out.print("Username: ");
                 username = scanner.nextLine().trim();
-                if (username.equals("-1")) return;
-                
+                if (username.equals("-1")) {
+                    inputUserName = false;
+                    break;
+                }
                 if (username.isEmpty()) {
                     System.out.println("Username cannot be empty.");
-                } else {
-                    step++;
+                    continue;
                 }
+                if(employeeManager.isExistUserName(username)){
+                    System.out.println("Username already exist!");
+                    continue;
+                }
+                step++;
+                break;
+                }
+                if (!inputUserName) return;
+
             } else if (step == 1) {
                 System.out.print("Password: ");
                 password = scanner.nextLine().trim();

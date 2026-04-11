@@ -22,5 +22,13 @@
     "name": "Hey",
     "role": "normal",
     "isActive": true
+  },
+  "S004": {
+    "id": "S004",
+    "username": "lwl_staff",
+    "password": "password123",
+    "name": "lwl",
+    "role": "normal",
+    "isActive": true
   }
 }
