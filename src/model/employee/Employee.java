@@ -45,6 +45,12 @@ public class Employee {
         }
     }
 
+    public void searchOrder(OrderManager orderManager){
+        if (roleStrategy != null) {
+            this.roleStrategy.searchOrder(orderManager);
+        }
+    }
+
     public void accessAdminPanel() {
         if (roleStrategy != null) {
             this.roleStrategy.accessAdminPanel();

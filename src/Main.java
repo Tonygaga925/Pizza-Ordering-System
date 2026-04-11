@@ -281,12 +281,12 @@ public class Main implements RecommendationService.MainCallback {
         System.out.println("\n=== Employee Menu ===");
         System.out.println("Welcome, " + current.getName());
         System.out.println("1. View Order");
-        
+        System.out.println("2. Search Order");
         if (current.isManager()) {
-            System.out.println("2. Access Admin Panel");
-            System.out.println("3. Logout");
+            System.out.println("3. Access Admin Panel");
+            System.out.println("4. Logout");
         } else {
-            System.out.println("2. Logout");
+            System.out.println("3. Logout");
         }
         
         System.out.print("Choose: ");
@@ -300,9 +300,12 @@ public class Main implements RecommendationService.MainCallback {
                     current.handleOrder(orderManager);
                     break;
                 case 2:
-                    current.accessAdminPanel();
+                    current.searchOrder(orderManager);
                     break;
                 case 3:
+                    current.accessAdminPanel();
+                    break;
+                case 4:
                     employeeManager.logout();
                     System.out.println("Employee logged out.");
                     break;
@@ -315,6 +318,9 @@ public class Main implements RecommendationService.MainCallback {
                     current.handleOrder(orderManager);
                     break;
                 case 2:
+                    current.searchOrder(orderManager);
+                    break;
+                case 3:
                     employeeManager.logout();
                     System.out.println("Employee logged out.");
                     break;
