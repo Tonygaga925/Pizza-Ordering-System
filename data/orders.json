@@ -81,6 +81,28 @@
     "timestamp": "2026-04-09 22:49:31",
     "status": "Processing"
   },
+  "ORD1775889980463": {
+    "orderId": "ORD1775889980463",
+    "memberId": "M001",
+    "customerName": "Alice Chan",
+    "phone": "91234567",
+    "items": [
+      {
+        "pizzaDescription": "Margherita + Chicken + Sausage (Small)",
+        "pizzaPrice": 67.0,
+        "pizzaPoints": 147,
+        "sizeName": "Small",
+        "sizeMultiplier": 1.0,
+        "quantity": 2
+      }
+    ],
+    "originalTotal": 134.0,
+    "finalTotal": 120.6,
+    "discountApplied": 13.4,
+    "totalPoints": 294,
+    "timestamp": "2026-04-11 14:46:20",
+    "status": "Processing"
+  },
   "ORD1775846384726": {
     "orderId": "ORD1775846384726",
     "memberId": "M004",
@@ -123,6 +145,28 @@
     "discountApplied": 212.0,
     "totalPoints": 4160,
     "timestamp": "2026-04-09 22:53:29",
+    "status": "Processing"
+  },
+  "ORD1775889929737": {
+    "orderId": "ORD1775889929737",
+    "memberId": "M001",
+    "customerName": "Alice Chan",
+    "phone": "91234567",
+    "items": [
+      {
+        "pizzaDescription": "Vegetarian + Cheese + Olive + Onion (Medium)",
+        "pizzaPrice": 79.0,
+        "pizzaPoints": 125,
+        "sizeName": "Medium",
+        "sizeMultiplier": 0.0,
+        "quantity": 1
+      }
+    ],
+    "originalTotal": 79.0,
+    "finalTotal": 71.1,
+    "discountApplied": 7.9,
+    "totalPoints": 125,
+    "timestamp": "2026-04-11 14:45:29",
     "status": "Processing"
   },
   "ORD1775888737479": {
@@ -581,6 +625,27 @@
     "discountApplied": 0.0,
     "totalPoints": 573,
     "timestamp": "2026-04-08 21:44:31",
+    "status": "Processing"
+  },
+  "ORD1775889878666": {
+    "orderId": "ORD1775889878666",
+    "customerName": "Sam",
+    "phone": "67895432",
+    "items": [
+      {
+        "pizzaDescription": "Pepperoni + Cheese + Olive + Onion + Sausage + Chicken (Medium)",
+        "pizzaPrice": 118.3,
+        "pizzaPoints": 188,
+        "sizeName": "Medium",
+        "sizeMultiplier": 1.3,
+        "quantity": 2
+      }
+    ],
+    "originalTotal": 236.6,
+    "finalTotal": 236.6,
+    "discountApplied": 0.0,
+    "totalPoints": 0,
+    "timestamp": "2026-04-11 14:44:38",
     "status": "Processing"
   },
   "ORD1775846135612": {

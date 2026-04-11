@@ -23,7 +23,7 @@ public class Main implements RecommendationService.MainCallback {
     
     public static void main(String[] args) {
         try {
-            menuLoader = new MenuLoader();
+            menuLoader = MenuLoader.getInstance();
             orderManager = OrderManager.getInstance();
             memberManager = MemberManager.getInstance();
             employeeManager = EmployeeManager.getInstance();
