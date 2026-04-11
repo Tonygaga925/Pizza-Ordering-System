@@ -326,64 +326,21 @@ public class Main implements RecommendationService.MainCallback {
 
     private static void showEmployeeMenu() {
         Employee current = employeeManager.getCurrentEmployee();
-        System.out.println("\n=== Employee Menu ===");
-        System.out.println("Welcome, " + current.getName());
-        System.out.println("1. View Order");
-        System.out.println("2. Search Order");
-        System.out.println("3. Cancel Processing Order");
-        if (current.isManager()) {
-            System.out.println("4. Access Admin Panel");
-            System.out.println("5. Logout");
-        } else {
-            System.out.println("4. Logout");
-        }
-        
-        System.out.print("Choose: ");
+        boolean running = true;
+        while (running) {
+            current.displayMenu();
+            int choice = getIntInput();
+            if (choice == -1) continue;
 
-        int choice = getIntInput();
-        if (choice == -1) return;
-
-        if (current.isManager()) {
-            switch (choice) {
-                case 1:
-                    current.handleOrder(orderManager);
-                    break;
-                case 2:
-                    current.searchOrder(orderManager);
-                    break;
-                case 3:
-                    current.cancelOrder(orderManager);
-                    break;
-                case 4:
-                    if(current.accessAdminPanel()){
-                        showAdminMenu();
-                    }
-                    break;
-                case 5:
-                    employeeManager.logout();
-                    System.out.println("Employee logged out.");
-                    break;
-                default:
-                    System.out.println("Invalid choice! Please enter 1-3.");
+            int result = current.handleMenuChoice(choice, orderManager);
+            if (result == 1) { // Logout
+                employeeManager.logout();
+                System.out.println("Employee logged out.");
+                running = false;
+            } else if (result == 2) { // Access Admin Panel
+                showAdminMenu();
             }
-        } else {
-            switch (choice) {
-                case 1:
-                    current.handleOrder(orderManager);
-                    break;
-                case 2:
-                    current.searchOrder(orderManager);
-                    break;
-                case 3:
-                    current.cancelOrder(orderManager);
-                    break;
-                case 4:
-                    employeeManager.logout();
-                    System.out.println("Employee logged out.");
-                    break;
-                default:
-                    System.out.println("Invalid choice! Please enter 1-2.");
-            }
+            // result == 0 continues the loop
         }
     }
 

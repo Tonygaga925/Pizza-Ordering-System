@@ -104,7 +104,7 @@
     "discountApplied": 0.0,
     "totalPoints": 2940,
     "timestamp": "2026-04-11 14:46:20",
-    "status": "Processing",
+    "status": "Cancelled",
     "discountRate": 0.0
   },
   "ORD1775846384726": {
@@ -271,7 +271,7 @@
     "discountApplied": 0.0,
     "totalPoints": 0,
     "timestamp": "2026-04-08 22:32:58",
-    "status": "Processing",
+    "status": "Completed",
     "discountRate": 0.0
   },
   "ORD1775888834223": {
@@ -339,7 +339,7 @@
     "discountApplied": 0.0,
     "totalPoints": 0,
     "timestamp": "2026-04-08 22:10:21",
-    "status": "Processing",
+    "status": "Completed",
     "discountRate": 0.0
   },
   "ORD1775832058037": {
@@ -474,7 +474,7 @@
     "discountApplied": 0.0,
     "totalPoints": 0,
     "timestamp": "2026-04-08 22:38:37",
-    "status": "Processing",
+    "status": "Cancelled",
     "discountRate": 0.0
   },
   "ORD1775836361033": {
@@ -558,7 +558,7 @@
     "discountApplied": 0.0,
     "totalPoints": 649,
     "timestamp": "2026-04-11 17:50:27",
-    "status": "Processing",
+    "status": "Cancelled",
     "discountRate": 0.0
   },
   "ORD1775649327758": {

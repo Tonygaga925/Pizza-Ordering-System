@@ -15,6 +15,9 @@ import model.command.CommandHistory;
 import service.OrderManager;
 
 public abstract class Role {
+    public abstract void displayMenu(String employeeName);
+    public abstract int handleMenuChoice(int choice, OrderManager orderManager);
+    
     public void handleOrder(OrderManager orderManager) {
         List<Order> activeOrders = new ArrayList<>();
         activeOrders.addAll(orderManager.getOrdersByStatus("Handling"));
@@ -235,38 +238,61 @@ public abstract class Role {
     }
 
     public boolean cancelOrder(OrderManager orderManager) {
+        List<Order> processingOrders = new ArrayList<>(orderManager.getOrdersByStatus("Processing"));
+        if (processingOrders.isEmpty()) {
+            System.out.println("No processing orders available to cancel.");
+            return false;
+        }
+
+        // Sort by timestamp
+        processingOrders.sort((o1, o2) -> {
+            String t1 = o1.getTimestamp();
+            String t2 = o2.getTimestamp();
+            if (t1 == null) return (t2 == null) ? 0 : -1;
+            return t1.compareTo(t2);
+        });
+
+        System.out.println("\n=== Cancel Processing Order ===");
+        for (int i = 0; i < processingOrders.size(); i++) {
+            Order order = processingOrders.get(i);
+            System.out.printf("%d. ID: %s | Customer: %s | Time: %s%n", 
+                i + 1, order.getOrderId(), order.getCustomerName(), order.getTimestamp());
+        }
+
         Scanner scanner = new Scanner(System.in);
-        
-        System.out.print("\nEnter the Order ID to cancel (or -1 to go back): ");
-        String orderId = scanner.nextLine().trim();
-        
-        if (orderId.equals("-1")) {
-            return false; // User backed out
-        }
-
-        // 1. Find the order first
-        Order order = orderManager.getOrderById(orderId);
-        
-        if (order == null) {
-            System.out.println("Order not found.");
-            return false;
-        }
-        
-        // 2. Check if it's already completed or cancelled
-        if (order.getStatus().equalsIgnoreCase("Completed") || order.getStatus().equalsIgnoreCase("Cancelled")) {
-            System.out.println("This order cannot be cancelled because its status is: " + order.getStatus());
-            return false;
-        }
-
-        // 3. Confirm and cancel
+        System.out.print("\nChoose order number to cancel (0 to go back): ");
+        int choice;
         try {
-            orderManager.changeOrderStatus(order, "Cancelled");
-            System.out.println("Order " + orderId + " has been successfully cancelled.");
-        } catch (Exception e) {
-            System.out.println("An error occurred while cancelling the order.");
+            choice = Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input! Please enter a number.");
             return false;
         }
-        return true;
+
+        if (choice == 0) return false;
+        if (choice < 1 || choice > processingOrders.size()) {
+            System.out.println("Invalid order number!");
+            return false;
+        }
+
+        Order order = processingOrders.get(choice - 1);
+        
+        System.out.print("Are you sure you want to cancel order " + order.getOrderId() + "? (y/n): ");
+        String confirm = scanner.nextLine().trim().toLowerCase();
+        
+        if (confirm.equals("y")) {
+            try {
+                orderManager.changeOrderStatus(order, "Cancelled");
+                System.out.println("Order " + order.getOrderId() + " cancelled successfully.");
+                return true;
+            } catch (Exception e) {
+                System.out.println("Error cancelling order: " + e.getMessage());
+                return false;
+            }
+        } else {
+            System.out.println("Cancellation aborted.");
+            return false;
+        }
     }
 
     public void editProcessingOrder(OrderManager orderManager) {
