@@ -1,11 +1,11 @@
 package model.command;
 
+import java.util.List;
+import java.util.Scanner;
 import model.Member;
 import model.order.Order;
 import model.order.OrderItem;
 import service.OrderManager;
-import java.util.List;
-import java.util.Scanner;
 
 public class ViewOrdersCommand implements Command {
     private Member member;
@@ -61,19 +61,21 @@ public class ViewOrdersCommand implements Command {
             }
             System.out.println();
         }
-
-        System.out.println("[m] Back to main menu");
-        System.out.println("[r] Reorder a previous order");
+        while(true){
+        System.out.println("[-1] Back to main menu");
+        System.out.println("[0] Reorder a previous order");
         System.out.print("Choose: ");
 
         String input = scanner.nextLine().toLowerCase();
 
-        if (input.equals("m")) {
+        if (input.equals("-1")) {
             return;
-        } else if (input.equals("r")) {
+        } else if (input.equals("0")) {
             new model.command.ReorderCommand(recentOrders, true, scanner, reorderCallback).execute();
+            break;
         } else {
-            System.out.println("Invalid option!");
+            System.out.println("Invalid option!\n");
+        }
         }
     }
 

@@ -86,14 +86,19 @@ public class MemberManager {
         }
         return false;
     }
+
+    public boolean isExistUserName(String username){
+        for (Member member : members.values()) {
+            if (member.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     public boolean register(String username, String password, String name, String phone) throws IOException {
         // Check if username exists
-        for (Member member : members.values()) {
-            if (member.getUsername().equals(username)) {
-                return false;
-            }
-        }
+        if(isExistUserName(username)){return false;}
         
         String id = generateMemberId();
         Member newMember = new Member(id, username, password, name, phone);

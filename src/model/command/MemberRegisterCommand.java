@@ -1,8 +1,8 @@
 package model.command;
 
-import service.MemberManager;
 import java.io.IOException;
 import java.util.Scanner;
+import service.MemberManager;
 
 public class MemberRegisterCommand implements Command {
     private MemberManager memberManager;
@@ -24,10 +24,22 @@ public class MemberRegisterCommand implements Command {
 
         while (step < 4) {
             if (step == 0) {
+                boolean checkUserName = true;
+                while(checkUserName){
                 System.out.print("Username: ");
                 username = scanner.nextLine();
-                if (username.equals("-1")) return;
+                if (username.equals("-1")) {
+                    checkUserName = false;
+                    break;
+                }
+                if(memberManager.isExistUserName(username)){
+                    System.out.println("Username already exist!");
+                    continue;
+                }
                 step++;
+                break;
+                }
+                if (!checkUserName) return;
             } else if (step == 1) {
                 System.out.print("Password: ");
                 password = scanner.nextLine();
