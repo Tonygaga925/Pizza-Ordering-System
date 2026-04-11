@@ -229,6 +229,28 @@
     "status": "Processing",
     "discountRate": 0.0
   },
+  "ORD1775907440070": {
+    "orderId": "ORD1775907440070",
+    "customerName": "Guest Name",
+    "phone": "87654321",
+    "items": [
+      {
+        "pizzaDescription": "Margherita + Olive + Cheese (Small)",
+        "pizzaPrice": 58.0,
+        "pizzaPoints": 133,
+        "sizeName": "Small",
+        "sizeMultiplier": 1.0,
+        "quantity": 1
+      }
+    ],
+    "originalTotal": 58.0,
+    "finalTotal": 58.0,
+    "discountApplied": 0.0,
+    "totalPoints": 0,
+    "timestamp": "2026-04-11 19:37:20",
+    "status": "Processing",
+    "discountRate": 0.0
+  },
   "ORD1775888785735": {
     "orderId": "ORD1775888785735",
     "memberId": "M001",
@@ -421,7 +443,7 @@
     "discountApplied": 0.0,
     "totalPoints": 0,
     "timestamp": "2026-04-09 22:41:37",
-    "status": "Processing",
+    "status": "Completed",
     "discountRate": 0.0
   },
   "ORD1775649244968": {

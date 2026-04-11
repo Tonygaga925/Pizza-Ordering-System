@@ -10,7 +10,6 @@ import model.pizza.Pizza;
 import model.pizza.PizzaFactory;
 import model.size.Size;
 import model.size.SizeFactory;
-import model.command.AddToppingCommand;
 import model.command.CommandHistory;
 import service.OrderManager;
 
@@ -124,22 +123,13 @@ public abstract class Role {
             }
         }
         Order currentOrder = earliestOrderList.get(0);
-        try {
-            orderManager.changeOrderStatus(currentOrder, "Handling");
-        } catch (java.io.IOException e){
-            System.out.println("An unexpected error occurred. Please try again later.");
-            return;
-        }
+        model.command.CommandFactory.getInstance().createChangeOrderStatusCommand(currentOrder, "Handling").execute();
+        
         Scanner scanner = new Scanner(System.in);
         System.out.print("\nType 'y' to finish this order : ");
         String input = scanner.nextLine().trim();
         if (input.equalsIgnoreCase("y")) {
-            try {
-                orderManager.changeOrderStatus(currentOrder, "Completed");
-                System.out.println("Order " + currentOrder.getOrderId() + " has been marked as Completed.");
-            } catch (java.io.IOException e) {
-                System.out.println("An unexpected error occurred. Please try again later.");
-            }
+            model.command.CommandFactory.getInstance().createChangeOrderStatusCommand(currentOrder, "Completed").execute();
         }
     }
 
@@ -149,7 +139,6 @@ public abstract class Role {
         String orderID = sc.nextLine().trim();
         Order order = orderManager.getOrderById(orderID);
         
-        // Handle case where order is not found
         if (order == null) {
             System.out.println("\n==================================");
             System.out.println("         Order not found.         ");
@@ -157,88 +146,14 @@ public abstract class Role {
             return;
         }
 
-        System.out.println("\n╔════════════════════════════════════════════════╗");
-        System.out.println("║                  ORDER DETAILS                 ║");
-        
-        // --- CONNECTION LOGIC ---
-        // 1. Create the title text (without the index 'i' since it's a single search)
-        String orderTitle = String.format(" Order: %s ", order.getOrderId());
-        
-        // 2. Calculate remaining dashes to make the box exactly 50 characters wide
-        int remainingDashes = 50 - 2 - orderTitle.length() - 1; // 50 total - "╟─" - title - "╢"
-        
-        // 3. Print the connecting border using ╟ and ╢
-        System.out.print("╟─" + orderTitle);
-        for (int d = 0; d < remainingDashes; d++) {
-            System.out.print("─");
-        }
-        System.out.println("╢");
-        // -----------------------------
-        
-        System.out.printf("│ Customer: %-36s │%n", order.getCustomerName());
-        System.out.printf("│ Date:     %-36s │%n", order.getTimestamp());
-        System.out.printf("│ Status:   %-36s │%n", order.getStatus()); // Helpful for search results
-        System.out.println("├────────────────────────────────────────────────┤");
-        
-        for (int j = 0; j < order.getItems().size(); j++) {
-            model.order.OrderItem item = order.getItems().get(j);
-            String desc = item.getDescription(); 
-            
-            String pizzaName = desc;
-            String[] toppings = new String[0];
-
-            // 1. Extract the size at the end (e.g., "(Medium)")
-            String size = "";
-            int sizeStart = desc.lastIndexOf("(");
-            if (sizeStart != -1) {
-                size = desc.substring(sizeStart);
-                desc = desc.substring(0, sizeStart).trim();
-            }
-
-            // 2. Split by '+' to separate the pizza name and extra toppings
-            if (desc.contains("+")) {
-                String[] parts = desc.split("\\+");
-                pizzaName = parts[0].trim() + " " + size;
-                
-                toppings = new String[parts.length - 1];
-                for (int k = 1; k < parts.length; k++) {
-                    toppings[k - 1] = parts[k].trim();
-                }
-            } else {
-                pizzaName = desc.trim() + " " + size;
-            }
-
-            // 3. Append the Quantity format (Check to prevent duplicates)
-            String nameWithQuantity = pizzaName;
-            if (!pizzaName.contains("| x")) {
-                nameWithQuantity += " | x " + item.getQuantity();
-            }
-
-            // 4. Print Item Details
-            System.out.printf("│ %-46s │%n", "Item " + (j + 1) + ":");
-            System.out.printf("│ %-46s │%n", nameWithQuantity);
-            System.out.println("│ Topping:                                       │");
-            
-            if (toppings.length == 0) {
-                System.out.println("│ No topping                                     │");
-            } else {
-                for (int k = 0; k < toppings.length; k++) {
-                    String toppingLine = String.format("%d. %s", (k + 1), toppings[k]);
-                    System.out.printf("│ %-46s │%n", toppingLine);
-                }
-            }
-            
-            // Print divider or bottom border
-            if (j < order.getItems().size() - 1) {
-                System.out.println("├────────────────────────────────────────────────┤");
-            } else {
-                System.out.println("└────────────────────────────────────────────────┘");
-            }
-        }
+        model.command.Command searchCmd = model.command.CommandFactory.getInstance().createSearchOrderCommand(false);
+        ((model.command.SearchOrderCommand)searchCmd).setOrderId(order.getOrderId());
+        ((model.command.SearchOrderCommand)searchCmd).setStaffInvoke(true);
+        searchCmd.execute();
     }
 
     public boolean cancelOrder(OrderManager orderManager) {
-        List<Order> processingOrders = new ArrayList<>(orderManager.getOrdersByStatus("Processing"));
+        java.util.List<Order> processingOrders = new java.util.ArrayList<>(orderManager.getOrdersByStatus("Processing"));
         if (processingOrders.isEmpty()) {
             System.out.println("No processing orders available to cancel.");
             return false;
@@ -281,14 +196,8 @@ public abstract class Role {
         String confirm = scanner.nextLine().trim().toLowerCase();
         
         if (confirm.equals("y")) {
-            try {
-                orderManager.changeOrderStatus(order, "Cancelled");
-                System.out.println("Order " + order.getOrderId() + " cancelled successfully.");
-                return true;
-            } catch (Exception e) {
-                System.out.println("Error cancelling order: " + e.getMessage());
-                return false;
-            }
+            model.command.CommandFactory.getInstance().createChangeOrderStatusCommand(order, "Cancelled").execute();
+            return true;
         } else {
             System.out.println("Cancellation aborted.");
             return false;
@@ -411,17 +320,9 @@ public abstract class Role {
         String action = scanner.nextLine().trim();
         if (action.equals("1")) {
             int newQty = getValidQuantity(scanner, "Enter new quantity (1-50): ");
-            selectedItem.setQuantity(newQty);
-            order.calculateTotals();
-            System.out.println("Quantity updated.");
+            model.command.CommandFactory.getInstance().createUpdateQuantityCommand(order, selectedItem, newQty).execute();
         } else if (action.equals("2")) {
-            if (items.size() <= 1) {
-                System.out.println("Cannot remove the only item in the order!");
-            } else {
-                items.remove(itemIdx);
-                order.calculateTotals();
-                System.out.println("Item removed.");
-            }
+            model.command.CommandFactory.getInstance().createRemoveItemCommand(order, items, itemIdx).execute();
         } else {
             System.out.println("Invalid action.");
         }
@@ -483,8 +384,8 @@ public abstract class Role {
                         if (itemBuilder.hasTopping(toppingName)) {
                             System.out.println("Topping already added!");
                         } else {
-                            AddToppingCommand command = new AddToppingCommand(toppingName, itemBuilder);
-                            history.executeCommand(command);
+                        model.command.Command command = model.command.CommandFactory.getInstance().createAddToppingCommand(toppingName, itemBuilder);
+                        history.executeCommand(command);
                         }
                     } else {
                         System.out.println("Invalid topping choice!");
@@ -498,8 +399,7 @@ public abstract class Role {
         int quantity = getValidQuantity(scanner, "Enter quantity (1-50): ");
 
         itemBuilder.setQuantity(quantity);
-        order.getItems().add(itemBuilder.build());
-        order.calculateTotals();
+        model.command.CommandFactory.getInstance().createAddItemCommand(order, order.getItems(), itemBuilder.build()).execute();
         System.out.println("Item added to order.");
     }
 

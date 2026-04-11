@@ -18,6 +18,7 @@ public class Employee {
         this.name = name;
         this.isActive = isActive;
         this.role = role;
+        initRole();
     }
 
     public void initRole() {

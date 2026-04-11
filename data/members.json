@@ -1,14 +1,4 @@
 {
-  "M005": {
-    "id": "M005",
-    "username": "bob123",
-    "password": "password123",
-    "name": "Bob",
-    "phone": "67880123",
-    "points": 7731,
-    "level": "VIP",
-    "registerDate": "2026-04-09 22:45:28"
-  },
   "M004": {
     "id": "M004",
     "username": "john123",
@@ -48,5 +38,25 @@
     "points": 16681,
     "level": "VIP",
     "registerDate": "2026-01-15 10:30:00"
+  },
+  "M006": {
+    "id": "M006",
+    "username": "testuser",
+    "password": "testpass",
+    "name": "Test Name",
+    "phone": "12345678",
+    "points": 0,
+    "level": "Normal",
+    "registerDate": "2026-04-11 19:37:07"
+  },
+  "M005": {
+    "id": "M005",
+    "username": "bob123",
+    "password": "password123",
+    "name": "Bob",
+    "phone": "67880123",
+    "points": 7731,
+    "level": "VIP",
+    "registerDate": "2026-04-09 22:45:28"
   }
 }

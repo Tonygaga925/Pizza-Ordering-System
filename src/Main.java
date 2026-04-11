@@ -1,6 +1,5 @@
 import model.pizza.*;
 import model.Member;
-import model.command.AddToppingCommand;
 import model.command.CommandHistory;
 import model.size.*;
 import model.order.*;
@@ -10,11 +9,11 @@ import service.RecommendationService;
 import service.MemberManager;
 import service.EmployeeManager;
 import model.employee.Employee;
-
+import model.command.*;
 import java.io.IOException;
 import java.util.*;
 
-public class Main implements RecommendationService.MainCallback {
+public class Main {
     private static MenuLoader menuLoader;
     private static OrderManager orderManager;
     private static MemberManager memberManager;
@@ -32,6 +31,7 @@ public class Main implements RecommendationService.MainCallback {
             orderManager.setMemberManager(memberManager);
 
             scanner = new Scanner(System.in);
+            CommandFactory.initialize(memberManager, orderManager, employeeManager, menuLoader, scanner);
 
             while (true) {
                 if (employeeManager.isLoggedIn()) {
@@ -64,19 +64,19 @@ public class Main implements RecommendationService.MainCallback {
         try {
             switch (choice) {
                 case 1:
-                    login();
+                    CommandFactory.getInstance().createMemberLoginCommand().execute();
                     break;
                 case 2:
-                    register();
+                    CommandFactory.getInstance().createMemberRegisterCommand().execute();
                     break;
                 case 3:
                     placeOrderWithBuilder(false, null);
                     break;
                 case 4:
-                    searchOrderById(false);
+                    CommandFactory.getInstance().createSearchOrderCommand(false).execute();
                     break;
                 case 5:
-                    employeeLogin();
+                    CommandFactory.getInstance().createEmployeeLoginCommand().execute();
                     break;
                 case 6:
                     System.out.println("Goodbye!");
@@ -124,16 +124,30 @@ public class Main implements RecommendationService.MainCallback {
                     placeOrderWithBuilder(true, null);
                     break;
                 case 3:
-                    viewMyOrders();
+                    CommandFactory.getInstance().createViewOrdersCommand(memberManager.getCurrentMember(), new ReorderCommand.ReorderCallback() {
+                        @Override
+                        public void onReorder(List<OrderItem> items, boolean isMember) throws IOException {
+                            continueOrderFlow(items, isMember);
+                        }
+                    }).execute();
                     break;
                 case 4:
-                    searchOrderById(true);
+                    CommandFactory.getInstance().createSearchOrderCommand(true).execute();
                     break;
                 case 5:
                     memberManager.displayMemberInfo();
                     break;
                 case 6:
-                    getRecommendation();
+                    CommandFactory.getInstance().createGetRecommendationCommand(memberManager.getCurrentMember(), new RecommendationService.MainCallback() {
+                        @Override
+                        public void startOrderWithRecommendedPizza(String pizzaName, boolean isMember) {
+                            try {
+                                placeOrderWithBuilder(isMember, pizzaName);
+                            } catch (IOException e) {
+                                System.out.println("Error: " + e.getMessage());
+                            }
+                        }
+                    }).execute();
                     break;
                 case 7:
                     memberManager.logout();
@@ -165,164 +179,7 @@ public class Main implements RecommendationService.MainCallback {
         return getIntInput();
     }
 
-    private static void login() throws IOException {
-        System.out.println("\n--- Member Login (-1 to go back to previous step) ---");
-        String username = "";
-        String password = "";
-        int step = 0;
-        
-        while (step < 2) {
-            if (step == 0) {
-                System.out.print("Username: ");
-                username = scanner.nextLine();
-                if (username.equals("-1")) return;
-                step++;
-            } else if (step == 1) {
-                System.out.print("Password: ");
-                password = scanner.nextLine();
-                if (password.equals("-1")) {
-                    step--;
-                } else {
-                    step++;
-                }
-            }
-        }
 
-        if (memberManager.login(username, password)) {
-            System.out.println("Login successful");
-        } else {
-            System.out.println("Invalid username or password!");
-        }
-    }
-
-    private static void registerEmployee() throws IOException{
-        System.out.println("\n=== Create Staff Account [-1 to go back to previous step] ===");
-        String username = "";
-        String password = "";
-        String name = "";
-        int step = 0;
-        while (step < 3) {
-            if (step == 0) {
-                System.out.print("Username: ");
-                username = scanner.nextLine().trim();
-                if (username.equals("-1")) return;
-                
-                if (username.isEmpty()) {
-                    System.out.println("Username cannot be empty.");
-                } else {
-                    step++;
-                }
-            }
-            else if (step == 1) {
-                System.out.print("Password: ");
-                password = scanner.nextLine().trim();
-                if (password.equals("-1")) {
-                    step--; // Go back to Username
-                } else if (password.isEmpty()) {
-                    System.out.println("Password cannot be empty.");
-                } else {
-                    step++;
-                }
-            }
-            else if (step == 2) {
-                System.out.print("Staff Name: ");
-                name = scanner.nextLine().trim();
-                if (name.equals("-1")) {
-                    step--; // Go back to Password
-                } else if (name.isEmpty()) {
-                    System.out.println("Name cannot be empty.");
-                } else {
-                    step++;
-                }
-            }
-        }
-        if (employeeManager.registerStaff(username, password, name)) {
-            System.out.println("Staff account for '" + name + "' created successfully.");
-        } else {
-            System.out.println("Registration failed: Username already exists!");
-        }
-    }
-
-    private static void register() throws IOException {
-        System.out.println("\n--- Register (-1 to go back to previous step) ---");
-        String username = "";
-        String password = "";
-        String name = "";
-        String phone = "";
-        int step = 0;
-
-        while (step < 4) {
-            if (step == 0) {
-                System.out.print("Username: ");
-                username = scanner.nextLine();
-                if (username.equals("-1")) return;
-                step++;
-            } else if (step == 1) {
-                System.out.print("Password: ");
-                password = scanner.nextLine();
-                if (password.equals("-1")) {
-                    step--;
-                } else {
-                    step++;
-                }
-            } else if (step == 2) {
-                System.out.print("Your Name: ");
-                name = scanner.nextLine();
-                if (name.equals("-1")) {
-                    step--;
-                } else {
-                    step++;
-                }
-            } else if (step == 3) {
-                System.out.print("Phone Number: ");
-                phone = scanner.nextLine();
-                if (phone.equals("-1")) {
-                    step--;
-                } else if (phone.length() != 8) {
-                    System.out.println("Phone number must be exactly 8 digits.");
-                } else if (!phone.matches("\\d+")) {
-                    System.out.println("Phone number can only contain numbers.");
-                } else {
-                    step++;
-                }
-            }
-        }
-
-        if (memberManager.register(username, password, name, phone)) {
-            System.out.println("Registration successful. Please login.");
-        } else {
-            System.out.println("Username already exists!");
-        }
-    }
-
-    private static void employeeLogin() {
-        int step = 0;
-        String username = "";
-        String password = "";
-        System.out.println("\n--- Employee Login (-1 to go back to previous step) ---");
-        while(step<2){
-            if(step == 0){
-                System.out.print("Username: ");
-                username = scanner.nextLine();
-                if(username.equals("-1")) return;
-                step++;
-            }
-            else if(step == 1){
-                System.out.print("Password: ");
-                password = scanner.nextLine();
-                if(password.equals("-1")) 
-                    step--;
-                else 
-                    step++;
-            }
-        }
-
-        if (employeeManager.login(username, password)) {
-            System.out.println("Employee login successful! Welcome, " + employeeManager.getCurrentEmployee().getName());
-        } else {
-            System.out.println("Invalid employee username or password!");
-        }
-    }
 
     private static void showEmployeeMenu() {
         Employee current = employeeManager.getCurrentEmployee();
@@ -356,11 +213,7 @@ public class Main implements RecommendationService.MainCallback {
             String choice = sc.nextLine().trim();
             switch (choice) {
                 case "1":
-                    try{
-                        registerEmployee();
-                    }catch (IOException e) {
-                        System.out.println("Error: " + e.getMessage());
-                    }
+                    CommandFactory.getInstance().createRegisterEmployeeCommand().execute();
                     break;
                 case "2":
                     current.editProcessingOrder(orderManager);
@@ -434,203 +287,6 @@ public class Main implements RecommendationService.MainCallback {
         }
     }
 
-    // for member use
-    private static void viewMyOrders() {
-        Member member = memberManager.getCurrentMember();
-
-        // Get orders from file
-        List<Order> orders = orderManager.getOrdersByMemberIdFromFile(member.getId());
-
-        if (orders.isEmpty()) {
-            System.out.println("You have no orders yet.");
-            return;
-        }
-
-        // Show only the 9 most recent orders
-        int maxDisplay = Math.min(orders.size(), 9);
-        List<Order> recentOrders = orders.subList(0, maxDisplay);
-
-        System.out.println("\n=== Your Recent Orders (Latest order on top, max 9 shown) ===\n");
-        for (int i = 0; i < recentOrders.size(); i++) {
-            Order order = recentOrders.get(i);
-            String timestamp = order.getTimestamp();
-            if (timestamp != null && timestamp.length() > 19) {
-                timestamp = timestamp.substring(0, 19);
-            }
-
-            System.out.printf("%d. %s | Total: $%.2f | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(),
-                    timestamp);
-            System.out.println("    Item(s):");
-
-            List<OrderItem> items = order.getItems();
-            for (OrderItem item : items) {
-                System.out.printf("\t%s - $%.2f each = $%.2f%n",
-                        item.getDescription(),
-                        item.getPizzaPrice(),
-                        item.getItemTotal());
-            }
-            if (order.getDiscountApplied() > 0) {
-                System.out.printf("\n\tOriginal Total: $%.2f, Discount: -$%.2f%n", order.getOriginalTotal(),
-                        order.getDiscountApplied());
-            } else {
-                System.out.printf("\n\tTotal: $%.2f%n", order.getOriginalTotal());
-            }
-            System.out.println();
-        }
-
-        System.out.println("[m] Back to main menu");
-        System.out.println("[r] Reorder a previous order");
-        System.out.print("Choose: ");
-
-        String input = scanner.nextLine().toLowerCase();
-
-        if (input.equals("m")) {
-            return;
-        } else if (input.equals("r")) {
-            reorderPreviousOrder(recentOrders, true);
-        } else {
-            System.out.println("Invalid option!");
-        }
-    }
-
-    private static void reorderPreviousOrder(List<Order> orders, boolean isMember) {
-        if (orders.isEmpty()) {
-            System.out.println("No orders to reorder.");
-            return;
-        }
-
-        System.out.println("\n=== Select Order to Reorder ===");
-        for (int i = 0; i < orders.size(); i++) {
-            Order order = orders.get(i);
-            String timestamp = order.getTimestamp();
-            if (timestamp != null && timestamp.length() > 19) {
-                timestamp = timestamp.substring(0, 19);
-            }
-            System.out.printf("%d. %s | $%.2f | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(), timestamp);
-        }
-
-        System.out.print("\nEnter number to reorder "
-                + (orders.size() == 1 ? "(e.g. 1) " : "(1-" + orders.size() + "), ") + "or input 0 to cancel: ");
-        int choice = getIntInput();
-
-        if (choice == 0) {
-            System.out.println("Reorder cancelled.");
-            return;
-        }
-
-        if (choice < 1 || choice > orders.size()) {
-            System.out.println("Invalid choice!");
-            return;
-        }
-
-        Order selectedOrder = orders.get(choice - 1);
-        reorderOrder(selectedOrder, isMember);
-    }
-
-    private static void reorderOrder(Order originalOrder, boolean isMember) {
-        System.out.println("\n=== Reorder Previous Order ===");
-
-        List<OrderItem> newItems = new ArrayList<>();
-
-        // Copy the original items directly
-        for (OrderItem originalItem : originalOrder.getItems()) {
-            OrderItem newItem = new OrderItem(
-                    originalItem.getPizzaDescription(),
-                    originalItem.getPizzaPrice(),
-                    originalItem.getPizzaPoints(),
-                    originalItem.getSizeName(),
-                    originalItem.getSizeMultiplier(),
-                    originalItem.getQuantity());
-            newItems.add(newItem);
-            System.out.println("\nCurrent Item(s): " + newItem.getDescription());
-
-            if (isMember) {
-                Member member = memberManager.getCurrentMember();
-                if (member.getState().getDiscount() > 0) {
-                    System.out.printf("Total: $%.2f%n", newItem.getItemTotal());
-                    Double discountAmount = newItem.getItemTotal() * member.getState().getDiscount();
-                    System.out.printf("Discount: -$%.2f%n", discountAmount);
-                    System.out.printf("Final Total: $%.2f%n", newItem.getItemTotal() - discountAmount);
-                } else {
-                    System.out.printf("Total: $%.2f%n", newItem.getItemTotal());
-                }
-                System.out.println("Points: " + newItem.getItemPoints());
-            } else {
-                // for guest users
-                System.out.printf("Total: $%.2f%n", newItem.getItemTotal());
-            }
-        }
-        // Use existing continueOrderFlow to handle checkout
-        try {
-            continueOrderFlow(newItems, isMember);
-        } catch (IOException e) {
-            System.out.println("Error processing order: " + e.getMessage());
-        }
-    }
-
-    private static void searchOrderById(boolean isMember) {
-        System.out.print("Enter Order ID: ");
-        String orderId = scanner.nextLine();
-
-        Order order = orderManager.getOrderById(orderId);
-
-        if (order == null) {
-            System.out.println("Order not found!");
-            return;
-        }
-        String notAuthorizedMsg = "You are not authorized to view this order.";
-
-        if (isMember) {
-            Member member = memberManager.getCurrentMember();
-            // Check if the order belongs to the current member
-            if (order.getMemberId() != null && !order.getMemberId().equals(member.getId())) {
-                System.out.println(notAuthorizedMsg);
-                return;
-            }
-            // Check if the order is a guest order
-            else if (order.getMemberId() == null) {
-                System.out.println(notAuthorizedMsg);
-                return;
-            }
-        } else {
-            // Guest user cannot check members' orders
-            if (order.getMemberId() != null) {
-                System.out.println(notAuthorizedMsg);
-                return;
-            }
-        }
-        orderManager.displayOrder(order, isMember);
-    }
-
-    private static String generateOrderId() {
-        return "ORD" + System.currentTimeMillis();
-    }
-
-    // for member get recommendation on pizza
-    private static void getRecommendation() {
-        Member current = memberManager.getCurrentMember();
-        RecommendationService recommendationService = new RecommendationService(orderManager, menuLoader, scanner);
-        recommendationService.setCallback(new RecommendationService.MainCallback() {
-            @Override
-            public void startOrderWithRecommendedPizza(String pizzaName, boolean isMember) {
-                try {
-                    placeOrderWithBuilder(isMember, pizzaName);
-                } catch (IOException e) {
-                    System.out.println("Error: " + e.getMessage());
-                }
-            }
-        });
-        recommendationService.getRecommendation(current, true);
-    }
-
-    @Override
-    public void startOrderWithRecommendedPizza(String pizzaName, boolean isMember) {
-        try {
-            placeOrderWithBuilder(isMember, pizzaName);
-        } catch (IOException e) {
-            System.out.println("Error starting order: " + e.getMessage());
-        }
-    }
 
     // continue order flow (from cart to checkout)
 private static void continueOrderFlow(List<OrderItem> items, boolean isMember) throws IOException {
@@ -656,7 +312,7 @@ private static void continueOrderFlow(List<OrderItem> items, boolean isMember) t
             }
             order = new Order(null, name, phone, items);
         }
-        checkOutOrder(order, isMember);
+        CommandFactory.getInstance().createPlaceOrderCommand(order, isMember).execute();
     }
 
     public static void displayPizzaInfo(OrderItemBuilder itemBuilder, boolean isMember) {
@@ -825,8 +481,8 @@ private static void continueOrderFlow(List<OrderItem> items, boolean isMember) t
 
             // Create and execute command, add topping by command
             // Perform undo / redo , add / remove topping action in this command
-            AddToppingCommand command = new AddToppingCommand(toppingName, itemBuilder);
-            history.executeCommand(command);
+            Command command = CommandFactory.getInstance().createAddToppingCommand(toppingName, itemBuilder);
+            ((CommandHistory)history).executeCommand(command);
 
             System.out.println("Added: " + toppingName);
         }
@@ -995,36 +651,8 @@ private static void continueOrderFlow(List<OrderItem> items, boolean isMember) t
         }
 
         displayCart(items);
-        checkOutOrder(orderBuilder.build(), isMember);
+        CommandFactory.getInstance().createPlaceOrderCommand(orderBuilder.build(), isMember).execute();
     }
 
-    public static void checkOutOrder(Order order, boolean isMember) throws IOException {
 
-        String orderId = generateOrderId();
-        order.setOrderId(orderId);
-        Member member = isMember ? memberManager.getCurrentMember() : null;
-
-        if (isMember) {
-            if (member.getDiscount() > 0) {
-                order.applyDiscount(member.getDiscount());
-            }
-        } else { // for guest, no points earned
-            order.setTotalPoints(0);
-        }
-
-        System.out.print("\nConfirm order? (y/n): ");
-        String confirm = scanner.nextLine().toLowerCase();
-        if (confirm.equals("y")) {
-            orderManager.placeOrder(order);
-            System.out.println("\nOrder placed successfully!");
-            System.out.println("Your Order ID: " + orderId);
-            // for updating member points and change member state if over the vip threshold
-            if (isMember) {
-                memberManager.updateMemberPoints(member.getId(), order.getTotalPoints());
-            }
-            order.displayOrder(isMember);
-        } else {
-            System.out.println("Order cancelled.");
-        }
-    }
 }
