@@ -1,8 +1,10 @@
 package controller;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import model.command.CommandHistory;
+import model.employee.Employee;
 import model.order.Order;
 import model.order.OrderItem;
 import model.order.OrderItemBuilder;
@@ -10,15 +12,13 @@ import model.pizza.Pizza;
 import model.pizza.PizzaFactory;
 import model.size.Size;
 import model.size.SizeFactory;
-import model.command.CommandHistory;
 import service.OrderManager;
-import model.employee.Employee;
 
 public class EmployeeController {
 
     public static int handleMenuChoice(Employee employee, int choice, OrderManager orderManager) {
         boolean isManager = employee.accessAdminPanel();
-        
+
         switch (choice) {
             case 1:
                 handleOrder(employee, orderManager);
@@ -36,11 +36,15 @@ public class EmployeeController {
                 }
                 return 1; // Staff Logout
             case 5:
-                if (isManager) return 2; // Manager Access Admin Panel
-                return 0;
+                if (isManager) {
+                    return 2; // Manager Access Admin Panel
+
+                                }return 0;
             case 6:
-                if (isManager) return 1; // Manager Logout
-                return 0;
+                if (isManager) {
+                    return 1; // Manager Logout
+
+                                }return 0;
             default:
                 view.MainView.displayMessage("Invalid choice!");
                 return 0;
@@ -69,9 +73,15 @@ public class EmployeeController {
 
         // Sort to show earliest orders first (oldest on top)
         activeOrders.sort((o1, o2) -> {
-            if (o1.getTimestamp() == null && o2.getTimestamp() == null) return 0;
-            if (o1.getTimestamp() == null) return 1;
-            if (o2.getTimestamp() == null) return -1;
+            if (o1.getTimestamp() == null && o2.getTimestamp() == null) {
+                return 0;
+            }
+            if (o1.getTimestamp() == null) {
+                return 1;
+            }
+            if (o2.getTimestamp() == null) {
+                return -1;
+            }
             return o1.getTimestamp().compareTo(o2.getTimestamp());
         });
         System.out.println();
@@ -86,7 +96,7 @@ public class EmployeeController {
             Order order = earliestOrderList.get(i);
 
             String orderTitle = String.format(" Order %d: %s ", i + 1, order.getOrderId());
-            int remainingDashes = 50 - 2 - orderTitle.length() - 1; 
+            int remainingDashes = 50 - 2 - orderTitle.length() - 1;
 
             System.out.print("╟─" + orderTitle);
             for (int d = 0; d < remainingDashes; d++) {
@@ -150,12 +160,22 @@ public class EmployeeController {
             }
         }
         Order currentOrder = earliestOrderList.get(0);
-        
+
         try {
             model.command.CommandFactory.getInstance().createChangeOrderStatusCommand(currentOrder, "Handling").execute();
-            String confirm = view.InputView.getStringInput("\nType 'y' to finish this order : ");
-            if (confirm.equalsIgnoreCase("y")) {
-                model.command.CommandFactory.getInstance().createChangeOrderStatusCommand(currentOrder, "Completed").execute();
+
+            String confirm;
+            while (true) {
+                confirm = view.InputView.getStringInput("\nType 'y' to finish this order ('n' to exit without change) : ");
+                if (confirm.equalsIgnoreCase("y")) {
+                    model.command.CommandFactory.getInstance().createChangeOrderStatusCommand(currentOrder, "Completed").execute();
+                    break;
+                } else if (confirm.equalsIgnoreCase("n")) {
+                    System.out.println("Order status remains no change.");
+                    break;
+                } else {
+                    System.out.println("Please input 'y' or 'n'");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -193,7 +213,9 @@ public class EmployeeController {
         processingOrders.sort((o1, o2) -> {
             String t1 = o1.getTimestamp();
             String t2 = o2.getTimestamp();
-            if (t1 == null) return (t2 == null) ? 0 : -1;
+            if (t1 == null) {
+                return (t2 == null) ? 0 : -1;
+            }
             return t1.compareTo(t2);
         });
 
@@ -203,15 +225,29 @@ public class EmployeeController {
             System.out.printf("%d. ID: %s | Customer: %s | Time: %s%n",
                     i + 1, order.getOrderId(), order.getCustomerName(), order.getTimestamp());
         }
+        Scanner scanner = new Scanner(System.in);
+        int choice = 0;
+        Order order;
+        while (true) {
+            System.out.print("\nChoose order number to cancel (-1 to go back): ");
 
-        int choice = view.InputView.getIntInput("\nChoose order number to cancel (0 to go back): ");
-        if (choice == 0) return false;
-        if (choice < 1 || choice > processingOrders.size()) {
-            System.out.println("Invalid order number!");
-            return false;
+            try {
+                choice = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a number.");
+                continue;
+            }
+            if (choice < -1 || choice == 0 || choice > processingOrders.size()) {
+                System.out.println("Invalid order number!");
+                continue;
+            }
+            break;
+        }
+        if (choice == -1) {
+            return false; // leave the cancel action
         }
 
-        Order order = processingOrders.get(choice - 1);
+        order = processingOrders.get(choice - 1);
         String confirm = view.InputView.getStringInput("Are you sure you want to cancel order " + order.getOrderId() + "? (y/n): ");
 
         if (confirm.equalsIgnoreCase("y")) {
@@ -243,9 +279,15 @@ public class EmployeeController {
         }
 
         processingOrders.sort((o1, o2) -> {
-            if (o1.getTimestamp() == null && o2.getTimestamp() == null) return 0;
-            if (o1.getTimestamp() == null) return 1;
-            if (o2.getTimestamp() == null) return -1;
+            if (o1.getTimestamp() == null && o2.getTimestamp() == null) {
+                return 0;
+            }
+            if (o1.getTimestamp() == null) {
+                return 1;
+            }
+            if (o2.getTimestamp() == null) {
+                return -1;
+            }
             return o1.getTimestamp().compareTo(o2.getTimestamp());
         });
 
@@ -260,14 +302,31 @@ public class EmployeeController {
                     i + 1, order.getOrderId(), order.getCustomerName(), timestamp, order.getFinalTotal());
         }
 
-        int choice = view.InputView.getIntInput("\nEnter the number of the order to edit (or 0 to cancel): ");
-        if (choice == 0) return;
-        if (choice < 1 || choice > processingOrders.size()) {
-            System.out.println("Invalid order number!");
-            return;
+        Scanner scanner = new Scanner(System.in);
+        int choice = 0;
+        Order selectedOrder;
+        while (true) {
+            System.out.print("\nEnter the number of the order to edit (or -1 to return): ");
+            String input = scanner.nextLine().trim();
+            try {
+                choice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input!");
+                continue;
+            }
+
+            if (choice < -1 || choice == 0 || choice > processingOrders.size()) {
+                System.out.println("Invalid order number!");
+                continue;
+            }
+            break;
         }
 
-        Order selectedOrder = processingOrders.get(choice - 1);
+        if (choice == -1) {
+            return; // leave this page
+        }
+
+        selectedOrder = processingOrders.get(choice - 1);
         boolean editing = true;
         while (editing) {
             System.out.println("\n=== Editing Order: " + selectedOrder.getOrderId() + " ===");
@@ -275,8 +334,8 @@ public class EmployeeController {
             System.out.println("\n1. Edit Ordered Item (Remove/Update Quantity)");
             System.out.println("2. Add New Item");
             System.out.println("3. Save and Exit");
-            System.out.println("0. Cancel / Exit without saving");
-            
+            System.out.println("4. Cancel / Exit without saving");
+
             String action = view.InputView.getStringInput("Choose: ");
             switch (action) {
                 case "1":
@@ -294,7 +353,7 @@ public class EmployeeController {
                     }
                     editing = false;
                     break;
-                case "0":
+                case "4":
                     System.out.println("Changes discarded.");
                     editing = false;
                     break;
@@ -312,7 +371,9 @@ public class EmployeeController {
         }
         int itemIdx = view.InputView.getIntInput("Enter item number (0 to cancel): ") - 1;
 
-        if (itemIdx == -1) return;
+        if (itemIdx == -1) {
+            return;
+        }
         if (itemIdx < 0 || itemIdx >= items.size()) {
             System.out.println("Invalid item number!");
             return;
@@ -322,7 +383,7 @@ public class EmployeeController {
         System.out.println("\nSelected Item: " + selectedItem.getDescription());
         System.out.println("1. Update Quantity");
         System.out.println("2. Remove Item");
-        
+
         String action = view.InputView.getStringInput("Choose: ");
         try {
             if (action.equals("1")) {
@@ -341,7 +402,9 @@ public class EmployeeController {
     private static void addNewItemToOrder(Order order, OrderManager orderManager) {
         view.MenuView.displayPizzaMenu(PizzaFactory.getPizzaNames(), PizzaFactory.getPizzaPrices(), PizzaFactory.getPizzaPoints(), false, true);
         int pizzaChoice = view.InputView.getIntInput("Choose pizza number (0 to cancel): ");
-        if (pizzaChoice == 0) return;
+        if (pizzaChoice == 0) {
+            return;
+        }
         if (pizzaChoice < 1 || pizzaChoice > PizzaFactory.getPizzaCount()) {
             System.out.println("Invalid pizza choice!");
             return;
@@ -370,16 +433,24 @@ public class EmployeeController {
             System.out.printf("Current Price: $%.2f%n", itemBuilder.getTotalPrice());
 
             String prompt = "\nCommands: 0=Done, enter topping number";
-            if (history.canUndo()) prompt += ", u=Undo";
-            if (history.canRedo()) prompt += ", r=Redo";
-            
+            if (history.canUndo()) {
+                prompt += ", u=Undo";
+            }
+            if (history.canRedo()) {
+                prompt += ", r=Redo";
+            }
+
             String input = view.InputView.getStringInput(prompt + ": ").toLowerCase();
             if (input.equals("0")) {
                 addingToppings = false;
             } else if (input.equals("u")) {
-                if (!history.undo()) System.out.println("Nothing to undo!");
+                if (!history.undo()) {
+                    System.out.println("Nothing to undo!");
+                }
             } else if (input.equals("r")) {
-                if (!history.redo()) System.out.println("Nothing to redo!");
+                if (!history.redo()) {
+                    System.out.println("Nothing to redo!");
+                }
             } else {
                 try {
                     int toppingChoice = Integer.parseInt(input);
@@ -402,7 +473,7 @@ public class EmployeeController {
 
         int quantity = getValidQuantity("Enter quantity (1-50): ");
         itemBuilder.setQuantity(quantity);
-        
+
         try {
             model.command.CommandFactory.getInstance().createAddItemCommand(order, order.getItems(), itemBuilder.build()).execute();
         } catch (Exception e) {

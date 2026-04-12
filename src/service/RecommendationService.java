@@ -253,12 +253,6 @@ public class RecommendationService {
         }
     }
 
-    // Display default recommendation message
-    private void displayDefaultRecommendation() {
-        System.out.println("\nTop Recommendation: PEPPERONI");
-        System.out.println("   It's our most popular pizza - you can't go wrong!");
-    }
-
     // Display pizza details (price and points) - Updated to use MenuLoader
     private void displayPizzaDetails(String pizzaName) {
         List<String> pizzaNames = menuLoader.getPizzaNames();

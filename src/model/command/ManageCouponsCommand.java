@@ -1,11 +1,10 @@
 package model.command;
 
+import java.io.IOException;
+import java.util.Map;
 import model.order.Coupon;
 import service.CouponManager;
 import view.InputView;
-
-import java.io.IOException;
-import java.util.Map;
 
 public class ManageCouponsCommand implements Command {
     private final CouponManager couponManager;
@@ -19,15 +18,17 @@ public class ManageCouponsCommand implements Command {
         boolean managing = true;
         while (managing) {
             displayCoupons();
-            System.out.println("\n--- Coupon Management ---");
+            System.out.println("\n--- Coupon Management (-1 Back to Employee Menu)---");
             System.out.println("1. Add Fixed Discount Coupon");
             System.out.println("2. Add Percentage Discount Coupon");
             System.out.println("3. Toggle Coupon Status (Enable/Disable)");
-            System.out.println("0. Back to Employee Menu");
 
             String choice = InputView.getStringInput("Choose: ");
             try {
                 switch (choice) {
+                    case "-1":
+                        managing = false;
+                        break;
                     case "1":
                         addFixedCoupon();
                         break;
@@ -36,9 +37,6 @@ public class ManageCouponsCommand implements Command {
                         break;
                     case "3":
                         toggleCoupon();
-                        break;
-                    case "0":
-                        managing = false;
                         break;
                     default:
                         System.out.println("Invalid choice!");

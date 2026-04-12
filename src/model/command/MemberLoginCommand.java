@@ -1,8 +1,8 @@
 package model.command;
 
-import service.MemberManager;
 import java.io.IOException;
 import java.util.Scanner;
+import service.MemberManager;
 
 public class MemberLoginCommand implements Command {
     private MemberManager memberManager;

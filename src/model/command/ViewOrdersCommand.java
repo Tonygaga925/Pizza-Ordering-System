@@ -1,11 +1,11 @@
 package model.command;
 
+import java.util.List;
+import java.util.Scanner;
 import model.Member;
 import model.order.Order;
 import model.order.OrderItem;
 import service.OrderManager;
-import java.util.List;
-import java.util.Scanner;
 
 public class ViewOrdersCommand implements Command {
     private Member member;
@@ -42,7 +42,7 @@ public class ViewOrdersCommand implements Command {
                 timestamp = timestamp.substring(0, 19);
             }
 
-            System.out.printf("%d. %s | Total: $%.2f | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(),
+             System.out.printf("%d. %s | Total: $%.2f | Status: %s | %s%n", i + 1, order.getOrderId(), order.getFinalTotal(), order.getStatus(),
                     timestamp);
             System.out.println("    Item(s):");
 
@@ -59,21 +59,28 @@ public class ViewOrdersCommand implements Command {
             } else {
                 System.out.printf("\n\tTotal: $%.2f%n", order.getOriginalTotal());
             }
+            if (order.getCouponDiscountAmount() > 0) {
+            System.out.printf("\n\tCoupon [%s]: -$%.2f%n", order.getCouponCode(), order.getCouponDiscountAmount());
+            }
+    
             System.out.println();
         }
 
-        System.out.println("[m] Back to main menu");
-        System.out.println("[r] Reorder a previous order");
-        System.out.print("Choose: ");
+        while (true) {
+            System.out.println("[-1] Back to main menu");
+            System.out.println("[0] Reorder a previous order");
+            System.out.print("Choose: ");
 
-        String input = scanner.nextLine().toLowerCase();
+            String input = scanner.nextLine().toLowerCase();
 
-        if (input.equals("m")) {
-            return;
-        } else if (input.equals("r")) {
-            new model.command.ReorderCommand(recentOrders, true, scanner, reorderCallback).execute();
-        } else {
-            System.out.println("Invalid option!");
+            if (input.equals("-1")) {
+                return;
+            } else if (input.equals("0")) {
+                new model.command.ReorderCommand(recentOrders, true, scanner, reorderCallback).execute();
+                break;
+            } else {
+                System.out.println("Invalid option!\n");
+            }
         }
     }
 

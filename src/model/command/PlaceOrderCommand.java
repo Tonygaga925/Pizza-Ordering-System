@@ -1,14 +1,15 @@
 package model.command;
 
-import model.order.Order;
-import model.Member;
-import service.OrderManager;
-import service.MemberManager;
 import java.io.IOException;
 import java.util.Scanner;
+import model.Member;
+import model.order.Order;
+import service.MemberManager;
+import service.OrderManager;
 import view.InputView;
 
 public class PlaceOrderCommand implements Command {
+
     private Order order;
     private boolean isMember;
     private OrderManager orderManager;
@@ -40,7 +41,9 @@ public class PlaceOrderCommand implements Command {
 
             while (true) {
                 String couponCode = InputView.getStringInput("\nEnter coupon code (or press Enter to skip): ");
-                if (couponCode.isEmpty()) break;
+                if (couponCode.isEmpty()) {
+                    break;
+                }
 
                 model.order.Coupon coupon = service.CouponManager.getInstance().validateCoupon(couponCode);
                 if (coupon != null) {
@@ -52,23 +55,34 @@ public class PlaceOrderCommand implements Command {
                 }
             }
 
-            String confirm = InputView.getStringInput("\nFinal Confirmation - Place order now? (y/n): ").toLowerCase();
-            if (confirm.equals("y")) {
-                orderManager.placeOrder(order);
-                System.out.println("\nOrder placed successfully!");
-                System.out.println("Your Order ID: " + orderId);
-                
-                // for updating member points and change member state if over the vip threshold
-                if (isMember && member != null) {
-                    memberManager.updateMemberPoints(member.getId(), order.getTotalPoints());
+            String confirm;
+
+            while (true) {
+                confirm = InputView.getStringInput("\nFinal Confirmation - Place order now? (y/n): ").toLowerCase();
+
+                if (confirm.equals("y")) {
+                    orderManager.placeOrder(order);
+                    System.out.println("\nOrder placed successfully!");
+                    System.out.println("Your Order ID: " + orderId);
+
+                    // for updating member points and change member state if over the vip threshold
+                    if (isMember && member != null) {
+                        memberManager.updateMemberPoints(member.getId(), order.getTotalPoints());
+                    }
+                    view.OrderView.displayOrder(order, isMember);
+                    break;
+                } else if (confirm.equals("n")) {
+                    System.out.println("Order cancelled.");
+                    break;
+                } else {
+                    System.out.println("Please input 'y' or 'n'");
                 }
-                view.OrderView.displayOrder(order, isMember);
-            } else {
-                System.out.println("Order cancelled.");
             }
+
         } catch (IOException e) {
             System.err.println("Error placing order: " + e.getMessage());
         }
+
     }
 
     @Override

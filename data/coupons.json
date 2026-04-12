@@ -5,10 +5,22 @@
     "value": 0.5,
     "isActive": true
   },
+  "PIZZA05": {
+    "code": "PIZZA05",
+    "type": "FIXED",
+    "value": 5.0,
+    "isActive": true
+  },
   "PIZZA10": {
     "code": "PIZZA10",
     "type": "FIXED",
     "value": 10.0,
+    "isActive": false
+  },
+  "SUMMER10": {
+    "code": "SUMMER10",
+    "type": "PERCENTAGE",
+    "value": 0.1,
     "isActive": false
   },
   "WELCOME20": {

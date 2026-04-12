@@ -11,7 +11,7 @@ public class MainView {
     public static void displayMainMenu() {
         System.out.println("\n=== Pizza Ordering System ===");
         System.out.println("1. Member Login");
-        System.out.println("2. Member Register");
+        System.out.println("2. Register");
         System.out.println("3. Continue as Guest");
         System.out.println("4. Search Order by ID");
         System.out.println("5. Employee Login");

@@ -35,7 +35,7 @@
     "password": "password123",
     "name": "Alice Chan",
     "phone": "91234567",
-    "points": 17237,
+    "points": 18101,
     "level": "VIP",
     "registerDate": "2026-01-15 10:30:00"
   },
@@ -78,5 +78,15 @@
     "points": 7731,
     "level": "VIP",
     "registerDate": "2026-04-09 22:45:28"
+  },
+  "M009": {
+    "id": "M009",
+    "username": "king999",
+    "password": "password123",
+    "name": "King",
+    "phone": "98765432",
+    "points": 0,
+    "level": "Normal",
+    "registerDate": "2026-04-12 15:18:48"
   }
 }

@@ -14,5 +14,13 @@
     "name": "Mary",
     "role": "manager",
     "isActive": true
+  },
+  "S003": {
+    "id": "S003",
+    "username": "tommy_staff",
+    "password": "password123",
+    "name": "Tommy",
+    "role": "normal",
+    "isActive": true
   }
 }
