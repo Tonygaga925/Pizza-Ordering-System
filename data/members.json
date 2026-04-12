@@ -1,21 +1,11 @@
 {
-  "M005": {
-    "id": "M005",
-    "username": "bob123",
-    "password": "password123",
-    "name": "Bob",
-    "phone": "67880123",
-    "points": 7731,
-    "level": "VIP",
-    "registerDate": "2026-04-09 22:45:28"
-  },
   "M004": {
     "id": "M004",
     "username": "john123",
     "password": "password123",
     "name": "John",
     "phone": "97664432",
-    "points": 472,
+    "points": 582,
     "level": "Normal",
     "registerDate": "2026-04-08 21:56:51"
   },
@@ -45,8 +35,48 @@
     "password": "password123",
     "name": "Alice Chan",
     "phone": "91234567",
-    "points": 16681,
+    "points": 17237,
     "level": "VIP",
     "registerDate": "2026-01-15 10:30:00"
+  },
+  "M008": {
+    "id": "M008",
+    "username": "test_reg_full",
+    "password": "pass123",
+    "name": "FullTester",
+    "phone": "11118888",
+    "points": 0,
+    "level": "Normal",
+    "registerDate": "2026-04-12 02:46:08"
+  },
+  "M007": {
+    "id": "M007",
+    "username": "tester1",
+    "password": "pass1",
+    "name": "TestUser",
+    "phone": "11112222",
+    "points": 0,
+    "level": "Normal",
+    "registerDate": "2026-04-12 02:12:29"
+  },
+  "M006": {
+    "id": "M006",
+    "username": "testuser",
+    "password": "testpass",
+    "name": "Test Name",
+    "phone": "12345678",
+    "points": 0,
+    "level": "Normal",
+    "registerDate": "2026-04-11 19:37:07"
+  },
+  "M005": {
+    "id": "M005",
+    "username": "bob123",
+    "password": "password123",
+    "name": "Bob",
+    "phone": "67880123",
+    "points": 7731,
+    "level": "VIP",
+    "registerDate": "2026-04-09 22:45:28"
   }
 }

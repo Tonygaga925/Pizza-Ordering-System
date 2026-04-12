@@ -63,10 +63,14 @@ public class OrderManager {
             Map<String, Order> loaded = gson.fromJson(reader, type);
             if (loaded != null) {
                 orders = new ConcurrentHashMap<>(loaded);
-                System.out.println("System: Loaded " + orders.size() + " orders from file.");
+                // Initialize status state for each order after loading
+                for (Order order : orders.values()) {
+                    order.initStatus();
+                }
+                // System.out.println("System: Loaded " + orders.size() + " orders from file.");
             } else {
                 orders = new ConcurrentHashMap<>();
-                System.out.println("System: Starting with empty orders list.");
+                // System.out.println("System: Starting with empty orders list.");
             }
         } catch (Exception e) {
             System.err.println("Warning: Could not load orders, starting with empty orders.");
@@ -138,10 +142,10 @@ public class OrderManager {
     
     public void displayOrder(Order order, boolean isMember) {
         if (order == null) {
-            System.out.println("Order not found!");
+            view.MainView.displayMessage("Order not found!");
             return;
         }
-        order.displayOrder(isMember);
+        view.OrderView.displayOrder(order, isMember);
     }
     
     public void changeOrderStatus(Order order, String status) throws IOException {

@@ -115,39 +115,14 @@ public class PizzaFactory {
         return new ArrayList<>(toppingNames);
     }
 
-     // Display methods
-    public static void displayPizzaMenu(boolean isCartEmpty, boolean isMember) {
-        System.out.println("\n--- Pizza Menu ---");
-        for (int i = 0; i < pizzaNames.size(); i++) {
-            if(isMember){
-            System.out.printf("%d. %s - $%.2f (%d points)%n",
-                    i + 1, pizzaNames.get(i), pizzaPrices.get(i), pizzaPoints.get(i));
-            } else{ // guest has no points
-                System.out.printf("%d. %s - $%.2f %n",
-                    i + 1, pizzaNames.get(i), pizzaPrices.get(i));
-            }
-        }
-        if(!isCartEmpty){
-        System.out.println("0. Finish / Checkout");
-        }
+    public static List<Double> getToppingPrices() {
+        return new ArrayList<>(toppingPrices);
     }
 
-    public static void displayToppingMenu(boolean isMember) {
-        System.out.println("\n=== Extra Toppings Menu ===");
-        System.out.println("Enter topping numbers (1-" + toppingNames.size() + "), one at a time.");
-        System.out.println("Enter 0 when you are done.\n");
-
-        for (int i = 0; i < toppingNames.size(); i++) {
-            if(isMember){
-            System.out.printf("  %d. %s - $%.2f (%d points)%n",
-                    i + 1, toppingNames.get(i), toppingPrices.get(i), toppingPoints.get(i));
-            }else{ // guest has no points
-            System.out.printf("  %d. %s - $%.2f %n",
-                    i + 1, toppingNames.get(i), toppingPrices.get(i));
-            }
-        }
-        System.out.println("  0. Done / Finish selecting toppings");
+    public static List<Integer> getToppingPoints() {
+        return new ArrayList<>(toppingPoints);
     }
+
 
     public static int getPizzaCount() {
         return pizzaClasses.size();

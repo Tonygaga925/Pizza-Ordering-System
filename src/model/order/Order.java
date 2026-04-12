@@ -16,10 +16,17 @@ public class Order {
     private int totalPoints;
     private String timestamp;
     private String status = "Processing";
+    private transient OrderStatus orderStatus;
     private double discountRate = 0;
+    private String couponCode = "";
+    private double couponDiscountAmount = 0;
 
     public Order() {
         // Default constructor for Gson
+    }
+
+    public void initStatus() {
+        this.orderStatus = OrderStatusFactory.createStatus(this.status);
     }
     
     public Order(String memberId, String customerName, String phone, List<OrderItem> items) {
@@ -30,6 +37,7 @@ public class Order {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.timestamp = LocalDateTime.now().format(formatter);
         this.status = "Processing";
+        this.orderStatus = new ProcessingState();
         this.discountRate = 0;
         calculateTotals();
     }
@@ -41,8 +49,37 @@ public class Order {
             this.originalTotal += item.getItemTotal();
             this.totalPoints += item.getItemPoints();
         }
-        this.discountApplied = this.originalTotal * this.discountRate;
-        this.finalTotal = this.originalTotal - this.discountApplied;
+        this.discountApplied = this.originalTotal * this.discountRate; // VIP Discount
+        double priceAfterVIP = this.originalTotal - this.discountApplied;
+
+        if (this.couponCode != null && !this.couponCode.isEmpty()) {
+            try {
+                java.util.Map<String, Coupon> coupons = service.CouponManager.getInstance().getAllCoupons();
+                Coupon c = coupons.get(this.couponCode.toUpperCase());
+                if (c != null) {
+                    // Bypass isActive() check for historical scale
+                    if (c.getType() == Coupon.Type.PERCENTAGE) {
+                        this.couponDiscountAmount = priceAfterVIP * c.getValue();
+                    } else if (c.getType() == Coupon.Type.FIXED) {
+                        this.couponDiscountAmount = Math.min(c.getValue(), priceAfterVIP);
+                    }
+                }
+            } catch (Exception e) {
+                // Fallback to original hardcoded amount if Manager loading fails
+            }
+        }
+
+        this.finalTotal = priceAfterVIP - this.couponDiscountAmount; 
+        if (this.finalTotal < 0) {
+            this.finalTotal = 0;
+        }
+    }
+
+    public void applyCoupon(Coupon coupon) {
+        if (coupon != null) {
+            this.couponCode = coupon.getCode();
+            calculateTotals();
+        }
     }
     
     public void applyDiscount(double discountRate) {
@@ -64,33 +101,24 @@ public class Order {
     public void setTotalPoints(int points) { this.totalPoints = points; }
     public String getTimestamp() { return timestamp; }
     public String getStatus() { return status; }
-    public void setStatus(String status){this.status = status;}
-
-    public void displayOrder(boolean isMember) {
-    System.out.println("\n=== Order Details ===");
-    System.out.println("Order ID: " + orderId);
-    System.out.println("Date: " + timestamp);
-    System.out.println("Customer: " + customerName);
-    System.out.println("Phone: " + phone);
-    System.out.println("\nItems:");
-    for (int i = 0; i < items.size(); i++) {
-        OrderItem item = items.get(i);
-        System.out.printf("  %d. %s - $%.2f each x%d = $%.2f%n",
-            i + 1, item.getDescription(), 
-            item.getPizzaPrice(),
-            item.getQuantity(), item.getItemTotal());
+    public void setStatus(String status){
+        this.status = status;
+        this.orderStatus = OrderStatusFactory.createStatus(status);
     }
 
-    System.out.printf("\nTotal: $%.2f%n", originalTotal);
-
-    if(isMember){
-    if (discountApplied > 0) {
-        System.out.printf("Discount: -$%.2f%n", discountApplied);
-        System.out.printf("Final total: $%.2f%n", finalTotal);
+    public OrderStatus getOrderStatus() {
+        if (orderStatus == null) {
+            initStatus();
         }
-        System.out.printf("Points earned: %d%n", totalPoints);
+        return orderStatus;
     }
 
-}
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+        this.status = orderStatus.getStatusName();
+    }
+    public String getCouponCode() { return couponCode; }
+    public double getCouponDiscountAmount() { return couponDiscountAmount; }
+
 
 }

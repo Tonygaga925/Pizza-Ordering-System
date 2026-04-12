@@ -1,0 +1,20 @@
+{
+  "HAPPY50": {
+    "code": "HAPPY50",
+    "type": "PERCENTAGE",
+    "value": 0.5,
+    "isActive": true
+  },
+  "PIZZA10": {
+    "code": "PIZZA10",
+    "type": "FIXED",
+    "value": 10.0,
+    "isActive": false
+  },
+  "WELCOME20": {
+    "code": "WELCOME20",
+    "type": "PERCENTAGE",
+    "value": 0.2,
+    "isActive": true
+  }
+}

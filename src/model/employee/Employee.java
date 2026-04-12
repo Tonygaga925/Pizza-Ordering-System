@@ -1,7 +1,5 @@
 package model.employee;
 
-import service.OrderManager;
-
 public class Employee {
     private String id;
     private String username;
@@ -18,6 +16,7 @@ public class Employee {
         this.name = name;
         this.isActive = isActive;
         this.role = role;
+        initRole();
     }
 
     public void initRole() {
@@ -37,61 +36,11 @@ public class Employee {
     public Role getRole() { return roleStrategy; }
     public void setId(String id) { this.id = id; }
     public void setRole(Role role) { this.roleStrategy = role; }
-    public boolean canAccessAdminPanel() { 
-        return roleStrategy != null && roleStrategy.accessAdminPanel(); 
-    }
-
-    // Actions delegated to the Role Strategy
-    public void handleOrder(OrderManager orderManager) {
-        if (roleStrategy != null) {
-            this.roleStrategy.handleOrder(orderManager);
-        }
-    }
-
-    public void searchOrder(OrderManager orderManager){
-        if (roleStrategy != null) {
-            this.roleStrategy.searchOrder(orderManager);
-        }
-    }
-
+    
     public boolean accessAdminPanel() {
         if (roleStrategy != null) {
             return this.roleStrategy.accessAdminPanel();
         }
         return false;
-    }
-
-    public boolean cancelOrder(OrderManager orderManager){
-        if (roleStrategy != null) {
-            return this.roleStrategy.cancelOrder(orderManager);
-        }
-        return false;
-    }
-    
-    public boolean editOrder(OrderManager orderManager){
-        if (roleStrategy != null) {
-            this.roleStrategy.editProcessingOrder(orderManager);
-            return true;
-        }
-        return false;
-    }
-
-    public void editProcessingOrder(OrderManager orderManager) {
-        if (roleStrategy != null) {
-            this.roleStrategy.editProcessingOrder(orderManager);
-        }
-    }
-
-    public void displayMenu() {
-        if (roleStrategy != null) {
-            roleStrategy.displayMenu(this.name);
-        }
-    }
-
-    public int handleMenuChoice(int choice, OrderManager orderManager) {
-        if (roleStrategy != null) {
-            return roleStrategy.handleMenuChoice(choice, orderManager);
-        }
-        return 0;
     }
 }

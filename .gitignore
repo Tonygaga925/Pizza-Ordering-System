@@ -5,3 +5,4 @@ run.sh
 /.vscode
 *.class
 sources.txt
+sources_to_compile.txt
