@@ -78,12 +78,18 @@ public class EmployeeManager {
         return currentEmployee;
     }
 
-    public boolean registerStaff(String username, String password, String name) throws IOException{
+    public boolean isExistUserName(String username){
         for (Employee e : employees.values()) {
             if (e.getUsername().equals(username)) {
-                return false;
+                return true;
             }
         }
+        return false;
+    }
+
+    public boolean registerStaff(String username, String password, String name) throws IOException{
+        if(isExistUserName(username)){return false;}
+        
         String newId = generateEmployeeId();
         Employee newEmployee = new Employee(newId, username, password, name, true, "normal");
         employees.put(newId, newEmployee);
