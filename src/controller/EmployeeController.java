@@ -2,7 +2,6 @@ package controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import model.command.CommandHistory;
 import model.employee.Employee;
 import model.order.Order;
@@ -225,14 +224,12 @@ public class EmployeeController {
             System.out.printf("%d. ID: %s | Customer: %s | Time: %s%n",
                     i + 1, order.getOrderId(), order.getCustomerName(), order.getTimestamp());
         }
-        Scanner scanner = new Scanner(System.in);
         int choice = 0;
         Order order;
         while (true) {
-            System.out.print("\nChoose order number to cancel (-1 to go back): ");
-
+            String input = view.InputView.getStringInput("\nChoose order number to cancel (-1 to go back): ");
             try {
-                choice = Integer.parseInt(scanner.nextLine().trim());
+                choice = Integer.parseInt(input.trim());
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input! Please enter a number.");
                 continue;
@@ -302,12 +299,10 @@ public class EmployeeController {
                     i + 1, order.getOrderId(), order.getCustomerName(), timestamp, order.getFinalTotal());
         }
 
-        Scanner scanner = new Scanner(System.in);
         int choice = 0;
         Order selectedOrder;
         while (true) {
-            System.out.print("\nEnter the number of the order to edit (or -1 to return): ");
-            String input = scanner.nextLine().trim();
+            String input = view.InputView.getStringInput("\nEnter the number of the order to edit (or -1 to return): ");
             try {
                 choice = Integer.parseInt(input);
             } catch (NumberFormatException e) {

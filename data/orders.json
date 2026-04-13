@@ -375,6 +375,30 @@
     "couponCode": "",
     "couponDiscountAmount": 0.0
   },
+  "ORD1776082270610": {
+    "orderId": "ORD1776082270610",
+    "customerName": "Hs",
+    "phone": "12345678",
+    "items": [
+      {
+        "pizzaDescription": "Margherita (Small)",
+        "pizzaPrice": 42.0,
+        "pizzaPoints": 110,
+        "sizeName": "Small",
+        "sizeMultiplier": 1.0,
+        "quantity": 1
+      }
+    ],
+    "originalTotal": 42.0,
+    "finalTotal": 42.0,
+    "discountApplied": 0.0,
+    "totalPoints": 0,
+    "timestamp": "2026-04-13 20:11:10",
+    "status": "Processing",
+    "discountRate": 0.0,
+    "couponCode": "",
+    "couponDiscountAmount": 0.0
+  },
   "ORD1775649244968": {
     "orderId": "ORD1775649244968",
     "memberId": "M001",
@@ -452,7 +476,7 @@
     "discountApplied": 0.0,
     "totalPoints": 236,
     "timestamp": "2026-04-10 23:52:41",
-    "status": "Handling",
+    "status": "Completed",
     "discountRate": 0.0,
     "couponCode": "",
     "couponDiscountAmount": 0.0
@@ -477,7 +501,7 @@
     "discountApplied": 8.4,
     "totalPoints": 220,
     "timestamp": "2026-04-10 23:53:23",
-    "status": "Processing",
+    "status": "Completed",
     "discountRate": 0.0,
     "couponCode": "",
     "couponDiscountAmount": 0.0
@@ -567,7 +591,7 @@
     "discountApplied": 6.4,
     "totalPoints": 141,
     "timestamp": "2026-04-11 02:32:49",
-    "status": "Processing",
+    "status": "Handling",
     "discountRate": 0.0,
     "couponCode": "",
     "couponDiscountAmount": 0.0
@@ -1349,6 +1373,31 @@
     "couponCode": "",
     "couponDiscountAmount": 0.0
   },
+  "ORD1776078250770": {
+    "orderId": "ORD1776078250770",
+    "memberId": "M001",
+    "customerName": "Alice Chan",
+    "phone": "91234567",
+    "items": [
+      {
+        "pizzaDescription": "Margherita (Medium)",
+        "pizzaPrice": 54.6,
+        "pizzaPoints": 110,
+        "sizeName": "Medium",
+        "sizeMultiplier": 1.3,
+        "quantity": 1
+      }
+    ],
+    "originalTotal": 54.6,
+    "finalTotal": 49.14,
+    "discountApplied": 5.460000000000001,
+    "totalPoints": 110,
+    "timestamp": "2026-04-13 19:04:10",
+    "status": "Processing",
+    "discountRate": 0.1,
+    "couponCode": "",
+    "couponDiscountAmount": 0.0
+  },
   "ORD1775932219435": {
     "orderId": "ORD1775932219435",
     "customerName": "Hin",
@@ -1729,6 +1778,31 @@
     "timestamp": "2026-04-09 22:49:16",
     "status": "Cancelled",
     "discountRate": 0.0,
+    "couponCode": "",
+    "couponDiscountAmount": 0.0
+  },
+  "ORD1776079316285": {
+    "orderId": "ORD1776079316285",
+    "memberId": "M001",
+    "customerName": "Alice Chan",
+    "phone": "91234567",
+    "items": [
+      {
+        "pizzaDescription": "Pepperoni + Cheese + Olive (Large)",
+        "pizzaPrice": 96.0,
+        "pizzaPoints": 143,
+        "sizeName": "Large",
+        "sizeMultiplier": 1.6,
+        "quantity": 4
+      }
+    ],
+    "originalTotal": 384.0,
+    "finalTotal": 345.6,
+    "discountApplied": 38.400000000000006,
+    "totalPoints": 572,
+    "timestamp": "2026-04-13 19:21:56",
+    "status": "Cancelled",
+    "discountRate": 0.1,
     "couponCode": "",
     "couponDiscountAmount": 0.0
   }

@@ -14,14 +14,12 @@ public class PlaceOrderCommand implements Command {
     private boolean isMember;
     private OrderManager orderManager;
     private MemberManager memberManager;
-    private Scanner scanner;
 
     public PlaceOrderCommand(Order order, boolean isMember, OrderManager orderManager, MemberManager memberManager, Scanner scanner) {
         this.order = order;
         this.isMember = isMember;
         this.orderManager = orderManager;
         this.memberManager = memberManager;
-        this.scanner = scanner;
     }
 
     @Override

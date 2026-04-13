@@ -26,8 +26,6 @@ public class Main {
             memberManager = MemberManager.getInstance();
             employeeManager = EmployeeManager.getInstance();
 
-            orderManager.setMemberManager(memberManager);
-
             CommandFactory.initialize(memberManager, orderManager, employeeManager, menuLoader, view.InputView.getScanner());
 
             while (true) {

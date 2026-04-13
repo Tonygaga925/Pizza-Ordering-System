@@ -4,10 +4,18 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class InputView {
-    private static final Scanner scanner = new Scanner(System.in);
+    private static Scanner scanner = new Scanner(System.in);
 
     public static Scanner getScanner() {
         return scanner;
+    }
+
+    public static void setScannerForTesting(Scanner testScanner) {
+        scanner = testScanner;
+    }
+
+    public static void resetScanner() {
+        scanner = new Scanner(System.in);
     }
 
     public static int getIntInput() {

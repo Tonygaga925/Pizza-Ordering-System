@@ -4,10 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import model.order.Order;
-import model.order.OrderItem;
-import model.pizza.Pizza;
-import model.size.Size;
-import model.Member;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -22,7 +18,6 @@ public class OrderManager {
     private Map<String, Order> orders;
     private final String orderFilePath;
     private final Gson gson;
-    private MemberManager memberManager;
 
     private OrderManager(String orderFilePath) throws IOException {
         this.orderFilePath = orderFilePath;
@@ -43,10 +38,6 @@ public class OrderManager {
             instance = new OrderManager(filePath);
         }
         return instance;
-    }
-    
-    public void setMemberManager(MemberManager memberManager) {
-        this.memberManager = memberManager;
     }
     
     private void loadOrders() throws IOException {
